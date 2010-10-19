@@ -1,0 +1,87 @@
+\documentclass[a4paper,10pt,fleqn]{scrartcl}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% \usepackage{mathtools} not installed?
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage[ngerman]{babel}
+\usepackage{algpseudocode}
+
+\usepackage{hyperref}
+\usepackage{url}
+
+\usepackage{color}
+
+\usepackage{paralist} % inline list
+
+% enhanced enumerate 
+% see http://texblog.wordpress.com/2008/10/16/lists-enumerate-itemize-description-and-how-to-change-them/
+\usepackage{enumerate}
+
+% i hate the fat blob..
+\renewcommand{\labelitemi}{\guilsinglright}
+
+\usepackage[thmmarks,amsmath,amsthm]{ntheorem}
+
+\theorempreskipamount 14pt
+\theorempostskipamount 12pt
+\theoremstyle{break}
+\theoremheaderfont{\scshape \smallskip}
+\theorembodyfont{\normalfont}
+\newtheorem{defi}{Definition}[subsection]
+
+% vektoren durch $\mat{1 \\ 2 \\ 3}$
+\def\mat#1{\left(\begin{array}{cccccc}#1\end{array}\right)}
+
+% framebox
+\def\framebox#1{\fbox{\begin{minipage}{0.8\textwidth}{#1}\end{minipage}}\\}
+
+% questionbox
+\usepackage{fancybox}
+\def\questionbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge ?} \color{red}{#1}}\end{minipage}}\\}
+\def\warningbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge !} \color{blue}{#1}}\end{minipage}}\\}
+
+% condensed lists
+\usepackage{mdwlist}
+
+
+% floor funktion
+\def\floor#1{\left\lfloor #1 \right\rfloor}
+
+% seitenverhältnis etwas anpassen
+\usepackage[paper=a4paper,left=20mm,right=20mm,top=25mm,bottom=25mm]{geometry}
+%
+\newtheorem{beh}{Behauptung}
+\newtheorem{bew}{Beweis}
+\newtheorem{afg}{Aufgabe}
+\newtheorem{lsg}{Lösung}
+\newtheorem{lem}{Lemma}[subsection]
+\newtheorem{bsp}{Beispiel}[subsection]
+\newtheorem{satz}{Satz}[subsection]
+\newtheorem{define}{Definition}
+\theoremsymbol{$\square$}
+
+
+% Title Page
+\title{OMSI 2, SoSe 2010 \\ Zusammenfassung}
+\author{Magnus Müller}
+
+% schau dir mal empheq an
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\framebox{
+Reinefeld, Schintke
+WS 2010
+Einführung
+Reinefeld -> ZIB - Zuse Institut, Massiv parallele Systeme
+}
+
+\input{vl1.tex}
+
+\end{document}

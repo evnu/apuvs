@@ -1,0 +1,356 @@
+\part{Organisatorisches}
+\section{Organisatorisches}
+\begin{itemize}
+	\item Dozenten
+		\begin{itemize}
+			\item  Reinefeld
+			\item Schintke (schintke@zib.de)
+		\end{itemize}
+	\item Stil
+		\begin{itemize}
+			\item VL (2-3 h)
+			\item Übungen (1-2 h)
+			\item Projektarbeit
+		\end{itemize}
+	\item Voraussetzungen
+		\begin{itemize}
+			\item Grundstudium: Programmiesprachen, OS, Rechnerarchitektur, nichtsequentielle Programmierung
+		\end{itemize}
+	\item Homepage der Veranstaltung
+		\begin{itemize}
+			\item http://www.zib.de/de/reinefeld/courses/ws10-vl.html
+			\item nach der VL
+				\begin{itemize}
+					\item ausführliche Folien
+					\item Übungsaufgaben
+					\item Ergänzendes
+				\end{itemize}
+		\end{itemize}
+	\item Ziel
+		\begin{itemize}
+			\item Wie programmiert man skalierbare Programme?
+		\end{itemize}
+	\item Leistungsüberprüfung
+		\begin{itemize}
+			\item Mündliche Prüfung
+			\item Termin: 23. und 24. Februar 20100
+			\item Vor.:
+				\begin{itemize}
+					\item aktive Mitarbeit in Übung \& Bearbeitung aller Übungsaufgaben
+					\item mind 67% der Übungspunkte
+					\item Projektaufgabe in Gruppe gelöst \& im Plenum vorgestellt
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+\subsection{Geplanter Inhalt}
+
+\begin{itemize}
+	\item  Parallele Systeme
+		\begin{itemize}
+			\item Architektur: MPP, SMP (Multicore)
+			\item Programmierung mit MPI und OpenMP
+			\item Speedup, Effizienz
+			\item Kommunikation
+			\item Prozesse
+			\item Namen
+		\end{itemize}
+		\begin{itemize}
+			\item  Verteilte Systeme
+			\item Abstraktion
+			\item sync. Basisalgs.
+			\item Unterschiede sync. \& async. Algos.
+			\item Zeig \& Synchronisation
+			\item Koord. und async. Basisalgos
+			\item Transaktionen \& Nebenläufigskeitskontrolle
+			\item Robuste Algorithmen
+			\item Selbststabil. Algorthmen
+			\item P2P Algorithmen
+			\item Dateninsensive Anwendungen, Map/Reduce
+		\end{itemize}
+\end{itemize}
+\subsection{Literatur}
+Siehe Folien
+\begin{itemize}
+	\item Empfehlung: R. Guerraoui, Introduction to Reliable Distributed Programming
+	\item K. Birman, Reliable Distributed Systems
+\end{itemize}
+
+\section{Einführung in Parallele Systeme}
+Warum?
+
+\begin{itemize}
+	\item  Ziele
+		\begin{itemize}
+			\item Zeit sparen
+			\item grö. Probl. lösen
+		\end{itemize}
+	\item  Grenzen sequentl. Rechnens \footnote{the free lunch is over (sutter):
+		http://www.gotw.ca/publications/concurrency-ddj.htm}
+		\begin{itemize}
+			\item Lichtgeschwindigkeit: 30cm/ns im Vakuum bzw 9cm/ns in Kupfer
+			\item Miniaturisierung (phys. \& ökon. Grenzen)
+			\item Stromverbr. (kubisch mit Taktrate)
+		\end{itemize}
+	\item 
+		\begin{itemize}
+			\item Perf/Clock ?
+		\end{itemize}
+\end{itemize}
+
+Nur Parallelität bringt zus. Leistung
+\begin{itemize}
+	\item  Letzt. 30 Jahre Leistungsgewinn durch
+	\item 
+		\begin{itemize}
+			\item Taktrate
+			\item Optimierung Ausführungseinheiten
+			\item Cache
+		\end{itemize}
+	\item  Quellen für zukünft. Leistungsgewinne
+	\item 
+		\begin{itemize}
+			\item Multicore
+			\item Hyperthreading -> mehrere Registerthreads, die auf mehreren Threads arbeiten => simulierter Mehrkernprozessor, virtuelle Kerne
+			\item Cache
+		\end{itemize}
+\end{itemize}
+
+=> Methoden zur Unterstützung der Softwareparallelität.
+
+\subsection{Moore's Law}
+Die Anzahl der Transistoren verdoppelt sich alle zwei Jahre
+-> Nicht: Die Prozessorleistung!
+
+\subsection{Reale Proz.-Leistungssteigerung}
+SPEC 2006 - Abflachung um 2002
+
+\subsection{Moore's Law heute}
+
+\begin{itemize}
+	\item Anz. Prozessorkerne verdoppelt sich mit neuer Chigeneration
+		\begin{itemize}
+			\item http://www.eecs.berkely.edu/Pubs/TechRpts/2008/EECS-2008-23.pdf
+		\end{itemize}
+	\item Warum?
+		\begin{itemize}
+			\item Weniger Strom durch einf. Strukturen
+			\item mehr par. Speicherzugriffe -> weniger Latenz
+			\item Kürzere "Verkabelung" in einem Core
+			\item geringere Design-Komplexität
+		\end{itemize}
+	\item Konsequenz
+		\begin{itemize}
+			\item Heute ist jeder PC Parallelrechner
+			\item Hochleistungsrechner mit Mio. CPUs
+		\end{itemize}
+\end{itemize}
+
+
+\subsection{Multicore}
+
+\begin{itemize}
+	\item  Immer mehr Multicoresysteme, z. B.
+	\item 
+		\begin{itemize}
+			\item Intel Xeon X5570
+		\end{itemize}
+	\item  Eff. Nutzung schwierig
+	\item  Programmierer, Compiler od. OS muss parallel ausführbare Codeseq. erkennen \& paral. Ausführung "orchestrieren"
+	\item 
+		\begin{itemize}
+			\item Start, Sync. und Kommun. überwachen
+			\item Nebenläufigkeitskontrolle durch locks
+		\end{itemize}
+\end{itemize}
+=> Serialisierung
+
+\section{Rechnerarchitektur}
+\subsection{Komponenten einer Rechnerarchitektur}
+vgl. Folie 11
+\begin{itemize}
+	\item Funktionales Verhalten festgel. durch
+		\begin{itemize}
+			\item Datenstr.
+			\item Kontrollstrk.
+		\end{itemize}
+	\item Strukturanordnung def. durch
+		\begin{itemize}
+			\item Art und Anzahl HW-Betriebsmittel
+			\item verbindende Kommunikationseinrichtungen
+		\end{itemize}
+\end{itemize}
+
+
+\subsection{Operationsprinzip: Vorschft. über Zusammenwirken der Komponenten}
+Strukturanord.: Struktur der Verknüpfung
+
+\subsection{Sysarch. nach Michael Flynn (1972)}
+Unterschdg. Daten- \& Befehlsströme im Rechner
+vgl. Folie 13 \\
+Folgefolien betrachten die einzelnen Architekturen
+
+\subsubsection{SPMD}
+Merke: SPMD (Single Program, Multiple Data) hat nichts mit Flynn Taxonomi zu tun!
+\begin{itemize}
+	\item Grundprinzip
+		\begin{itemize}
+			\item Alle (MIMD-)Prozessoren arbeiten auf Kopien desselben Programmcodes, aber mit unterschdl. Daten und ggf. in unterschiedl. Modulen
+		\end{itemize}
+	\item Vorteile
+		\begin{itemize}
+			\item Leichte Programmentwicklung, -Debugging \& -Wartung
+			\item Einfachere Synchronisation (vgl. mit "echter" MIMD-Programmierung)
+			\item im vgl. zu SIMD gröbere Parallelitätsganularität
+		\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Kommunikationsnetze}
+Aufbau von MIMD-Systemen
+Folie 23 mit Diagram (!)
+
+\begin{itemize}
+	\item SMP, DSM, nachrichtengekoppelter (shared-nothing-)Multiprozessor
+\end{itemize}
+
+
+\subsubsection{SMP - Multiprozessor}
+
+\begin{itemize}
+	\item glob. Speicher (UMA - uniform memory access)
+	\item Glob. Adressraum
+	\item Gleiche CPUs
+	\item Datenaustausch
+		\begin{itemize}
+			\item transparentes Caching mittls Chachekohärenzprotok. in Hardware (MSI, MESI, Dragon, ...)
+			\item Statusflags je Speicherseite im Cache (exclusive, invalid, shared, ...)
+			\item Protokoll überwacht die Zugriffe anderer Prozessoren auf dem Bus
+				\begin{itemize}
+					\item schwieriger wenn kein einzelner Bus
+				\end{itemize}
+		\end{itemize}
+\end{itemize}
+
+
+\subsubsection{DSM - Multiprozessor}
+
+\begin{itemize}
+	\item Vert. Speicher (NUMA -> Zugriffszeit abhängig von Position des zu erreichenden Speichers)
+	\item Glob. Adressraum
+	\item Gleiche CPUs (nicht zwingend relevant)
+	\item Datenaustausch
+		\begin{itemize}
+			\item Transp. Caching mittels Cachekohärenzprot. in HW
+			\item Kann auch für Cluster realisiert werden (selten)
+		\end{itemize}
+\end{itemize}
+
+
+\subsubsection{Homogenes Multicom.-System}
+\begin{itemize}
+	\item vertl. Speicher
+	\item Getl. Adressraum
+	\item GleicheCPUs
+	\item Hochleistungsnetzwerk verbindet Prozessoren
+	\item Datenaustausch
+		\begin{itemize}
+			\item Nachrichten expl. über Netzwerk
+		\end{itemize}
+
+\end{itemize}
+
+\subsubsection{Heterogenes Multicomp.-System}
+\ldots
+
+
+\section{Verteilte Systeme}
+Geographisch verteiltes System
+
+Def.: Menge miteinander verbundener, autonomer Computer, die dem Nutzer wie ein einzelnes kohärentes System erscheinen
+\begin{itemize}
+	\item Computer: Prozessoren/Prozesse (auch Knoten genannt)
+	\item Autonom: Private Kontrolle
+	\item Miteinander verbunden: Informationsaustausch
+\end{itemize}
+
+=> Leslie Lempert
+
+\subsection{Warum?}
+\begin{itemize}
+	\item Austausch von Informationen
+		\begin{itemize}
+			\item WWW, Bittorrent,...
+		\end{itemize}
+	\item Erhöhte Zuverlässigkeit (reliability) durch Duplikation (replication)
+	\item Gem. Verwendung von Ress. (resource sharing)
+		\begin{itemize}
+			\item zb. Drucker, SAN, ...
+			\item Anwendung: LHC (CERN), Lofar (Astronomie)
+		\end{itemize}
+	\item Erhöhte Leistung (performant durch Parallelisierung)
+		\begin{itemize}
+			\item Google
+		\end{itemize}
+	\item Vereinfachung des Systemdesigns durch Spezialisierung
+		\begin{itemize}
+			\item spezialisierte Server
+		\end{itemize}
+\end{itemize}
+
+
+\subsection{Typen}
+... \marginpar{Das nachschlagen!}
+
+\subsection{Forderungen}
+
+\begin{itemize}
+	\item Benutzer und Ressourcen brauchen nicht unbedingt am gl. Ort zu sein, d.h. Verteilung soll dem Benutzer verborgen sein (Transparenz)
+	\item Austausch und Erweiterbarkeit von Komponenten (Offenheit)
+	\item Stets gleich gute Leistung, unabhängig von Anzahl der Nutzer
+\end{itemize}
+
+
+\subsection{Transparenz}
+Arten der Transparenz auf Folie 34 und 35
+
+\subsection{Realisierung}
+Abstraktionsschicht zw. Ress. und Anwendung => Middleware
+
+\subsection{Skalierbarkeit}
+
+\begin{itemize}
+	\item Verschiedene Arten der Skalierbarkeit
+		\begin{itemize}
+			\item Größe
+			\item Geographische Verteilung
+			\item Administrativ
+			\item Leistung
+		\end{itemize}
+	\item Skalierbarkeit kann behindert werden durch
+		\begin{itemize}
+			\item Zentrale Komponenten
+				\begin{itemize}
+					\item Dienste: Einzelner Server für alle Nutzer
+					\item Daten: ein einziges Online-Telefonbuch
+					\item Algorithmen: Routing-Verfahren, das glob. Information braucht => nur verteilte Algorithmen einsetzen
+				\end{itemize}
+			\item Kommunikation
+			\item Weitere Spakete
+		\end{itemize}
+	\item Lösungen für Skalierbarkeit
+		\begin{itemize}
+			\item Verbergen von Kommunikationslatenzen durch async. statt sync. Komm.
+			\item Weniger Einzelnachrichten
+			\item Verteilung (Divide and Conquer)
+			\item Folie 42 (!) => Client und Server
+				\begin{itemize}
+					\item verbindungslose oder verbindungsorientierte Kommunikation (schnell vs. langsam, unzuverlässig vs. zuverlässig)
+				\end{itemize}
+			\item Mehrschichtige Architekturen (vertikale Verteilung) Folie 44
+				\begin{itemize}
+					\item Bsp.: Verteilte Transaktionen
+				\end{itemize}
+			\item Horizontale Verteilung => P2P-Verteilung
+		\end{itemize}
+\end{itemize}
