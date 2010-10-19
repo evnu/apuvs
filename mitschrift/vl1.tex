@@ -1,5 +1,5 @@
 \part{Organisatorisches}
-\section{Organisatorisches}
+\section{1. Vorlesung}
 \begin{itemize}
 	\item Dozenten
 		\begin{itemize}
@@ -111,16 +111,16 @@ Nur Parallelität bringt zus. Leistung
 	\item 
 		\begin{itemize}
 			\item Multicore
-			\item Hyperthreading -> mehrere Registerthreads, die auf mehreren Threads arbeiten => simulierter Mehrkernprozessor, virtuelle Kerne
+			\item Hyperthreading $\rightarrow$ mehrere Registerthreads, die auf mehreren Threads arbeiten $\Rightarrow$ simulierter Mehrkernprozessor, virtuelle Kerne
 			\item Cache
 		\end{itemize}
 \end{itemize}
 
-=> Methoden zur Unterstützung der Softwareparallelität.
+$\Rightarrow$ Methoden zur Unterstützung der Softwareparallelität.
 
 \subsection{Moore's Law}
 Die Anzahl der Transistoren verdoppelt sich alle zwei Jahre
--> Nicht: Die Prozessorleistung!
+$\rightarrow$ Nicht: Die Prozessorleistung!
 
 \subsection{Reale Proz.-Leistungssteigerung}
 SPEC 2006 - Abflachung um 2002
@@ -135,7 +135,7 @@ SPEC 2006 - Abflachung um 2002
 	\item Warum?
 		\begin{itemize}
 			\item Weniger Strom durch einf. Strukturen
-			\item mehr par. Speicherzugriffe -> weniger Latenz
+			\item mehr par. Speicherzugriffe $\rightarrow$ weniger Latenz
 			\item Kürzere "Verkabelung" in einem Core
 			\item geringere Design-Komplexität
 		\end{itemize}
@@ -163,7 +163,7 @@ SPEC 2006 - Abflachung um 2002
 			\item Nebenläufigkeitskontrolle durch locks
 		\end{itemize}
 \end{itemize}
-=> Serialisierung
+$\Rightarrow$ Serialisierung
 
 \section{Rechnerarchitektur}
 \subsection{Komponenten einer Rechnerarchitektur}
@@ -236,7 +236,7 @@ Folie 23 mit Diagram (!)
 \subsubsection{DSM - Multiprozessor}
 
 \begin{itemize}
-	\item Vert. Speicher (NUMA -> Zugriffszeit abhängig von Position des zu erreichenden Speichers)
+	\item Vert. Speicher (NUMA $\rightarrow$ Zugriffszeit abhängig von Position des zu erreichenden Speichers)
 	\item Glob. Adressraum
 	\item Gleiche CPUs (nicht zwingend relevant)
 	\item Datenaustausch
@@ -274,7 +274,7 @@ Def.: Menge miteinander verbundener, autonomer Computer, die dem Nutzer wie ein 
 	\item Miteinander verbunden: Informationsaustausch
 \end{itemize}
 
-=> Leslie Lempert
+$\Rightarrow$ Leslie Lempert
 
 \subsection{Warum?}
 \begin{itemize}
@@ -315,7 +315,7 @@ Def.: Menge miteinander verbundener, autonomer Computer, die dem Nutzer wie ein 
 Arten der Transparenz auf Folie 34 und 35
 
 \subsection{Realisierung}
-Abstraktionsschicht zw. Ress. und Anwendung => Middleware
+Abstraktionsschicht zw. Ress. und Anwendung $\Rightarrow$ Middleware
 
 \subsection{Skalierbarkeit}
 
@@ -333,7 +333,7 @@ Abstraktionsschicht zw. Ress. und Anwendung => Middleware
 				\begin{itemize}
 					\item Dienste: Einzelner Server für alle Nutzer
 					\item Daten: ein einziges Online-Telefonbuch
-					\item Algorithmen: Routing-Verfahren, das glob. Information braucht => nur verteilte Algorithmen einsetzen
+					\item Algorithmen: Routing-Verfahren, das glob. Information braucht $\Rightarrow$ nur verteilte Algorithmen einsetzen
 				\end{itemize}
 			\item Kommunikation
 			\item Weitere Spakete
@@ -343,7 +343,7 @@ Abstraktionsschicht zw. Ress. und Anwendung => Middleware
 			\item Verbergen von Kommunikationslatenzen durch async. statt sync. Komm.
 			\item Weniger Einzelnachrichten
 			\item Verteilung (Divide and Conquer)
-			\item Folie 42 (!) => Client und Server
+			\item Folie 42 (!) $\Rightarrow$ Client und Server
 				\begin{itemize}
 					\item verbindungslose oder verbindungsorientierte Kommunikation (schnell vs. langsam, unzuverlässig vs. zuverlässig)
 				\end{itemize}
@@ -351,6 +351,6 @@ Abstraktionsschicht zw. Ress. und Anwendung => Middleware
 				\begin{itemize}
 					\item Bsp.: Verteilte Transaktionen
 				\end{itemize}
-			\item Horizontale Verteilung => P2P-Verteilung
+			\item Horizontale Verteilung $\Rightarrow$ P2P-Verteilung
 		\end{itemize}
 \end{itemize}
