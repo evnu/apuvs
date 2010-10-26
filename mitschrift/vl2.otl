@@ -1,0 +1,41 @@
+VL 2
+Programmierung Paralleler Systeme
+
+Betriebssystemsicht
+	Multicomputersystem
+		erbringt die Systemdienste verteilt und transparent
+		Bsp: Mosix
+		: Verteilung eines Betriebssystems über mehrere Knoten
+			Probleme
+				Was ist mit offenen Dateien?
+				Synchronisation
+				...
+	Netzwerkbetriebssystem
+		Erlaubt Dienste entfernt zu nutzen, bietet aber keine Transparenz
+		Beispiele: rlogin, ssh, rc, scp, sockets
+	Multicomputeros und Netzwerkos sind noch nicht alles	
+		Multicomputersystem
+			hat zwar Transparenz
+	Middleware für vert. Systeme
+		Abstraktionsschicht 
+		bietet (rel.) kompletten Satz von Diensten
+		Middleware soll/darf nicht umgangen werden
+		Paradigmen
+			alles ist eine Datei
+				Unix, Plan9
+			RPC
+	Vergleich der unterschiedlichen Systeme S.6
+		Grad der Transparenz
+		Kommunikationsbasis
+		Ressourcenmanagement
+		Skalierbarkeit
+		Offenheit (?)
+
+Parallele Programmierung
+	Was ist ein ausgewo. System?
+		Gene Amdahl fordert je Operation/s:
+			1 Byte Hauptspeicherkapazität
+			1 Bit I/O-Rate
+			100  Byte Plattenspeicher
+		Vgl. PC versus ZIB-Supercomputer
+			S. 8
