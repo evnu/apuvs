@@ -142,3 +142,93 @@ Parallele Programmiermodelle
 			...
 
 Message Passing Interface (MPI)
+: Nachrichtenbasiertes System
+: => OpenMP - Shared memory basiertes System
+	Parallelprog. mit Nachrichtenaustausch möglich durch
+		direkten Zugriff auf das Netzwerk
+			früher die einzig eff. Methode, nicht portabel
+		Eigenständ. parallele programmiersprache
+			Großer Aufwand: Einarbeitung, neuer Compiler, etc
+			Bsp: OCCAM, parallele Fortran-Varianten (HPF), OpenMP
+		Unterprogrammbibliotheken
+			Beispiele: pthreads, MPI
+	Kommunikationsbibliotheken
+		shmem
+		NX/2
+		Vertex
+		Express
+		Chameleon
+		Linda
+		PICL
+		P4
+		PVM
+		...
+	: MPI am weitesten verbreitet
+	MPI
+		Ziele
+			Effizienz durch Parallelität
+			Portabilität
+			Leichte Programmierung
+		Weitere Aspekte
+			MPI ist eine Programmierschnittstelle - keine Programmiersprache, keine Umgebung
+			Sprachanbindung an C,C++,Fortran
+			Effiz. Kommunikationsprimitiven durch Nutzung von Systemeigenschft.
+			(viele) MPI-Implementationen sind thread-safe, Bibliotheksfunktionen sind "reentrant"
+
+		Standards
+			Nicht in MPI-1-Standard (1994) enthalten
+				Programmstart
+					Realisierung auf Shell-Ebene: mpirun
+				spawn
+				parallel I/O
+				Einseitige Kommunikation (durch "remote mem. access"
+			Nicht im MPI-2-Standard (1997) enthalten
+				Debugging
+				Interrupts
+	Grundlegende Konzepte von MPI [S. 35]
+		P2P Kommunikation
+			Vier Kommunikationsarten
+				Standard -- synchron oder gepuffert - implementationsabhängig [S. 39]
+				: MPI_SEND (buf, count, datatype, dest, tag, comm)
+				Synchronous -- beendet, wenn Nachricht empfangen wurde
+				: MPI_SSEND (buf, count, datatype, dest, tag, comm)
+				Buffered -- beendet sofort
+				Ready -- beendet sofort
+				: MPI_RSEND (buf, count, datatype, dest, tag, comm)
+			Nachrichtenempfang
+			: MPI_RECV (buf, count, datatype, dest, tag, comm)
+				:immer blockierend
+				:Parameter siehe [S. 44]
+			: MPI_IRECV (buf, count, datatype, dest, tag, comm)
+				:nicht blockierendes Empfangen
+			blockierendes Senden
+				Nach Rückkehr vom Sendebfehl ist das Senden abgeschlossen
+				"abgeschlossen" = Sendepuffer darf überschrieben werden
+			nicht-blockierendes Empfangen
+				kehrt sofort zurück. Mit test oder wait kann der Komm.stat. überprüft werden
+		Kollektive Operationen
+			Barrier
+				MPI_BARRIER
+				MPI_BROADCAST
+				MPI_REDUCE
+				: mit verschiedenen Operationen
+		Komplexe Datentypen
+		Gruppen, Kontexte, Kommunikatoren
+		Virtuelle Topologien
+	Beispiel: Hello World [S. 49]
+	MPI-2
+		Einseitige Kommunikation (one-sided communiaction)
+		: MPI_Win_Create
+		: ...
+	Welche MPI Bibliothek?
+		Viele Varianten für unterschiedliche Hardware (Netzwerke) und OS:
+			LAM-MPI
+			MPICH2
+			OpenMPI
+			ScaliMPI
+		Neuerdings
+			Grid Computing: MPICH-G,...
+			fehlertolerantes MPI
+	Literatur
+		MPI-Standards: www.mpi-forum.org
+		Eine einfache Einführung
