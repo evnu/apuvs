@@ -7,12 +7,14 @@
 #include <mpi.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #define SIZE 100
 
 int main (int argc, char **argv) {
+	int constant = 1;
 	char arr[SIZE];
-	memset (arr, 1, SIZE+1); // TODO wieso + 1 ..?
+	memset (arr, constant, SIZE);
 
 	int numpes; // number of processing units
 	int myid;
@@ -36,15 +38,13 @@ int main (int argc, char **argv) {
 			// nothing to be done
 			fprintf (stderr, "Nah.. not really useful."); // TODO
 		} else {
-			// TODO die Partitionierung stimmt noch nicht
 			int len = SIZE / (numpes - 1); // the master doesn't help.
 			int slavenum = 1;
 			int i;
 
 			// partition the array according to the number of slaves
-			for (i = 0; i < SIZE; i += len) {
+			for (i = 0; i < SIZE && slavenum < numpes; i += len) {
 				MPI_Send (&(arr[i]), len, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
-				i++;
 			}
 
 			int remaining = SIZE - (numpes - 1) * len;
@@ -62,7 +62,8 @@ int main (int argc, char **argv) {
 				sum += part;
 			}
 
-			printf ("Ergebnis: %d\n", sum);
+			printf ("Result: %d\n", sum);
+			printf ("Should be: %d\n", SIZE * constant);
 		}
 	} else {
 		/* slave */
