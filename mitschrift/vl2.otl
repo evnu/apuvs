@@ -24,7 +24,7 @@ Betriebssystemsicht
 			alles ist eine Datei
 				Unix, Plan9
 			RPC
-	Vergleich der unterschiedlichen Systeme S.6
+	Vergleich der unterschiedlichen Systeme [S.6]
 		Grad der Transparenz
 		Kommunikationsbasis
 		Ressourcenmanagement
@@ -38,4 +38,107 @@ Parallele Programmierung
 			1 Bit I/O-Rate
 			100  Byte Plattenspeicher
 		Vgl. PC versus ZIB-Supercomputer
-			S. 8
+			[S. 8]
+	Rechenaufwand von Simulationen
+		Daten- und Rechenaufwand potenzieren sich bei höherer Genauigkeit
+		Ursachen
+			höhere Auflösung
+			kleinere simulierte Zeitscshritte
+			Berücksichtigung von mehr Systemparametern
+	Maßnahmen zur Leistungssteigerung
+		Pipelining
+		Superscalar
+		Out-of-Order Execution
+		Multilevel Caches
+		SIMD
+	Daten- und Aufgabenverteilung
+		Aufteilung einer Matrixstruktur auf Prozessoren
+			Berechnung auf lokalen Daten
+			Randaustausch mit benachbarten Prozessoren
+	Speedup
+	: $S_N(n) = \frac{T_1(n)}{T_N(n)}$ mit
+	: n Problemgröße
+	: N Anzahl der Prozessoren
+		absoluter Speedup: $T_1 = $ Zeit des (opt.) seq. Algo.
+		relativer Speedup: $T_1 = $ Zeig des par. Alg. auf einem Proz.
+		Normalerweise gilt $1 \leq S_N(n) \leq N$
+			Slowdown $S_N(n) < 1)
+				Mehraufwand Parallelisierung überstgt. Gewinn
+			Superlinear Speedup $S_N(n) > N)
+				Cacheeffekte, Suchverfahren (branch & bound)
+	Amdahls Gesetz
+	: N Anzahl Prozessoren
+	: P Anteil des parallelisierbaren Programmcodes
+	: 1-P Anteil des sequentiellen Programmcodes
+	: => $S_p(n) \leq \frac{1}{(1-P) + \frac{P}{N}} \leq \frac{1}{1-P}$
+		:Die maximale leistungsst. (speedup) eines parallelen Programms ist
+		:limitiert durch den sequentiellen Anteil (z.B. I/O,
+		:Vor-/Nachbereitung, Kommunikation, Sync.,...)
+		Amdahl-Effekt
+		: Bei fester Prozessoranzahl steigt die Beschl. mit wachsender
+		: Problemgröße
+	Effizienz als Maß
+	: $E_N(n) = \frac{S_N(n){N}$
+	Lohnt sich die Skalierung? [S. 18/19]
+		Schwer ab 1000 Prozessoren, nur für wenige Anwendungen sinnvoll
+
+Parallele Masachinenmodelle
+	PRAM
+		Parallel random access memory machine
+		Verschiedene Umsetzungen
+			EREW PRAM - exlusive read, exclusive write
+			CREW PRAM - concurrent read, exclusive write
+			CRCW PRAM - parallel read, parallel write
+		Nomenklatur
+		:(n,m)-PRAM modell. Parallelrechner mt n Proz. und m Speicherworten.
+		:Alle Proz. arbeiten synchron
+		Ähnlich shared memory MIMD-System
+		Verschd. Implementationen eines parl. Algs. schwer zu vergleichen
+	LogP
+	:L latency
+	:o overhead
+	:g gap
+	:P processors
+		Sehr populär
+		Anwendbar für massiv parallele Systeme und Cluster
+		Aber: ignoriert lange Nachrichten und Sättigung des Kommunikationsmediums
+		Beispiel: Broadcast Tree
+	BSP
+		Bulk synchronous parallel model [S. 25]
+			parall. Berechnungen und Kommunikation wechseln sich ab
+			Sync. zwischen den Phasen
+			Vorteil: Keine Gefahr von Deadlocks (?)
+
+Parallele Programmiermodelle
+	Erzeugen der Parallelität
+		explizite Parallelität
+			Threads: fork and join
+			parbegin/parend
+			Co-Routinen
+			Prozesse
+			RPCs
+		Implizite Parallelität
+			Matrixop.
+			Prolog
+			vektorielle Ausdücke
+	Kommunikation
+		Kommunikation von Prozessen über gem. Speicherbereich (shared memory)
+			Primitiven für put und get
+			Primitiven für gegenseitigem Ausschluss
+			Wie sequ. Programmierung, daher (leichter) verständlich
+		Kommunikation von Prozessen durch Nachrichtenaustausch (message passing)
+			Primitven für Senden & Empfangen von Nachrichten
+			nur lokale Variablen
+	Programmspezifikation
+	: Wo setzt man Parallelität an?
+		Datenparallelität
+			alle Datenelemente werden gleich behandelt
+			ein Kontrollfluss
+			Gut skalierbar
+			Passt gut zu SIMD
+		Kontrollparallelität
+			Simultane Ausführung verscd. Instruktionsströme
+			Mehr. Kontrollflüsse
+			...
+
+Message Passing Interface (MPI)
