@@ -107,7 +107,6 @@ int main (int argc, char **argv) {
 		if (verbose) {
 			printf ("%d: I got %d elements\n", myid, cnt);
 		}
-		fflush (NULL);
 		
 		// sum
 		int sum = 0;
@@ -126,4 +125,3 @@ int main (int argc, char **argv) {
 	MPI_Finalize ();
 	return 0;
 }
-
