@@ -17,7 +17,7 @@ int main (int argc, char **argv) {
 		fprintf (stderr, "Not enough arguments. \nUsage: summation_mpi <Number of elements in array> [verbose output, 0 = false, 1 = true]");
 		exit (-1);
 	}
-	
+
 	int size = 1;
 	if (argc > 1) {
 		size = atoi (argv[1]);
@@ -35,7 +35,7 @@ int main (int argc, char **argv) {
 
 	// initialize MPI
 	MPI_Init (&argc, &argv);
-	
+
 	// we have to remember the number of PEs
 	MPI_Comm_size (MPI_COMM_WORLD, &numpes);
 
@@ -89,11 +89,12 @@ int main (int argc, char **argv) {
 		}
 	} else {
 		/* slave */
-    MPI_Probe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
+		MPI_Probe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
 
 		int msglen;
-    MPI_Get_count (&stat, MPI_CHAR, &msglen);
-    char *arr = malloc (msglen * sizeof(char));
+		assert (msglen > 0);
+		MPI_Get_count (&stat, MPI_CHAR, &msglen);
+		char *arr = malloc (msglen * sizeof(char));
 
 		if (!arr) {
 			fprintf (stderr, "Not enough memory to allocate %d bytes for the array.", size);
@@ -107,7 +108,7 @@ int main (int argc, char **argv) {
 		if (verbose) {
 			printf ("%d: I got %d elements\n", myid, cnt);
 		}
-		
+
 		// sum
 		int sum = 0;
 		while (cnt) {
@@ -120,6 +121,8 @@ int main (int argc, char **argv) {
 		if (verbose) {
 			printf ("%d: I send it.. \n", myid);
 		}
+
+		free (arr);
 	}
 
 	MPI_Finalize ();
