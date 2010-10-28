@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <alloca.h>
 
 const int constant = 1;
 
@@ -29,7 +28,9 @@ int main (int argc, char **argv) {
 		verbose = atoi (argv[2]);
 	}
 
-	char *arr = alloca (size * sizeof (char));
+	// TODO one huge array for every processor...?
+	// TODO do the processors share their pointers?
+	char *arr = malloc (size * sizeof (char));
 
 	if (!arr) {
 		fprintf (stderr, "Not enough memory to allocate %d bytes for the array.", size);
