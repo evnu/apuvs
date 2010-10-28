@@ -28,17 +28,6 @@ int main (int argc, char **argv) {
 		verbose = atoi (argv[2]);
 	}
 
-	// TODO one huge array for every processor...?
-	// TODO do the processors share their pointers?
-	char *arr = malloc (size * sizeof (char));
-
-	if (!arr) {
-		fprintf (stderr, "Not enough memory to allocate %d bytes for the array.", size);
-		exit (-2);
-	}
-
-	memset (arr, constant, size);
-
 	int numpes; // number of processing units
 	int myid;
 
@@ -55,6 +44,13 @@ int main (int argc, char **argv) {
 
 	if (!myid) {
 		/* master */
+
+		char *arr = malloc (size * sizeof (char));
+		memset (arr, constant, size);
+		if (!arr) {
+			fprintf (stderr, "Not enough memory to allocate %d bytes for the array.", size);
+			exit (-2);
+		}
 
 		// check the number of slaves
 		if (numpes < 2) {
@@ -93,7 +89,18 @@ int main (int argc, char **argv) {
 		}
 	} else {
 		/* slave */
-		MPI_Recv (arr, size, MPI_CHAR, 0, 0, MPI_COMM_WORLD, &stat);
+    MPI_Probe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
+
+		int msglen;
+    MPI_Get_count (&stat, MPI_CHAR, &msglen);
+    char *arr = malloc (msglen * sizeof(char));
+
+		if (!arr) {
+			fprintf (stderr, "Not enough memory to allocate %d bytes for the array.", size);
+			exit (-2);
+		}
+
+		MPI_Recv (arr, size, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG, MPI_COMM_WORLD, &stat);
 
 		int cnt; // number of received elements
 		MPI_Get_count (&stat, MPI_CHAR, &cnt);
