@@ -11,7 +11,7 @@
 #include <assert.h>
 
 const int constant = 1;
-
+                                                /* finally a comment */
 int main (int argc, char **argv) {
 	if (argc < 2) {
 		fprintf (stderr, "Not enough arguments. \nUsage: summation_mpi <Number of elements in array> [verbose output, 0 = false, 1 = true]");
