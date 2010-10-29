@@ -1,0 +1,27 @@
+\documentclass[a4paper,
+               12pt,
+               titlepage,
+               BCOR12mm,
+               ]{scrartcl}
+%scrreport
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+  
+  \section*{Aufgabe 1.3}
+
+    \begin{itemize}
+      \item [Dwarf 1] Die Daten sind als dich besetzter Vektor abgespeichert und die Arbeit wird durch das Aufteilen von kontinuierlichen Speicherstücken verteilt.
+      \item [Dwarf 8] Summierung implemmentiert in diesem Fall eine Hashfunktion *so oder anders...bin mit der begründung nich so zufrieden*
+      \item [Dwarf 10] Das Aufsummieren der Arrayelemente wird duch das Zerlegen in kleinere Teilprobleme parallelisiert.
+    \end{itemize}
+
+  \section*{Aufgabe 1.4}
+
+    \begin{itemize}
+      \item [a)] SIMD \\ Die gleiche Instruktion wird parallel auf verschiedenen Daten ausgeführt.
+      \item [b)] *meiner meinung nach bleibts bei SIMD...ist das einzige was sinn macht. oder fällt euch was anderes ein um die elemente zu summieren? man könnte das ganze natürlich sequentiell machen, also SISD, aber ob die das hören wollen. keine ahnung ob es irgend eine möglichkeit gibt das ganze mit ner MIMD architektur zu machen?*
+    \end{itemize}
+\end{document}

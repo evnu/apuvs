@@ -92,8 +92,8 @@ int main (int argc, char **argv) {
 		MPI_Probe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
 
 		int msglen;
-		assert (msglen > 0);
 		MPI_Get_count (&stat, MPI_CHAR, &msglen);
+		assert (msglen > 0);
 		char *arr = malloc (msglen * sizeof(char));
 
 		if (!arr) {
