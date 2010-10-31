@@ -13,15 +13,46 @@
   \section*{Aufgabe 1.3}
 
     \begin{itemize}
-      \item [Dwarf 1] Die Daten sind als dich besetzter Vektor abgespeichert und die Arbeit wird durch das Aufteilen von kontinuierlichen Speicherstücken verteilt.
-      \item [Dwarf 8] Summierung implemmentiert in diesem Fall eine Hashfunktion *so oder anders...bin mit der begründung nich so zufrieden*
-      \item [Dwarf 10] Das Aufsummieren der Arrayelemente wird duch das Zerlegen in kleinere Teilprobleme parallelisiert.
+      \item [Dwarf 1] Die Daten sind als dich besetzter Vektor abgespeichert und die Arbeit wird durch das Aufteilen von kontinuierlichen Speicherstücke verteilt.
+      \item [Dwarf 8] Summierung implementiert in diesem Fall eine Hashfunktion/Checksumme
+      \item [Dwarf 10] Das Aufsummieren der Arrayelemente wird durch das Zerlegen in kleinere Teilprobleme parallelisiert.
     \end{itemize}
+		\paragraph{Dwarf 1}
+		*Ich bin mir nicht sicher, wie man den begründen kann. Vgl.
+		\url{http://fluid.stanford.edu/~barad/teaching/cme212_winter2009/Lecture03.pdf}: Diese
+		charakterisieren \emph{Dense Linear Algebra} als Komputation auf Matrizen
+		(Matrixoperationen). Wir wenden hier ja eigentlich keine Matrixoperationen an, oder?*
+		
+		\paragraph{Dwarf 8}
+		Vgl. hierzu \cite{wiki_hash}:
+		\begin{quotation}
+			A hash function is any well-defined procedure or mathematical function that converts
+			a large, possibly variable-sized amount of data into a small datum, usually a single
+			integer that may serve as an index to an array (cf. associative array). The values
+			returned by a hash function are called hash values, hash codes, hash sums, checksums
+			or simply hashes.
+		\end{quotation}
+		In diesem Sinne kann man das Aufsummieren der Feldelemente als Bildung einer
+		Checksumme verstehen, was unter die Klasse der Kombinatorischen Algorithmen (Dwarf 8)
+		fällt.
+
+		\paragraph{Dwarf 10 - dynamic programming}
+		Dwarf 10 wird in \cite[S. 16]{eecs} folgendermaßen charakterisiert:
+		\begin{quotation}
+			Computes a solution by solving simpler overlapping subproblems.
+			Particularly useful in optimization problems with a large set of feasible
+			solutions.
+		\end{quotation}
 
   \section*{Aufgabe 1.4}
 
     \begin{itemize}
-      \item [a)] SIMD \\ Die gleiche Instruktion wird parallel auf verschiedenen Daten ausgeführt.
+      \item [a)] SIMD \\ Die gleichen Instruktionen werden parallel auf verschiedenen Daten ausgeführt.
       \item [b)] *meiner meinung nach bleibts bei SIMD...ist das einzige was sinn macht. oder fällt euch was anderes ein um die elemente zu summieren? man könnte das ganze natürlich sequentiell machen, also SISD, aber ob die das hören wollen. keine ahnung ob es irgend eine möglichkeit gibt das ganze mit ner MIMD architektur zu machen?*
     \end{itemize}
+
+		\nocite{*}
+		\bibliographystyle{alphadin}
+		\bibliography{bibliography.bib}
+
 \end{document}
