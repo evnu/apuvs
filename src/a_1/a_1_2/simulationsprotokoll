@@ -1,0 +1,111 @@
+============ PHASE 1 ===========
+Using 1 PEs to sum up 10000 elements 5 times
+
+real	0m0.066s
+user	0m0.023s
+sys	0m0.020s
+
+Using 2 PEs to sum up 10000 elements 5 times
+
+real	0m5.115s
+user	0m0.043s
+sys	0m0.103s
+
+Using 3 PEs to sum up 10000 elements 5 times
+
+real	0m5.157s
+user	0m0.113s
+sys	0m0.140s
+
+Using 4 PEs to sum up 10000 elements 5 times
+
+real	0m5.184s
+user	0m0.163s
+sys	0m0.153s
+
+Using 5 PEs to sum up 10000 elements 5 times
+
+real	0m5.226s
+user	0m0.247s
+sys	0m0.157s
+
+Using 6 PEs to sum up 10000 elements 5 times
+
+real	0m5.237s
+user	0m0.223s
+sys	0m0.233s
+
+Using 7 PEs to sum up 10000 elements 5 times
+
+real	0m5.241s
+user	0m0.250s
+sys	0m0.240s
+
+Using 8 PEs to sum up 10000 elements 5 times
+
+real	0m5.297s
+user	0m0.350s
+sys	0m0.330s
+
+============ PHASE 2 ===========
+Using 1 PEs to sum up 1000 elements 5 times
+
+real	0m0.057s
+user	0m0.017s
+sys	0m0.017s
+
+Using 1 PEs to sum up 10000 elements 5 times
+
+real	0m0.058s
+user	0m0.017s
+sys	0m0.017s
+
+Using 1 PEs to sum up 10000 elements 5 times
+
+real	0m0.058s
+user	0m0.020s
+sys	0m0.017s
+
+Using 1 PEs to sum up 100000 elements 5 times
+
+real	0m0.060s
+user	0m0.023s
+sys	0m0.010s
+
+Using 1 PEs to sum up 1000000 elements 5 times
+
+real	0m0.081s
+user	0m0.043s
+sys	0m0.027s
+
+============ PHASE 3 ===========
+Using 4 PEs to sum up 1000 elements 5 times
+
+real	0m5.173s
+user	0m0.160s
+sys	0m0.140s
+
+Using 4 PEs to sum up 10000 elements 5 times
+
+real	0m5.210s
+user	0m0.163s
+sys	0m0.207s
+
+Using 4 PEs to sum up 10000 elements 5 times
+
+real	0m5.197s
+user	0m0.157s
+sys	0m0.170s
+
+Using 4 PEs to sum up 100000 elements 5 times
+
+real	0m5.189s
+user	0m0.147s
+sys	0m0.183s
+
+Using 4 PEs to sum up 1000000 elements 5 times
+
+real	0m5.198s
+user	0m0.210s
+sys	0m0.170s
+
