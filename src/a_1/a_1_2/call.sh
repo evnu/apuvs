@@ -38,6 +38,17 @@ done
 echo "============ PHASE 2 ==========="
 for i in 1000 10000 10000 100000 1000000 
 do
+	echo  Using 1 PEs to sum up $i elements 5 times
+	time for j in $(seq 1 5)
+	do
+		mpirun -np 1 ./summation_mpi $i 0
+	done
+	echo ""
+done
+
+echo "============ PHASE 3 ==========="
+for i in 1000 10000 10000 100000 1000000 
+do
 	echo  Using 4 PEs to sum up $i elements 5 times
 	time for j in $(seq 1 5)
 	do
