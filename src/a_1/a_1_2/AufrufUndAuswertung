@@ -1,4 +1,4 @@
-== Bauen ==
+== Bauen des Programms ==
 make (getestet unter Linux mit openmpi 1.5.1)
 
 == Aufruf ==
@@ -6,14 +6,40 @@ Der Aufruf des Programms erfolgt über das Bashskript "call.sh". Durch dieses Sk
 die ausführbare Datei summation_mpi mehrfach aufgerufen.
 
 1. Phase
-8 Aufrufe mit wechselnder Anzahl von PEs (1..8). Das Array ist immer 10000 Elemente groß
+Aufrufe mit wechselnder Anzahl von PEs (1..8). Das Array ist immer 10000 Elemente groß.
+Jeder Aufruf wird 5 mal mit den gleichen Parametern wiederholt. 
 
 2. Phase
+Aufrufe mit ansteigender Größe des Arrays (1000 10000 10000 100000 1000000) und jeweils
+1 PEs. Jeder Aufruf wird 5 mal mit den gleichen Parametern wiederholt. 
+
+3. Phase
 4 Aufrufe mit ansteigender Größe des Arrays (1000 10000 10000 100000 1000000) und jeweils
-4 PEs.
+4 PEs. Jeder Aufruf wird 5 mal mit den gleichen Parametern wiederholt. 
+
 
 == Auswertung ==
+		Lokales Testsystem:
+		Linux centraldogma 2.6.35-ARCH #1 SMP PREEMPT Wed Sep 29 08:45:18 CEST 2010 x86_64
+		Intel(R) Core(TM) i5 CPU M 520 @ 2.40GHz GenuineIntel GNU/Linux
+
 	=== Phase 1 ===
+		In Phase 1 bleibt die Größe des Arrays konstant und nur die Anzahl der Prozessoren
+		variiert. Wie man an der Ausgabe des Skripts sieht, ergibt sich nur ein minimaler
+		Unterschied zwischen der Verwendung von 2 Recheneinheiten und 8
+		Recheneinheiten nur im Millisekundenbereich. Diese Schwankung wird wahrscheinlich durch
+		lokale Eigenschaften des Systems stärker beeinflusst als durch die mögliche
+		Parallelisierung bei Verwendung mehrerer Recheneinheiten. 
+		Jedoch ist klar ersichtlich, dass die Berechnung auf nur einem Rechenknoten um ein
+		Vielfaches schneller ist, als das Verteilen der Aufgaben auf mehrere Knoten. Hierbei
+		hat die Größe des Arrays also noch nicht eine kritische Schwelle überschritten, ab der
+		sich Parallelisierung lohnt.
 
+	=== Phase 2 und 3 ===
+		Nun stellt sich die Frage, ob bei einer wachsende Problemgröße Parallelität schnell zu
+		einer Verbesserung führt. Dies sollen die Phasen 2 und 3 untersuchen.
 
-	=== Phase 2 ===
+		Wie man im beigefügten Testprotokoll aber sofort sieht, bringt  bei den verwendeten Pro-
+		blemgrößen wieder die parallele Verteilung nicht den erwarteten Vorteil. Die
+		Kommunikation der Rechenknoten kostet zuviel Zeit, weshalb die Berechnung auf einem
+		einzelnen Knoten weiterhin überlegen ist.
