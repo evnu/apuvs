@@ -1,6 +1,5 @@
 \documentclass[a4paper,
                12pt,
-               titlepage,
                BCOR12mm,
                ]{scrartcl}
 %scrreport
@@ -8,9 +7,11 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{url}
+\title{APUVS, Blatt 1}
+\author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
 \begin{document}
-  
+\maketitle  
   \section*{Aufgabe 1.3}
 		Das Programm lässt sich nicht eindeutig einem Dwarf zuordnen. Wir identifizieren folgende
 		Dwarfs in der Problemstellung:
@@ -50,14 +51,20 @@
 
   \section*{Aufgabe 1.4}
 
-    \begin{itemize}
-      \item [a)] SIMD \\ Die gleichen Instruktionen werden parallel auf verschiedenen
+	\paragraph{a)} SIMD --- Die gleichen Instruktionen werden parallel auf verschiedenen
 				Daten ausgeführt. --- \emph{data level parallelism.}
-      \item [b)] *meiner meinung nach bleibts bei SIMD...ist das einzige was sinn macht. oder fällt euch was anderes ein um die elemente zu summieren? man könnte das ganze natürlich sequentiell machen, also SISD, aber ob die das hören wollen. keine ahnung ob es irgend eine möglichkeit gibt das ganze mit ner MIMD architektur zu machen?*
-				*Magnus: mir fällt da auch nichts anderes ein. Ich denke nicht, dass es Sinn
-				macht, die Summation auf verschiedenen Recheneinheiten unterschiedlich zu
-				implementieren. Die Aufgabe bleibt ja die gleiche..*
-    \end{itemize}
+	\paragraph{b)} 
+	Wie im Protokoll des Skripts \verb|call.sh| in Aufgabe 1.2 zu sehen, bringt in dieser
+	Problemstellung die Parallelisierung keinen nennenswerten Vorteil (zumindest nicht,
+	solange nicht die Problemgröße in Form der Größe des Arrays eine gewisse Grenze
+	überschreitet). Daher könnte man sinnvollerweise das Problem durch eine \emph{SISD}
+	Architektur umsetzen. Die Ausführung der Summation erfolgt also auf einer einzelnen
+	Recheneinheit schneller als bei der Verteilung auf verschiedene Einheiten.
+	
+%	*meiner meinung nach bleibts bei SIMD...ist das einzige was sinn macht. oder fällt euch was anderes ein um die elemente zu summieren? man könnte das ganze natürlich sequentiell machen, also SISD, aber ob die das hören wollen. keine ahnung ob es irgend eine möglichkeit gibt das ganze mit ner MIMD architektur zu machen?*
+%				*Magnus: mir fällt da auch nichts anderes ein. Ich denke nicht, dass es Sinn
+%				macht, die Summation auf verschiedenen Recheneinheiten unterschiedlich zu
+%				implementieren. Die Aufgabe bleibt ja die gleiche..*
 
 		\nocite{*}
 		\bibliographystyle{alphadin}
