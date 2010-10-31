@@ -7,11 +7,13 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
+\usepackage{url}
 
 \begin{document}
   
   \section*{Aufgabe 1.3}
-
+		Das Programm lässt sich nicht eindeutig einem Dwarf zuordnen. Wir identifizieren folgende
+		Dwarfs in der Problemstellung:
     \begin{itemize}
       \item [Dwarf 1] Die Daten sind als dich besetzter Vektor abgespeichert und die Arbeit wird durch das Aufteilen von kontinuierlichen Speicherstücke verteilt.
       \item [Dwarf 8] Summierung implementiert in diesem Fall eine Hashfunktion/Checksumme
@@ -43,12 +45,17 @@
 			Particularly useful in optimization problems with a large set of feasible
 			solutions.
 		\end{quotation}
+		Das Aufteilen des Arrays in kleinere Stücke, auf denen dann jeweils das Problem gelöst
+		wird, stellt also solch eine dynamische Programmierung dar.
 
   \section*{Aufgabe 1.4}
 
     \begin{itemize}
       \item [a)] SIMD \\ Die gleichen Instruktionen werden parallel auf verschiedenen Daten ausgeführt.
       \item [b)] *meiner meinung nach bleibts bei SIMD...ist das einzige was sinn macht. oder fällt euch was anderes ein um die elemente zu summieren? man könnte das ganze natürlich sequentiell machen, also SISD, aber ob die das hören wollen. keine ahnung ob es irgend eine möglichkeit gibt das ganze mit ner MIMD architektur zu machen?*
+				*Magnus: mir fällt da auch nichts anderes ein. Ich denke nicht, dass es Sinn
+				macht, die Summation auf verschiedenen Recheneinheiten unterschiedlich zu
+				implementieren. Die Aufgabe bleibt ja die gleiche..*
     \end{itemize}
 
 		\nocite{*}
