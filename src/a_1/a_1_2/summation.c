@@ -11,7 +11,7 @@
 #include <assert.h>
 
 const int constant = 1;
-                                                /* finally a comment */
+/* finally a comment */
 int main (int argc, char **argv) {
 	if (argc < 2) {
 		fprintf (stderr, "Not enough arguments. \nUsage: summation_mpi <Number of elements in array> [verbose output, 0 = false, 1 = true]\n");
@@ -57,26 +57,26 @@ int main (int argc, char **argv) {
 			// nothing to be done
 			fprintf (stderr, "Using only one processor isn't very useful.\n"); // TODO
 		} else {
-            numpes = numpes - 1; //master is not adding array elements
+			numpes = numpes - 1; //master is not adding array elements
 			int slavenum = 1;
 			int sum = 0;
-            int i = 0;
+			int i = 0;
 
-		// partition the array according to the number of slaves
-            int len = size / numpes; // the master doesn't help.
-            int extra = size % numpes; //whatever is leftover
+			// partition the array according to the number of slaves
+			int len = size / numpes; // the master doesn't help.
+			int extra = size % numpes; //whatever is leftover
 
 			for (i = 0; slavenum < numpes + 1; i += len) {
-                if ( extra ) {
-                    //send len + 1 to get rid of leftovers
-                    MPI_Send (&(arr[i]), len + 1, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
-                    extra--;
-                    i++;
-                }
-                else {
-                    //no extra elemments left to add
-                    MPI_Send (&(arr[i]), len, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
-                }
+				if ( extra ) {
+					//send len + 1 to get rid of leftovers
+					MPI_Send (&(arr[i]), len + 1, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
+					extra--;
+					i++;
+				}
+				else {
+					//no extra elemments left to add
+					MPI_Send (&(arr[i]), len, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
+				}
 			}
 
 			// Now, everybody got it's part of the array. The master waits for all responses and
@@ -91,7 +91,7 @@ int main (int argc, char **argv) {
 				printf ("Result: %d\n", sum);
 				printf ("Should be: %d\n", size * constant);
 			}
-//			assert (sum == size * constant);
+			//			assert (sum == size * constant);
 		}
 	} else {
 		/* slave */
