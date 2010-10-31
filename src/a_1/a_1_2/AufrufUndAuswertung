@@ -1,0 +1,14 @@
+== Bauen ==
+make (getestet unter Linux mit openmpi 1.5.1)
+
+== Aufruf ==
+Der Aufruf des Programms erfolgt über das Bashskript "call.sh". Durch dieses Skript wird
+die ausführbare Datei summation_mpi mehrfach aufgerufen.
+
+1. Phase
+8 Aufrufe mit wechselnder Anzahl von PEs (1..8). Das Array ist immer 10000 Elemente groß
+
+2. Phase
+4 Aufrufe mit ansteigender Größe des Arrays (1000 10000 10000 100000 1000000) und jeweils
+4 PEs.
+
