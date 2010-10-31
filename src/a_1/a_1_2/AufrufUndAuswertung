@@ -12,3 +12,8 @@ die ausführbare Datei summation_mpi mehrfach aufgerufen.
 4 Aufrufe mit ansteigender Größe des Arrays (1000 10000 10000 100000 1000000) und jeweils
 4 PEs.
 
+== Auswertung ==
+	=== Phase 1 ===
+
+
+	=== Phase 2 ===
