@@ -55,7 +55,12 @@ int main (int argc, char **argv) {
 		// check the number of slaves
 		if (numpes < 2) {
 			// nothing to be done
-			fprintf (stderr, "Using only one processor isn't very useful.\n"); // TODO
+			int sum = 0;
+			int i;
+			for (i = 0; i < size; i++) {
+				sum += arr[i];
+			}
+			assert (sum == size * constant);
 		} else {
 			numpes = numpes - 1; //master is not adding array elements
 			int slavenum = 1;
@@ -91,7 +96,7 @@ int main (int argc, char **argv) {
 				printf ("Result: %d\n", sum);
 				printf ("Should be: %d\n", size * constant);
 			}
-			//			assert (sum == size * constant);
+			assert (sum == size * constant);
 		}
 	} else {
 		/* slave */
@@ -132,5 +137,5 @@ int main (int argc, char **argv) {
 	}
 
 	MPI_Finalize ();
-	return 0;
+	return EXIT_SUCCESS;
 }
