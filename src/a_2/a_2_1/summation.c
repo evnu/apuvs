@@ -40,6 +40,7 @@ int main (int argc, char **argv) {
 	size = atoi (argv[1]);
 
 	// determine the send function
+	// TODO thread safe..? My local openmpi implementation creates one process for each PE.
 	assert (argc > 2);
 	sendfunction send = NULL;
 
