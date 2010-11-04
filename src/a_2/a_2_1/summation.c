@@ -39,7 +39,7 @@ int main (int argc, char **argv) {
 	// we avoid dealing with thread-safety
 
 	if (argc > 3) {
-		verbose = atoi (argv[2]);
+		verbose = atoi (argv[3]);
 	}
 
 	// initialize MPI
