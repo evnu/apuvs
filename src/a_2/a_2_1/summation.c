@@ -15,8 +15,8 @@ typedef int (*sendfunction)(void *buf, int count, MPI_Datatype datatype, int des
             int tag, MPI_Comm comm);
 
 // function prototypes
-void master (int, int, sendfunction); // parameters: size of buffer, number of processing elements
-void slave (int id, sendfunction);
+void master (int size, int numpes, sendfunction send); // parameters: size of buffer, number of processing elements
+void slave (int id, sendfunction send);
 
 
 // thread safe..?
