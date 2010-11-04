@@ -76,6 +76,7 @@ int main (int argc, char **argv) {
 
 	if (!myid) {
 		/* master */
+		// TODO fix bug - if size < numpes, it crashes
 		master (size, numpes, send);
 	} else {
 		/* slave */

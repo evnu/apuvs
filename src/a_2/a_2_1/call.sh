@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # call summation with different arguments
 #
