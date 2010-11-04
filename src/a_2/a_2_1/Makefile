@@ -1,6 +1,6 @@
 CC=mpicc
 summation_mpi: summation.c
-	$(CC) $< -o $@ -Wall	
+	$(CC) $< -o $@ -Wall --std=c99 -pedantic
 
 clean:
 	-rm *.o

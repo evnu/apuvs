@@ -1,6 +1,6 @@
 // =====================================================================================
 //       Filename:  summation.c
-//    Description:  sum up (see README)
+//    Description:  sum up 
 //        Created:  26.10.2010 18:59:01
 // =====================================================================================
 
@@ -10,17 +10,24 @@
 #include <stdlib.h>
 #include <assert.h>
 
-// function prototypes
-void master (int, int); // parameters: size of buffer, number of processing elements
-void slave (int id);
+// typedefs
+typedef int (*sendfunction)(void *buf, int count, MPI_Datatype datatype, int dest,
+            int tag, MPI_Comm comm);
 
+// function prototypes
+void master (int, int, sendfunction); // parameters: size of buffer, number of processing elements
+void slave (int id, sendfunction);
+
+
+// thread safe..?
 const int constant = 1;
 char verbose = 0; // enable verbose output
 
 int main (int argc, char **argv) {
-	if (argc < 2) {
-		fprintf (stderr, "Not enough arguments. \nUsage: summation_mpi <Number of elements in array> [verbose output, 0 = false, 1 = true]\n");
-		exit (-1);
+	if (argc < 3) {
+		fprintf (stderr, "Not enough arguments. \nUsage: summation_mpi <Number of elements in array> <Send Method> [verbose output, 0 = false, 1 = true]\n");
+		fprintf (stderr, "where Send Method is d for MPI_SEND, s for MPI_SSEND, b for MPI_BSEND, r for MPI_RSEND\n");
+		exit (EXIT_FAILURE);
 	}
 
 	int size = 1;
@@ -28,12 +35,12 @@ int main (int argc, char **argv) {
 		size = atoi (argv[1]);
 	}
 
-	if (argc > 2) {
+	// NOTE: We determine the send method below and call master and slave accordingly. Hence
+	// we avoid dealing with thread-safety
+
+	if (argc > 3) {
 		verbose = atoi (argv[2]);
 	}
-
-	int myid;
-
 
 	// initialize MPI
 	MPI_Init (&argc, &argv);
@@ -43,21 +50,62 @@ int main (int argc, char **argv) {
 	MPI_Comm_size (MPI_COMM_WORLD, &numpes);
 
 	// which rank does this process have?
+	int myid;
 	MPI_Comm_rank (MPI_COMM_WORLD, &myid);
 
 	if (!myid) {
 		/* master */
-		master (size, numpes);
+
+		// note: We know that argv[2] is set, as the process aborts if there are less than 2
+		// commandline arguments
+
+		switch (*argv[2]) {
+			case 'd':
+				master (size, numpes, MPI_Send);
+				break;
+			case 's':
+				master (size, numpes, MPI_Ssend);
+				break;
+			case 'b':
+				master (size, numpes, MPI_Bsend);
+				break;
+			case 'r':
+				master (size, numpes, MPI_Rsend);
+				break;
+			default:
+				fprintf (stderr, "Option for sendmethod not recognized.Allowed values are d,s,b,r\n");
+				exit (EXIT_FAILURE);
+		}
 	} else {
 		/* slave */
-		slave (myid);
+
+		// note: We know that argv[2] is set, as the process aborts if there are less than 2
+		// commandline arguments
+		
+		switch (*argv[2]) {
+			case 'd':
+				slave (myid, MPI_Send);
+				break;
+			case 's':
+				slave (myid, MPI_Ssend);
+				break;
+			case 'b':
+				slave (myid, MPI_Bsend);
+				break;
+			case 'r':
+				slave (myid, MPI_Rsend);
+				break;
+			default:
+				fprintf (stderr, "Option for sendmethod not recognized.Allowed values are d,s,b,r\n");
+				exit (EXIT_FAILURE);
+		}
 	}
 
 	MPI_Finalize ();
 	return EXIT_SUCCESS;
 }
 
-void master (int size, int numpes) {
+void master (int size, int numpes, sendfunction send) {
 
 	char *arr = malloc (size * sizeof (char));
 	MPI_Status stat;
@@ -119,7 +167,7 @@ void master (int size, int numpes) {
 	}
 }
 
-void slave (int myid) {
+void slave (int myid, sendfunction send) {
 	// determine length of message
 	MPI_Status stat;
 	MPI_Probe (MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &stat);
