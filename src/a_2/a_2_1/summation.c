@@ -19,7 +19,7 @@ void master (int size, int numpes, sendfunction send); // parameters: size of bu
 void slave (int id, sendfunction send);
 
 
-// thread safe..?
+// TODO thread safe..?
 const int constant = 1;
 char verbose = 0; // enable verbose output
 
@@ -30,20 +30,40 @@ int main (int argc, char **argv) {
 		exit (EXIT_FAILURE);
 	}
 
-	int size = 1;
-	if (argc > 1) {
-		size = atoi (argv[1]);
-	}
 
-	// NOTE: We determine the send method below and call master and slave accordingly. Hence
-	// we avoid dealing with thread-safety
+	// initialize MPI
+	MPI_Init (&argc, &argv);
+
+	int size = 1;
+
+	assert (argc > 1);
+	size = atoi (argv[1]);
+
+	// determine the send function
+	assert (argc > 2);
+	sendfunction send = NULL;
+
+	switch (*argv[2]) {
+		case 'd':
+			send = MPI_Send;
+			break;
+		case 's':
+			send = MPI_Ssend;
+			break;
+		case 'b':
+			send = MPI_Bsend;
+			break;
+		case 'r':
+			send = MPI_Rsend;
+			break;
+		default:
+			fprintf (stderr, "Option for sendmethod not recognized.Allowed values are d,s,b,r\n");
+			exit (EXIT_FAILURE);
+	}
 
 	if (argc > 3) {
 		verbose = atoi (argv[3]);
 	}
-
-	// initialize MPI
-	MPI_Init (&argc, &argv);
 
 	// we have to remember the number of PEs
 	int numpes;
@@ -55,50 +75,10 @@ int main (int argc, char **argv) {
 
 	if (!myid) {
 		/* master */
-
-		// note: We know that argv[2] is set, as the process aborts if there are less than 2
-		// commandline arguments
-
-		switch (*argv[2]) {
-			case 'd':
-				master (size, numpes, MPI_Send);
-				break;
-			case 's':
-				master (size, numpes, MPI_Ssend);
-				break;
-			case 'b':
-				master (size, numpes, MPI_Bsend);
-				break;
-			case 'r':
-				master (size, numpes, MPI_Rsend);
-				break;
-			default:
-				fprintf (stderr, "Option for sendmethod not recognized.Allowed values are d,s,b,r\n");
-				exit (EXIT_FAILURE);
-		}
+		master (size, numpes, send);
 	} else {
 		/* slave */
-
-		// note: We know that argv[2] is set, as the process aborts if there are less than 2
-		// commandline arguments
-		
-		switch (*argv[2]) {
-			case 'd':
-				slave (myid, MPI_Send);
-				break;
-			case 's':
-				slave (myid, MPI_Ssend);
-				break;
-			case 'b':
-				slave (myid, MPI_Bsend);
-				break;
-			case 'r':
-				slave (myid, MPI_Rsend);
-				break;
-			default:
-				fprintf (stderr, "Option for sendmethod not recognized.Allowed values are d,s,b,r\n");
-				exit (EXIT_FAILURE);
-		}
+		slave (myid, send);
 	}
 
 	MPI_Finalize ();
