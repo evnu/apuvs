@@ -1,0 +1,17 @@
+set terminal png
+set output 'png/output.png'
+set key box linestyle 2
+set key below
+
+set xlabel "Anzahl Prozessoren"
+set ylabel "Sekunden"
+
+# erase axes
+set border 3
+set xtics nomirror
+set ytics nomirror
+
+plot "fixedarray_1000000_defaultsendtype_distributed" w linespoints \
+			t "Verteiltes System", \
+			"fixedarray_1000000_defaultsendtype_singlemachine" w linespoints \
+			t "Einzelne Maschine"
