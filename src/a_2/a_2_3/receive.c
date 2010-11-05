@@ -47,7 +47,7 @@ main ( int argc, char *argv[] )
             {
                 printf("0: I have A....sending it!\n");
                 char *msg = "A";
-                MPI_Send(&msg, strlen(msg), MPI_CHAR, 2, 0, MPI_COMM_WORLD);
+                MPI_Send(&msg, strlen(msg) + 1, MPI_CHAR, 2, 0, MPI_COMM_WORLD);
                 break;
             }
 
@@ -55,7 +55,7 @@ main ( int argc, char *argv[] )
             {
                 printf("1: I have B....sending it!\n");
                 char *msg = "B";
-                MPI_Send(&msg, strlen(msg), MPI_CHAR, 2, 0, MPI_COMM_WORLD);
+                MPI_Send(&msg, strlen(msg) + 1, MPI_CHAR, 2, 0, MPI_COMM_WORLD);
                 break;
             }
 
@@ -71,7 +71,7 @@ main ( int argc, char *argv[] )
                     int msglen;
                     MPI_Get_count(&status, MPI_CHAR, &msglen);
                     assert(msglen > 0);
-                    char *msg = malloc(msglen = sizeof(char));
+                    char *msg = malloc(msglen * sizeof(char));
 
                     if (!msg) {
                         fprintf(stderr, "Could not allocate memory for %d bytes in message\n", msglen);
@@ -80,7 +80,7 @@ main ( int argc, char *argv[] )
 
                     MPI_Recv (msg, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
 
-                    printf("2: Received a %s\n", &msg);
+                    printf("2: Received a %s\n", msg);
                     
                     free(msg);
                 }
