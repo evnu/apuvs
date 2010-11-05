@@ -47,14 +47,25 @@ main ( int argc, char *argv[] )
             {
                 printf("0: I have A....sending it!\n");
                 char *msg = "A";
+                MPI_Send(msg, strlen(msg) + 1, MPI_CHAR, 1, 0, MPI_COMM_WORLD);
                 MPI_Send(msg, strlen(msg) + 1, MPI_CHAR, 2, 0, MPI_COMM_WORLD);
                 break;
             }
 
         case 1 :
             {
-                printf("1: I have B....sending it!\n");
                 char *msg = "B";
+
+                MPI_Status status;
+                MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+                int msglen;
+                MPI_Get_count(&status, MPI_CHAR, &msglen);
+                assert(msglen > 0);
+                char *recMsg = malloc(msglen * sizeof(char));
+                MPI_Recv (recMsg, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+
+                printf("1: I have B....\n");
+                printf("1: Received an %s so sending my B\n", recMsg);
                 MPI_Send(msg, strlen(msg) + 1, MPI_CHAR, 2, 0, MPI_COMM_WORLD);
                 break;
             }
@@ -62,28 +73,31 @@ main ( int argc, char *argv[] )
         case 2 :
             {
                 int hasMail;
-                int received = 0;
+                int receivedNotAll = 2;
                 MPI_Status status;
 
-                MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &hasMail, &status);
+                while(receivedNotAll){
 
-                if (hasMail) {
-                    int msglen;
-                    MPI_Get_count(&status, MPI_CHAR, &msglen);
-                    assert(msglen > 0);
-                    printf("Messagelength is %i\n", msglen);
-                    char *msg = malloc(msglen * sizeof(char));
+                    MPI_Iprobe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &hasMail, &status);
 
-                    if (!msg) {
-                        fprintf(stderr, "Could not allocate memory for %d bytes in message\n", msglen);
-                        exit(-2);
+                    if (hasMail) {
+                        int msglen;
+                        MPI_Get_count(&status, MPI_CHAR, &msglen);
+                        assert(msglen > 0);
+                        char *msg = malloc(msglen * sizeof(char));
+
+                        if (!msg) {
+                            fprintf(stderr, "Could not allocate memory for %d bytes in message\n", msglen);
+                            exit(-2);
+                        }
+
+                        MPI_Recv (msg, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+
+                        printf("2: Received a %s\n", msg);
+                        
+                        free(msg);
+                        receivedNotAll--;
                     }
-
-                    MPI_Recv (msg, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
-
-                    printf("2: Received a %s\n", msg);
-                    
-                    free(msg);
                 }
                 break;
             }
