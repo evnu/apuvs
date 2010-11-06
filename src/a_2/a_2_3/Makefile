@@ -1,6 +1,11 @@
 CC=mpicc
-receive_mpi: receive.c
-	$(CC) $< -o $@ -Wall	
+CLFAGS=-Wall
+
+all: receive_mpi deadlock nodeadlock1
+
+receive_mpi: receive.o
+deadlock: deadlock.o
+nodeadlock1: nodeadlock1.o
 
 clean:
 	-rm *.o
