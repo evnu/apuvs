@@ -30,7 +30,7 @@ int main (int argc, char **argv) {
 		/* master */
         printf("If programm doesn't return MPI_Send is syncronous send\n");
 
-        MPI_Send ("a", 2, MPI_CHAR, 1, 0, MPI_COMM_WORLD);
+        MPI_Send ("a", 2, MPI_CHAR, myid + 1, 0, MPI_COMM_WORLD);
 
         printf("MPI_Send returned....seems to be buffered\n");
 	} else {
