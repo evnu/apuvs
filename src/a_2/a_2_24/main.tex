@@ -1,30 +1,35 @@
 \documentclass[a4paper,
-               12pt,
-               BCOR12mm,
-               ]{scrartcl}
+12pt,
+BCOR12mm,
+]{scrartcl}
 %scrreport
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{url}
-\title{APUVS, Blatt 1}
+\title{APUVS, Blatt 2}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
 \begin{document}
 \maketitle  
-  \section*{Aufgabe 2.2}
-    Laut man mpi\_send ist das die Standartversion snychron
+\section*{Aufgabe 2.2}
+Laut \verb|$ man mpi_send| ist die Standardmethode zum Versenden von Nachrichten in
+openmpi synchron und blockierend:
+\begin{verbatim}
+DESCRIPTION
+MPI_Send performs a standard-mode, blocking send.
+\end{verbatim}
 
-  \section*{Aufgabe 2.4}
-    Zu den Hauptproblemen zählt:
-    \begin{itemize}
-      \item verschiedene MPI Implementationen
-      \item verschiedene Rechner-Architekturen
-      \item verschiedene Dateisysteme
-    \end{itemize}
+\section*{Aufgabe 2.4}
+Zu den Hauptproblemen zählt:
+\begin{itemize}
+	\item verschiedene MPI Implementationen
+	\item verschiedene Rechner-Architekturen
+	\item verschiedene Dateisysteme
+\end{itemize}
 
-		\nocite{*}
-		\bibliographystyle{alphadin}
-		\bibliography{bibliography.bib}
+\nocite{*}
+\bibliographystyle{alphadin}
+\bibliography{bibliography.bib}
 
 \end{document}
