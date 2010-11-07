@@ -28,6 +28,16 @@ Zu den Hauptproblemen zählt:
 	\item verschiedene MPI Implementationen
 	\item verschiedene Rechner-Architekturen
 	\item verschiedene Dateisysteme
+	\item die verschiedenen Knoten sind unter Umständen nicht immer erreichbar
+\end{itemize}
+
+Lösungsansätze:
+\begin{itemize}
+	\item Verwendung einer einheitlichen MPI-Implementation. Hierzu gehört auch die
+		Verwendung der gleichen Version, denn verschiedene Versionen sind nicht zwingend
+		ABI-kompatibel.
+	\item Abstraktion weg von der unterliegenden Architektur. Ähnlich der OSI-Layer sollten
+	die MPI-Implementationen die zugrunde liegende Architektur möglichst verbergen.
 \end{itemize}
 
 \nocite{*}
