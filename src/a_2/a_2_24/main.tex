@@ -12,6 +12,36 @@ BCOR12mm,
 
 \begin{document}
 \maketitle  
+
+\section*{Aufgabe 2.1}
+  \subsection*{Testumgebung}
+    Die Tests wurden lokal auf einem Thinkpad T410 mit Intel i5 XX MHz und 4 GB Arbeitsspeicher durchgeführt.
+    Im Netzwerk wurde auf dem Thinkpad T410 und einem Thinkpad T500 mit ..keine ahnung.. verbunden über das Eduroam Wlan
+    an der HU.
+
+  \subsection*{Testergebnisse}
+    \begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
+      \hline &&&\\
+      Send-Typ                      & relativer Speedup $S_8$       & linearer Speedup  $S_8$       & Effizienz $E_8$   \\
+      \hline &&&\\
+      blockierendes Senden lokal    & 0.0512                        & 8                             & 0.00625           \\
+      \hline &&&\\
+      blockierendes Senden verteilt & 0.0077                        & 8                             & 0.00096           \\
+      \hline &&&\\
+      Standartsenden lokal          & 0.027                         & 8                             & 0.0033            \\
+      \hline &&&\\
+      Standartsenden verteilt       & 0.011                         & 8                             & 0.0013            \\
+      \hline &&&\\
+      Ready-Send lokal              & 0.027                         & 8                             & 0.0033            \\
+      \hline &&&\\
+      Ready-Send verteilt           & 0.0058                        & 8                             & 0.00072           \\
+      \hline &&&\\
+      synchrones Senden lokal       & 0.0326                        & 8                             & 0.00408           \\
+      \hline &&&\\
+      synchrones Senden verteilt    & 0.0118                        & 8                             & 0.00147           \\
+      \hline 
+    \end{tabular}
+
 \section*{Aufgabe 2.2}
 Laut \verb|$ man mpi_send| ist die Standardmethode zum Versenden von Nachrichten in
 openmpi synchron und blockierend:
