@@ -1,3 +1,4 @@
+// Fajerski, Müller, Warnke - G02
 // =====================================================================================
 //       Filename:  summation.c
 //    Description:  sum up 
@@ -19,7 +20,6 @@ void master (int size, int numpes, sendfunction send); // parameters: size of bu
 void slave (int id, sendfunction send);
 
 
-// TODO thread safe..?
 const int constant = 1;
 char verbose = 0; // enable verbose output
 

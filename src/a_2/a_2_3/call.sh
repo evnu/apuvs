@@ -1,6 +1,5 @@
 #!/bin/sh
-#
-# call summation with different arguments
+# Fajerski, Müller, Warnke - G02
 #
 
 ####
