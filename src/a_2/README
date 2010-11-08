@@ -1,0 +1,17 @@
+Zum Aufruf der Testprogramme bitte jeweils die entsprechenden call.sh Startscripte in den Unterordnern ausführen.
+Ausgenommen davon sind die Testprogramm zum verifizieren der Deadlocksituation. Diese bitte mit
+
+mpirun -np 2 ./deadlock
+
+oder
+
+mpirun -np 2 ./nodeadlock1
+
+oder
+
+mpirun -np 2 ./nodeadlock2
+
+aufrufen.
+
+In den Ordner a_2_1 und a_2_3 befinden sich die Testprogramme, Startscripte und die dazugehörigen Protokolldaten.
+Im Ordner a_2_24 befindet sich das main.pdf mit den Textabgaben der gesamten Aufgabe, sowie ein Testprogramm und Startscript zur Aufgabe 2.2.
