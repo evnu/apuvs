@@ -1,7 +1,5 @@
 #!/bin/sh
 #
-# call summation with different arguments
-#
 
 ####
 # abort on Ctrl+C
