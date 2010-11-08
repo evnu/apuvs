@@ -1,3 +1,4 @@
+// Fajerski, Müller, Warnke - G02
 // =====================================================================================
 //       Filename:  summation.c
 //    Description:  sum up (see README)

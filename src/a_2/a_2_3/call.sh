@@ -1,4 +1,5 @@
 #!/bin/sh
+# Fajerski, Müller, Warnke - G02
 #
 
 ####

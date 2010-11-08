@@ -1,4 +1,5 @@
 #!/bin/bash
+# Fajerski, Müller, Warnke - G02
 #
 # create graphs from data in data/ using gnuplot template gnuplot.gpi
 #

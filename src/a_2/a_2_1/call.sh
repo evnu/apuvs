@@ -1,4 +1,5 @@
 #!/bin/bash
+# Fajerski, Müller, Warnke - G02
 #
 # call summation with different arguments
 #
