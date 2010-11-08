@@ -8,6 +8,8 @@ BCOR12mm,
 \usepackage[T1]{fontenc}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{listingsutf8}
+\usepackage{grffile}
 \title{APUVS, Blatt 2}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
@@ -91,5 +93,18 @@ Lösungsansätze:
 \nocite{*}
 \bibliographystyle{alphadin}
 %\bibliography{bibliography.bib}
+\newpage
+\subsection*{Quellcode}
+\lstinputlisting[frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=send_block]{send.c}
+\newpage
+\lstinputlisting[frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=deadlock]{../a_2_3/deadlock.c}
+\newpage
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=nodeadlock1]{../a_2_3/nodeadlock1.c}
+\newpage
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=nodeadlock2]{../a_2_3/nodeadlock2.c}
+\newpage
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=receive]{../a_2_3/receive.c}
+\newpage
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=summation]{../a_2_1/summation.c}
 
 \end{document}
