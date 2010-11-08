@@ -7,6 +7,7 @@ BCOR12mm,
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{url}
+\usepackage{graphicx}
 \title{APUVS, Blatt 2}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
@@ -15,10 +16,9 @@ BCOR12mm,
 
 \section*{Aufgabe 2.1}
   \subsection*{Testumgebung}
-    Die Tests wurden lokal auf einem Thinkpad T410 mit Intel i5 XX MHz und 4 GB Arbeitsspeicher durchgeführt.
-    Im Netzwerk wurde auf dem Thinkpad T410 und einem Thinkpad T500 mit Intel Core2 Duo @ 2,53GHz über das Eduroam Wlan
+    Die Tests wurden lokal auf einem Thinkpad T410 mit Intel i5 M520 @ 2,4GHz und 4 GB Arbeitsspeicher durchgeführt.
+    Im Netzwerk wurde auf dem Thinkpad T410 und einem Thinkpad T500 mit Intel Core2 Duo @ 2,53GHz und 4GB Arbeitsspeicher über das Eduroam Wlan
     an der HU gearbeitet.
-
   \subsection*{Testergebnisse}
     \begin{tabular}{|p{3cm}|p{3cm}|p{3cm}|p{3cm}|}
       \hline &&&\\
@@ -41,6 +41,21 @@ BCOR12mm,
       synchrones Senden verteilt    & 0.0118                        & 8                             & 0.00147           \\
       \hline 
     \end{tabular}
+
+\subsection*{Graphische Darstellung}
+\subsubsection*{Laufzeitdiagramme}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/blockingsend.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/defaultsendtype.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/readysendtype.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/synchronsendtype.png}
+\subsubsection*{Speedup-/Effizienzdiagramme}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/speed_eff_bs.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/speed_eff_ds.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/speed_eff_rs.png}
+	\includegraphics[width=0.5\linewidth]{../a_2_1/data/png/speed_eff_ss.png}
+Aus den Laufzeit- sowie den Speedup-/Effizienzdiagrammen ist ein starker Slowdown zu erkennen wenn das Problem
+auf mehreren PEs bearbeitet wird. Der Mehraufwand der Parallelisierung übersteigt klar den erreichten Gewinn. 
+
 
 \section*{Aufgabe 2.2}
 Laut \verb|$ man mpi_send| ist die Standardmethode zum Versenden von Nachrichten in
