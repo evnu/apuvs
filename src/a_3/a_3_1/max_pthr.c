@@ -12,8 +12,7 @@
 #include <sys/time.h> 
 
 clock_t begin, end;
-float delta;
-int max_thr = 500;
+int max_thr = 1000;
 
 void* go(void* i){
 	pthread_t th;
@@ -25,8 +24,8 @@ void* go(void* i){
 		pthread_join(th,NULL);
 	}else{
 		end=clock();
-		delta=(end-begin)/CLOCKS_PER_SEC;
-		printf("%d Threads started in %fseconds\n %fSeconds/Thread",max_thr,delta,delta/max_thr);
+		printf("CLOCKS_PER_SEC: %d\n",CLOCKS_PER_SEC);
+		printf("%d Threads started %.8f Sec/Thread\n",max_thr,(float)(end-begin)/CLOCKS_PER_SEC);
 	}
 }
 
