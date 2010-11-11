@@ -38,7 +38,7 @@ int main (int argc, char **argv){
 		// master counts actual creation time
 		
 		if (cid > 0) {
-			delta += end-begin;
+			delta += (end-begin)/(double)CLOCKS_PER_SEC; // divide to convert to seconds
 		}
 		if (cid == 0) {
 			/* wait for parent */
@@ -62,7 +62,7 @@ int main (int argc, char **argv){
 	printf ("Delta is: %.8f\n", delta);
 	// only parent process reaches this line
 	printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
-	printf("%d processes started %.8f Sec/Thread\n",i,
-			delta/CLOCKS_PER_SEC); // TODO stimmt nicht
+	printf("%d processes started %.8f Sec/Process\n",i,
+			delta/i); 
 	exit(EXIT_SUCCESS);
 }
