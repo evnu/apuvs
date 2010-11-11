@@ -21,6 +21,6 @@ set border 3
 set xtics nomirror
 set ytics nomirror
 
-plot "INPUT" using 1:2 w lines smooth cspline t "Average Creation Time" \
+plot "INPUT" using 1:2 w lines smooth cspline t "Average Creation Time", \
 	   "INPUT" using 1:3 w linespoints smooth cspline t "Total Creation Time"
 
