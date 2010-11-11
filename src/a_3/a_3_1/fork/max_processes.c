@@ -1,10 +1,4 @@
-/*
- * =====================================================================================
- *       Filename:  max_pthr.c
- *    Description:  Produce Posix-Threads until Death
- *        Created:  09.11.2010 20:43:23
- * =====================================================================================
- */
+// create processes and messure time
 #include <errno.h>
 #include <pthread.h>
 #include <stdio.h>
@@ -13,6 +7,7 @@
 #include <sys/wait.h> 
 #include <time.h>
 #include <unistd.h>
+#include <assert.h>
 
 clock_t begin, end;
 double delta = 0;
@@ -23,19 +18,20 @@ int main (int argc, char **argv){
 	if (argc > 1) {
 		sscanf (argv[1], "%u", &numforks);
 	}
+	
+	// maybe it isn't sane to start more than 100000 processes
+	assert (numforks < 100000);
 
-	// create 1000 processes
 	pid_t pid = getpid ();
 	pid_t cid;
 
 	int i;
 
 	for (i = 0; i < numforks; i++) {
+		// master counts actual creation time
 		begin = clock();
 			cid = fork ();
 		end = clock();
-		// TODO clock wirft wohl zu große werte.. 1 s pro fork() ? im leben nicht..
-		// master counts actual creation time
 		
 		if (cid > 0) {
 			delta += (end-begin)/(double)CLOCKS_PER_SEC; // divide to convert to seconds
@@ -59,10 +55,22 @@ int main (int argc, char **argv){
 			break;
 		}
 	}
+	
 	printf ("Delta is: %.8f\n", delta);
 	// only parent process reaches this line
 	printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
 	printf("%d processes started %.8f Sec/Process\n",i,
 			delta/i); 
+	
+	/* print data to file */
+	FILE  *fp = fopen ("../data/fork.dat", "a+");
+
+	if (!fp) {
+		fprintf (stderr, "Couldn't write to file ../data/fork.dat. Exiting disgracefully...\n");
+		exit (EXIT_FAILURE);
+	}
+	// structure: processes time/fork
+	fprintf (fp, "%d %.8f\n", i, delta / i);
+	fclose (fp);
 	exit(EXIT_SUCCESS);
 }
