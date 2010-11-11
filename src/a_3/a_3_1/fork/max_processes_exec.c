@@ -18,7 +18,7 @@ int main (int argc, char **argv){
 
 	bufferEcho ();
 
-	unsigned int numforks = 1;
+	unsigned int numforks = 1000;
 
 	if (argc > 1) {
 		sscanf (argv[1], "%u", &numforks);
@@ -41,8 +41,8 @@ int main (int argc, char **argv){
 			delta += (end-begin)/(double)CLOCKS_PER_SEC; // divide to convert to seconds
 		}
 		if (cid == 0) {
-			// we exec ls to see how long exec takes approximately.
-			if (execlp ("ls", "ls", NULL)) {
+			// we exec echo to see how long exec takes approximately.
+			if (execlp ("echo", "echo", "-n", "", NULL)) {
 				/* if exec returns, something went badly wrong */
 				fprintf (stderr, "ERROR: calling exec produced error %d\n", errno);
 				exit (EXIT_FAILURE);
@@ -71,8 +71,8 @@ int main (int argc, char **argv){
 		exit (EXIT_FAILURE);
 	}
 
-	// structure: processes time/fork
-	fprintf (fp, "%d %.8f\n", i, delta / i);
+	// structure: processes time/fork delta(sum)
+	fprintf (fp, "%d %.8f %.8f\n", i, delta / i, delta);
 	fclose (fp);
 	exit(EXIT_SUCCESS);
 }
@@ -82,9 +82,9 @@ int main (int argc, char **argv){
 
 void bufferEcho (void) {
 	pid_t id = fork ();
-	// child is supposed to ls
+	// child is supposed to echo nothing
 	if (!id) {
-		if (execlp ("ls", "ls", NULL)) {
+		if (execlp ("echo", "echo", "-n", "", NULL)) {
 			/* if exec returns, something went badly wrong */
 			fprintf (stderr, "ERROR: calling exec produced error %d\n", errno);
 			exit (EXIT_FAILURE);

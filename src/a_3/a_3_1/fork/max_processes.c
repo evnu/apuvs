@@ -70,7 +70,7 @@ int main (int argc, char **argv){
 		exit (EXIT_FAILURE);
 	}
 	// structure: processes time/fork
-	fprintf (fp, "%d %.8f\n", i, delta / i);
+	fprintf (fp, "%d %.8f %.8f\n", i, delta / i, delta);
 	fclose (fp);
 	exit(EXIT_SUCCESS);
 }
