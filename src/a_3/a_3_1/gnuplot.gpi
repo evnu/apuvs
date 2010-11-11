@@ -1,0 +1,26 @@
+# easy plots from data/
+#		I assume that files in data/ contain 3 columns:
+#    first column determines the number of processes/threads
+#    the second column specifies the average creation time per process/thread
+#    the third column specifies the total creation time for n processes/threads
+# usage:
+# m4  -DTITLE="title" -DFILENAME="output filename, will be put into data/png/" \
+#			-DINPUT="input filename" gnuplot.gpi | gnuplot
+set terminal png
+set output 'data/png/FILENAME.png'
+set key box linestyle 2
+set key below
+
+set title "TITLE"
+
+set xlabel "Anzahl Prozessoren"
+set ylabel "Sekunden"
+
+# erase axes
+set border 3
+set xtics nomirror
+set ytics nomirror
+
+plot "INPUT" using 1:2 w lines smooth cspline t "Average Creation Time" \
+	   "INPUT" using 1:3 w linespoints smooth cspline t "Total Creation Time"
+
