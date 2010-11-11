@@ -23,6 +23,9 @@ void* go(void* i){
 		printf("Thread %d stareted!\n",threadnr);
 		pthread_join(th,NULL);
 	}else{
+	// TODO
+	// die zeiterfassung sollte _nur_ fuer pthread_create erfolgen, und nicht das ganze
+	// programm erfassen - aufsummieren der deltas 
 		end=clock();
 		printf("CLOCKS_PER_SEC: %d\n",CLOCKS_PER_SEC);
 		printf("%d Threads started %.8f Sec/Thread\n",max_thr,(float)(end-begin)/CLOCKS_PER_SEC);
@@ -34,6 +37,9 @@ int main(){
 	long i=1;
 	pthread_t thr;
 	printf("Starting first Thread...");
+	// TODO
+	// die zeiterfassung sollte _nur_ fuer pthread_create erfolgen, und nicht das ganze
+	// programm erfassen - aufsummieren der deltas 
 	begin=clock();
 	if(pthread_create(&thr,NULL,go,(void *)i) < 0)
 	perror("pthread_create failed: ");
