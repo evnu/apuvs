@@ -23,12 +23,11 @@ void* go(void* i){
 		pthread_create(&th,NULL,go, (void *)threadnr);
 		end=clock();
 		delta+=(end-begin);
-		printf("Thread %ld stareted!\n",threadnr);
 		pthread_join(th,NULL);
 	}else{
 		printf("CLOCKS_PER_SEC: %ld\n",CLOCKS_PER_SEC);
 		printf("Delta: %ld\n",(long)delta);
-		printf("%d Threads started %.8f Sec/Thread\n",max_thr,(float)delta/CLOCKS_PER_SEC);
+		printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
 	}
 
 }
@@ -37,7 +36,6 @@ void* go(void* i){
 int main(){
 	long i=1;
 	pthread_t thr;
-	printf("Starting first Thread...");
 	begin=clock();
 	if(pthread_create(&thr,NULL,go,(void *)i) >= 0){
 		end=clock();
