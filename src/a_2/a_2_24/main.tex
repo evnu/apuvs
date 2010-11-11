@@ -8,6 +8,8 @@ BCOR12mm,
 \usepackage[T1]{fontenc}
 \usepackage{url}
 \usepackage{graphicx}
+\usepackage{listingsutf8}
+\usepackage{grffile}
 \title{APUVS, Blatt 2}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
@@ -91,5 +93,36 @@ Lösungsansätze:
 %\nocite{*}
 %\bibliographystyle{alphadin}
 %\bibliography{bibliography.bib}
+\newpage
+\subsection*{Quellcode}
+\subsubsection*{README}
+\lstinputlisting[breaklines=true,breakindent=0pt,frame=single,language=,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=README]{../README}
+\newpage
+\subsubsection*{Aufgabe 2.2 send\_block}
+\lstinputlisting[frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=send_block]{send.c}
+
+\newpage
+\subsubsection*{Aufgabe 2.3 deadlock}
+Erzeugung eines Deadlocks
+\lstinputlisting[frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=deadlock]{../a_2_3/deadlock.c}
+
+\newpage
+\subsubsection*{Aufgabe 2.3 nodeadlock1}
+Deadlock Vermeidung durch asynchrones Senden.
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=nodeadlock1]{../a_2_3/nodeadlock1.c}
+
+\newpage
+\subsubsection*{Aufgabe 2.3 nodeadlock2}
+Deadlock Vermeidung durch Pufferung.
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=nodeadlock2]{../a_2_3/nodeadlock2.c}
+
+\newpage
+\subsubsection*{Aufgabe 2.3 receive}
+Darstellung des Nichtdeterminismus beim Nachrichtenversand. 
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=receive]{../a_2_3/receive.c}
+
+\newpage
+\subsubsection*{Aufgabe 2.1 summation\_mpi}
+\lstinputlisting[showspaces=false,breaklines=true,breakindent=0pt,frame=single,language=C,extendedchars=true,inputencoding=utf8/latin1,identifierstyle=\ttfamily,basicstyle=\tiny,numbers=left,numberstyle=\tiny,label=summation]{../a_2_1/summation.c}
 
 \end{document}

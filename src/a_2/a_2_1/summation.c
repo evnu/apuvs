@@ -1,4 +1,4 @@
-// Fajerski, Müller, Warnke - G02
+// Fajerski, Müller, Warncke - G02
 // =====================================================================================
 //       Filename:  summation.c
 //    Description:  sum up 
@@ -119,16 +119,16 @@ void master (int size, int numpes, sendfunction send) {
 		int extra = size % numpes; //whatever is leftover
 
 		for (i = 0; slavenum < numpes + 1; i += len) {
-			if ( extra ) {
-				//send len + 1 to get rid of leftovers
-				MPI_Send (&(arr[i]), len + 1, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
-				extra--;
-				i++;
-			}
-			else {
-				//no extra elemments left to add
-				MPI_Send (&(arr[i]), len, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
-			}
+		    if ( extra ) {
+		       //send len + 1 to get rid of leftovers
+		       MPI_Send (&(arr[i]),len + 1,MPI_CHAR,slavenum++,0,MPI_COMM_WORLD);
+		       extra--;
+		       i++;
+		    }
+		    else {
+		       //no extra elemments left to add
+		       MPI_Send (&(arr[i]), len, MPI_CHAR, slavenum++, 0, MPI_COMM_WORLD);
+		    }
 		}
 
 		// Now, everybody got it's part of the array. The master waits for all responses and
@@ -164,7 +164,7 @@ void slave (int myid, sendfunction send) {
 		exit (-2);
 	}
 
-	MPI_Recv (arr, msglen, MPI_CHAR, stat.MPI_SOURCE, stat.MPI_TAG, MPI_COMM_WORLD, &stat);
+	MPI_Recv (arr,msglen,MPI_CHAR,stat.MPI_SOURCE,stat.MPI_TAG,MPI_COMM_WORLD,&stat);
 
 	int cnt; // number of received elements
 	MPI_Get_count (&stat, MPI_CHAR, &cnt);

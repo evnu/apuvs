@@ -1,7 +1,7 @@
-// Fajerski, Müller, Warnke - G02
+// Fajerski, Müller, Warncke - G02
 // =====================================================================================
-//       Filename:  summation.c
-//    Description:  sum up (see README)
+//       Filename:  send.c
+//    Description:  Tests if standard MPI_Send is synchronous or buffered...
 //        Created:  26.10.2010 18:59:01
 // =====================================================================================
 
