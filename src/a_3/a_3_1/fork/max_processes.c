@@ -11,6 +11,7 @@
 
 clock_t begin, end;
 double delta = 0;
+char *outputfile = "../data/fork.dat";
 
 int main (int argc, char **argv){
 	unsigned int numforks = 10000;
@@ -63,10 +64,10 @@ int main (int argc, char **argv){
 			delta/i); 
 	
 	/* print data to file */
-	FILE  *fp = fopen ("../data/fork.dat", "a+");
+	FILE  *fp = fopen (outputfile, "a+");
 
 	if (!fp) {
-		fprintf (stderr, "Couldn't write to file ../data/fork.dat. Exiting disgracefully...\n");
+		fprintf (stderr, "Couldn't write to file %s. Exiting disgracefully...\n", outputfile);
 		exit (EXIT_FAILURE);
 	}
 	// structure: processes time/fork
