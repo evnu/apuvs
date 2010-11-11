@@ -11,6 +11,7 @@
 
 clock_t begin, end;
 double delta = 0;
+char *outputfile = "../data/fork_exec.dat";
 
 void bufferEcho (void);
 
@@ -65,9 +66,9 @@ int main (int argc, char **argv){
 			delta/i); 
 	
 	/* print data to file */
-	FILE  *fp = fopen ("../data/fork_exec.dat", "a+");
+	FILE  *fp = fopen (outputfile, "a+");
 	if (!fp) {
-		fprintf (stderr, "Couldn't write to file ../data/fork_exec.dat. Exiting disgracefully...\n");
+		fprintf (stderr, "Couldn't write to file %s. Exiting disgracefully...\n", outputfile);
 		exit (EXIT_FAILURE);
 	}
 
