@@ -15,12 +15,15 @@
 #include <unistd.h>
 
 clock_t begin, end;
-float delta;
+double delta = 0;
 
-int main(){
-	unsigned int numforks = 1000;
+int main (int argc, char **argv){
+	unsigned int numforks = 10000;
 
-	begin = clock();
+	if (argc > 1) {
+		sscanf (argv[1], "%u", &numforks);
+	}
+
 	// create 1000 processes
 	pid_t pid = getpid ();
 	pid_t cid;
@@ -28,28 +31,38 @@ int main(){
 	int i;
 
 	for (i = 0; i < numforks; i++) {
-		cid = fork ();
+		begin = clock();
+			cid = fork ();
+		end = clock();
+		// TODO clock wirft wohl zu große werte.. 1 s pro fork() ? im leben nicht..
+		// master counts actual creation time
+		
+		if (cid > 0) {
+			delta += end-begin;
+		}
 		if (cid == 0) {
-			// wait for parent
+			/* wait for parent */
+			// We want the childs to live until we are done with creating processes, but they
+			// shouldn't waste any processing time (actual processing isn't required according
+			// to the excercise description)
 			int stat;
-			int options;
 
 			waitpid (pid, &stat, 0);
-			break;
+			exit (EXIT_SUCCESS); /* child doesn't need to clean up or print */
 		}
 		if (cid < 0) {
-			// error
-			fprintf (stderr, "can't fork, error %d\n", errno);
+			/* error */
+			// NOTE: error 11 == EAGAIN
+			// see man errno for more informatioen
+			fprintf (stderr, "can't fork anymore, error %d. See man errno.\n", errno);
 			fprintf (stderr, "number of processes is %d\n", i);
 			break;
 		}
 	}
-	end = clock();
-
-	if (cid > 0) {
-		printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
-		printf("%d processes started %.8f Sec/Thread\n",i,
-				(float)(end-begin)/CLOCKS_PER_SEC);
-	}
+	printf ("Delta is: %.8f\n", delta);
+	// only parent process reaches this line
+	printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
+	printf("%d processes started %.8f Sec/Thread\n",i,
+			delta/CLOCKS_PER_SEC); // TODO stimmt nicht
 	exit(EXIT_SUCCESS);
 }
