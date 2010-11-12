@@ -69,7 +69,6 @@ int main (int argc, char **argv){
 	
 	printf ("Delta is: %.8f\n", delta);
 	// only parent process reaches this line
-	printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
 	printf("%d processes started %.8f ms/Process\n", i, delta/i); 
 	
 	/* print data to file */
