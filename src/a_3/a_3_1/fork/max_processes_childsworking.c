@@ -50,8 +50,8 @@ int main (int argc, char **argv){
 				400924:	7e ed                	jle    400913 <main+0xdf>				# this seems to be the right loop
 			 Therefore, -O2 (the default when calling gnu gcc) didn't optimize the loop.
 			*/
-			volatile int i = 0;
-			while (++i < 100000);
+			volatile int i = 1;
+			while (i *= 1); 
 			exit (EXIT_SUCCESS);
 		}
 		if (cid < 0) {

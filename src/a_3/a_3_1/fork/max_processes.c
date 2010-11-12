@@ -39,12 +39,17 @@ int main (int argc, char **argv){
 		}
 		if (cid == 0) {
 			/* wait for parent */
+
+			// see Aufgabe 3.2. We could also use waitpid, but sleep does the tric as well.
+			while (1)
+				sleep (100);
+
+			// Use the following code if the upper infinite loop is too ugly.
 			// We want the childs to live until we are done with creating processes, but they
 			// shouldn't waste any processing time (actual processing isn't required according
 			// to the excercise description)
-			int stat;
-
-			waitpid (pid, &stat, 0);
+			// int stat;
+			// waitpid (pid, &stat, 0);
 			exit (EXIT_SUCCESS); /* child doesn't need to clean up or print */
 		}
 		if (cid < 0) {
