@@ -42,13 +42,18 @@ int main (int argc, char **argv){
 			// let's do some calculating.
 			/* 
 			 The following code is compiled from the later loop (using gcc 4.5.1 for x86_64):
-				400913:	8b 45 e8             	mov    -0x18(%rbp),%eax				  # move i to %eax
-				400916:	83 c0 01             	add    $0x1,%eax                # add 1 to %eax
-				400919:	89 45 e8             	mov    %eax,-0x18(%rbp)         # move %eax to i
-				40091c:	8b 45 e8             	mov    -0x18(%rbp),%eax         # move i to %eax
-				40091f:	3d 9f 86 01 00       	cmp    $0x1869f,%eax            # compare eax with 10000
-				400924:	7e ed                	jle    400913 <main+0xdf>				# this seems to be the right loop
-			 Therefore, -O2 (the default when calling gnu gcc) didn't optimize the loop.
+				400905:	83 7d f8 00          	cmpl   $0x0,-0x8(%rbp)						 # cid == 0?
+				400909:	75 1f                	jne    40092a <main+0xf6>          # if cid != 0, skip.
+				40090b:	c7 45 e8 01 00 00 00 	movl   $0x1,-0x18(%rbp)						 # i = 1
+				400912:	90                   	nop
+				400913:	8b 45 e8             	mov    -0x18(%rbp),%eax						 # %eax = i
+				400916:	89 45 e8             	mov    %eax,-0x18(%rbp)            # i = %eax
+				400919:	8b 45 e8             	mov    -0x18(%rbp),%eax            # %eax = i
+				40091c:	85 c0                	test   %eax,%eax                   # %eax == %eax ?
+				40091e:	75 f3                	jne    400913 <main+0xdf>          # if %eax != %eax, skip
+				400920:	bf 00 00 00 00       	mov    $0x0,%edi                   # return code
+				400925:	e8 86 fd ff ff       	callq  4006b0 <exit@plt>           # abort process
+			 Therefore, -O2 (the default when calling gnu gcc) didn't optimize the loop, except for avoiding multiplication.
 			*/
 			volatile int i = 1;
 			while (i *= 1); 
