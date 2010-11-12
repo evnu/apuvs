@@ -15,7 +15,7 @@ set key below
 set title "TITLE"
 
 set xlabel "Processes/Threads"
-set ylabel "Sekunden"
+set ylabel "ms"
 
 # erase axes
 set border 3
