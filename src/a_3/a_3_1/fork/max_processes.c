@@ -14,7 +14,7 @@ double delta = 0;
 char *outputfile = "../data/fork.dat";
 
 int main (int argc, char **argv){
-	unsigned int numforks = 10000;
+	unsigned int numforks = 10;
 
 	if (argc > 1) {
 		sscanf (argv[1], "%u", &numforks);

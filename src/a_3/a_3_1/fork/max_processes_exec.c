@@ -19,7 +19,7 @@ int main (int argc, char **argv){
 
 	bufferEcho ();
 
-	unsigned int numforks = 1000;
+	unsigned int numforks = 10;
 
 	if (argc > 1) {
 		sscanf (argv[1], "%u", &numforks);
