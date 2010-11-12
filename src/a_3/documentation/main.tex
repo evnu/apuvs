@@ -11,8 +11,23 @@ BCOR12mm,
 \usepackage{listingsutf8}
 \usepackage{grffile}
 \usepackage{epstopdf}
-
 \usepackage{subfigure}
+
+% lstlisting settings
+\lstset{
+showspaces=false,
+breaklines=true,
+breakindent=0pt,
+frame=single,
+language=C,
+extendedchars=true,
+inputencoding=utf8/latin1,
+identifierstyle=\ttfamily,
+basicstyle=\tiny,
+numbers=left,
+numberstyle=\tiny,
+label=nodeadlock1
+}
 
 \title{APUVS, Blatt 3}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
@@ -37,9 +52,31 @@ BCOR12mm,
 \end{figure}
 
 Wie an den Diagrammen \ref{fig:fork_sleep} und \ref{fig:fork_exec} zu erkennen ist,
-benötigt die Erzeugung eines Prozesses per \verb|fork()| im Bereich von ca. $0.04ms$.
+benötigt die Erzeugung eines Prozesses per \verb|fork()| ca. $0.04ms$.
 Hierbei ist zu beachten, dass \ref{fig:fork_exec} nur die Zeit zur Erstellung der Prozesse
 misst, aber nicht die für \verb|exec()| benötigte Zeit. \\
 
+% fork
+% % awk '{sum=sum+$2;} END {printf sum/NR;}' fork.dat
+% 3.16308e-05
+
 \section{Aufgabe 3.2}
+\subsection{b)}
+\subsubsection{Prozesse}
+vgl. angehängter Quelltext
+	\begin{itemize}
+		\item Starkes Thrasing
+	\end{itemize}
+\begin{figure}[h!]
+	\begin{center}
+		\subfigure[Kindprozesse arbeiten]{
+			\includegraphics[scale=0.7]{../a_3_1/data/graphs/fork_childsworking}
+			\label{fig:fork_childsworking}
+		}
+	\end{center}
+\end{figure}
+
+	\lstinputlisting[
+	]
+	{../a_3_1/fork/max_processes.c}
 \end{document}
