@@ -192,7 +192,7 @@ Disassembly of section .text:
   40088d:	bf c0 0b 40 00       	mov    $0x400bc0,%edi
   400892:	e8 29 fe ff ff       	callq  4006c0 <__assert_fail@plt>
   400897:	c7 45 fc 00 00 00 00 	movl   $0x0,-0x4(%rbp)
-  40089e:	e9 d1 00 00 00       	jmpq   400974 <main+0x140>
+  40089e:	e9 d5 00 00 00       	jmpq   400978 <main+0x144>
   4008a3:	e8 58 fe ff ff       	callq  400700 <clock@plt>
   4008a8:	48 89 05 d9 09 20 00 	mov    %rax,0x2009d9(%rip)        # 601288 <begin>
   4008af:	e8 6c fe ff ff       	callq  400720 <fork@plt>
@@ -215,105 +215,102 @@ Disassembly of section .text:
   4008f9:	f2 0f 58 c1          	addsd  %xmm1,%xmm0
   4008fd:	f2 0f 11 05 73 09 20 	movsd  %xmm0,0x200973(%rip)        # 601278 <delta>
   400904:	00 
-  400905:	83 7d f8 00          	cmpl   $0x0,-0x8(%rbp)
-  400909:	75 1b                	jne    400926 <main+0xf2>
-  40090b:	c7 45 e8 00 00 00 00 	movl   $0x0,-0x18(%rbp)
+  400905:	83 7d f8 00          	cmpl   $0x0,-0x8(%rbp)						 # cid == 0?
+  400909:	75 1f                	jne    40092a <main+0xf6>          # if cid != 0, skip.
+  40090b:	c7 45 e8 01 00 00 00 	movl   $0x1,-0x18(%rbp)						 # i = 1
   400912:	90                   	nop
-  400913:	8b 45 e8             	mov    -0x18(%rbp),%eax
-  400916:	83 c0 01             	add    $0x1,%eax
-  400919:	89 45 e8             	mov    %eax,-0x18(%rbp)
-  40091c:	8b 45 e8             	mov    -0x18(%rbp),%eax
-  40091f:	3d 9f 86 01 00       	cmp    $0x1869f,%eax            # compare eax with 10000
-  400924:	7e ed                	jle    400913 <main+0xdf>				# this seems to be the right loop
-  400926:	83 7d f8 00          	cmpl   $0x0,-0x8(%rbp)
-  40092a:	79 44                	jns    400970 <main+0x13c>
-  40092c:	e8 bf fd ff ff       	callq  4006f0 <__errno_location@plt>
-  400931:	8b 10                	mov    (%rax),%edx
-  400933:	b9 d8 0b 40 00       	mov    $0x400bd8,%ecx
-  400938:	48 8b 05 21 09 20 00 	mov    0x200921(%rip),%rax        # 601260 <__bss_start>
-  40093f:	48 89 ce             	mov    %rcx,%rsi
-  400942:	48 89 c7             	mov    %rax,%rdi
-  400945:	b8 00 00 00 00       	mov    $0x0,%eax
-  40094a:	e8 f1 fd ff ff       	callq  400740 <fprintf@plt>
-  40094f:	b9 06 0c 40 00       	mov    $0x400c06,%ecx
-  400954:	48 8b 05 05 09 20 00 	mov    0x200905(%rip),%rax        # 601260 <__bss_start>
-  40095b:	8b 55 fc             	mov    -0x4(%rbp),%edx
-  40095e:	48 89 ce             	mov    %rcx,%rsi
-  400961:	48 89 c7             	mov    %rax,%rdi
-  400964:	b8 00 00 00 00       	mov    $0x0,%eax
-  400969:	e8 d2 fd ff ff       	callq  400740 <fprintf@plt>
-  40096e:	eb 12                	jmp    400982 <main+0x14e>
-  400970:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
-  400974:	8b 55 fc             	mov    -0x4(%rbp),%edx
-  400977:	8b 45 ec             	mov    -0x14(%rbp),%eax
-  40097a:	39 c2                	cmp    %eax,%edx
-  40097c:	0f 82 21 ff ff ff    	jb     4008a3 <main+0x6f> # welche schleife?
-  400982:	f2 0f 10 05 ee 08 20 	movsd  0x2008ee(%rip),%xmm0        # 601278 <delta>
-  400989:	00 
-  40098a:	b8 21 0c 40 00       	mov    $0x400c21,%eax
-  40098f:	48 89 c7             	mov    %rax,%rdi
-  400992:	b8 01 00 00 00       	mov    $0x1,%eax
-  400997:	e8 f4 fc ff ff       	callq  400690 <printf@plt>
-  40099c:	b8 31 0c 40 00       	mov    $0x400c31,%eax
-  4009a1:	be 40 42 0f 00       	mov    $0xf4240,%esi
-  4009a6:	48 89 c7             	mov    %rax,%rdi
-  4009a9:	b8 00 00 00 00       	mov    $0x0,%eax
-  4009ae:	e8 dd fc ff ff       	callq  400690 <printf@plt>
-  4009b3:	f2 0f 10 0d bd 08 20 	movsd  0x2008bd(%rip),%xmm1        # 601278 <delta>
-  4009ba:	00 
-  4009bb:	f2 0f 2a 45 fc       	cvtsi2sdl -0x4(%rbp),%xmm0
-  4009c0:	66 0f 28 d1          	movapd %xmm1,%xmm2
-  4009c4:	f2 0f 5e d0          	divsd  %xmm0,%xmm2
-  4009c8:	66 0f 28 c2          	movapd %xmm2,%xmm0
-  4009cc:	b8 48 0c 40 00       	mov    $0x400c48,%eax
-  4009d1:	8b 55 fc             	mov    -0x4(%rbp),%edx
-  4009d4:	89 d6                	mov    %edx,%esi
-  4009d6:	48 89 c7             	mov    %rax,%rdi
-  4009d9:	b8 01 00 00 00       	mov    $0x1,%eax
-  4009de:	e8 ad fc ff ff       	callq  400690 <printf@plt>
-  4009e3:	ba 6f 0c 40 00       	mov    $0x400c6f,%edx
-  4009e8:	48 8b 05 69 08 20 00 	mov    0x200869(%rip),%rax        # 601258 <outputfile>
-  4009ef:	48 89 d6             	mov    %rdx,%rsi
-  4009f2:	48 89 c7             	mov    %rax,%rdi
-  4009f5:	e8 d6 fc ff ff       	callq  4006d0 <fopen@plt>
-  4009fa:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
-  4009fe:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
-  400a03:	75 2e                	jne    400a33 <main+0x1ff>
-  400a05:	48 8b 05 54 08 20 00 	mov    0x200854(%rip),%rax        # 601260 <__bss_start>
-  400a0c:	48 89 c2             	mov    %rax,%rdx
-  400a0f:	b8 78 0c 40 00       	mov    $0x400c78,%eax
-  400a14:	48 89 d1             	mov    %rdx,%rcx
-  400a17:	ba 42 00 00 00       	mov    $0x42,%edx
-  400a1c:	be 01 00 00 00       	mov    $0x1,%esi
-  400a21:	48 89 c7             	mov    %rax,%rdi
-  400a24:	e8 07 fd ff ff       	callq  400730 <fwrite@plt>
-  400a29:	bf 01 00 00 00       	mov    $0x1,%edi
-  400a2e:	e8 7d fc ff ff       	callq  4006b0 <exit@plt>
-  400a33:	f2 0f 10 15 3d 08 20 	movsd  0x20083d(%rip),%xmm2        # 601278 <delta>
-  400a3a:	00 
-  400a3b:	f2 0f 10 0d 35 08 20 	movsd  0x200835(%rip),%xmm1        # 601278 <delta>
-  400a42:	00 
-  400a43:	f2 0f 2a 45 fc       	cvtsi2sdl -0x4(%rbp),%xmm0
-  400a48:	66 0f 28 d9          	movapd %xmm1,%xmm3
-  400a4c:	f2 0f 5e d8          	divsd  %xmm0,%xmm3
-  400a50:	66 0f 28 c3          	movapd %xmm3,%xmm0
-  400a54:	b9 bb 0c 40 00       	mov    $0x400cbb,%ecx
-  400a59:	8b 55 fc             	mov    -0x4(%rbp),%edx
-  400a5c:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
-  400a60:	66 0f 28 ca          	movapd %xmm2,%xmm1
-  400a64:	48 89 ce             	mov    %rcx,%rsi
-  400a67:	48 89 c7             	mov    %rax,%rdi
-  400a6a:	b8 02 00 00 00       	mov    $0x2,%eax
-  400a6f:	e8 cc fc ff ff       	callq  400740 <fprintf@plt>
-  400a74:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
-  400a78:	48 89 c7             	mov    %rax,%rdi
-  400a7b:	e8 90 fc ff ff       	callq  400710 <fclose@plt>
-  400a80:	bf 00 00 00 00       	mov    $0x0,%edi
-  400a85:	e8 26 fc ff ff       	callq  4006b0 <exit@plt>
-  400a8a:	90                   	nop
-  400a8b:	90                   	nop
-  400a8c:	90                   	nop
-  400a8d:	90                   	nop
+  400913:	8b 45 e8             	mov    -0x18(%rbp),%eax						 # %eax = i
+  400916:	89 45 e8             	mov    %eax,-0x18(%rbp)            # i = %eax
+  400919:	8b 45 e8             	mov    -0x18(%rbp),%eax            # %eax = i
+  40091c:	85 c0                	test   %eax,%eax                   # %eax == %eax ?
+  40091e:	75 f3                	jne    400913 <main+0xdf>          # if %eax != %eax, skip
+  400920:	bf 00 00 00 00       	mov    $0x0,%edi                   # return code
+  400925:	e8 86 fd ff ff       	callq  4006b0 <exit@plt>           # abort process
+  40092a:	83 7d f8 00          	cmpl   $0x0,-0x8(%rbp)
+  40092e:	79 44                	jns    400974 <main+0x140>
+  400930:	e8 bb fd ff ff       	callq  4006f0 <__errno_location@plt>
+  400935:	8b 10                	mov    (%rax),%edx
+  400937:	b9 d8 0b 40 00       	mov    $0x400bd8,%ecx
+  40093c:	48 8b 05 1d 09 20 00 	mov    0x20091d(%rip),%rax        # 601260 <__bss_start>
+  400943:	48 89 ce             	mov    %rcx,%rsi
+  400946:	48 89 c7             	mov    %rax,%rdi
+  400949:	b8 00 00 00 00       	mov    $0x0,%eax
+  40094e:	e8 ed fd ff ff       	callq  400740 <fprintf@plt>
+  400953:	b9 06 0c 40 00       	mov    $0x400c06,%ecx
+  400958:	48 8b 05 01 09 20 00 	mov    0x200901(%rip),%rax        # 601260 <__bss_start>
+  40095f:	8b 55 fc             	mov    -0x4(%rbp),%edx
+  400962:	48 89 ce             	mov    %rcx,%rsi
+  400965:	48 89 c7             	mov    %rax,%rdi
+  400968:	b8 00 00 00 00       	mov    $0x0,%eax
+  40096d:	e8 ce fd ff ff       	callq  400740 <fprintf@plt>
+  400972:	eb 12                	jmp    400986 <main+0x152>
+  400974:	83 45 fc 01          	addl   $0x1,-0x4(%rbp)
+  400978:	8b 55 fc             	mov    -0x4(%rbp),%edx
+  40097b:	8b 45 ec             	mov    -0x14(%rbp),%eax
+  40097e:	39 c2                	cmp    %eax,%edx
+  400980:	0f 82 1d ff ff ff    	jb     4008a3 <main+0x6f>
+  400986:	f2 0f 10 05 ea 08 20 	movsd  0x2008ea(%rip),%xmm0        # 601278 <delta>
+  40098d:	00 
+  40098e:	b8 21 0c 40 00       	mov    $0x400c21,%eax
+  400993:	48 89 c7             	mov    %rax,%rdi
+  400996:	b8 01 00 00 00       	mov    $0x1,%eax
+  40099b:	e8 f0 fc ff ff       	callq  400690 <printf@plt>
+  4009a0:	b8 31 0c 40 00       	mov    $0x400c31,%eax
+  4009a5:	be 40 42 0f 00       	mov    $0xf4240,%esi
+  4009aa:	48 89 c7             	mov    %rax,%rdi
+  4009ad:	b8 00 00 00 00       	mov    $0x0,%eax
+  4009b2:	e8 d9 fc ff ff       	callq  400690 <printf@plt>
+  4009b7:	f2 0f 10 0d b9 08 20 	movsd  0x2008b9(%rip),%xmm1        # 601278 <delta>
+  4009be:	00 
+  4009bf:	f2 0f 2a 45 fc       	cvtsi2sdl -0x4(%rbp),%xmm0
+  4009c4:	66 0f 28 d1          	movapd %xmm1,%xmm2
+  4009c8:	f2 0f 5e d0          	divsd  %xmm0,%xmm2
+  4009cc:	66 0f 28 c2          	movapd %xmm2,%xmm0
+  4009d0:	b8 48 0c 40 00       	mov    $0x400c48,%eax
+  4009d5:	8b 55 fc             	mov    -0x4(%rbp),%edx
+  4009d8:	89 d6                	mov    %edx,%esi
+  4009da:	48 89 c7             	mov    %rax,%rdi
+  4009dd:	b8 01 00 00 00       	mov    $0x1,%eax
+  4009e2:	e8 a9 fc ff ff       	callq  400690 <printf@plt>
+  4009e7:	ba 6f 0c 40 00       	mov    $0x400c6f,%edx
+  4009ec:	48 8b 05 65 08 20 00 	mov    0x200865(%rip),%rax        # 601258 <outputfile>
+  4009f3:	48 89 d6             	mov    %rdx,%rsi
+  4009f6:	48 89 c7             	mov    %rax,%rdi
+  4009f9:	e8 d2 fc ff ff       	callq  4006d0 <fopen@plt>
+  4009fe:	48 89 45 f0          	mov    %rax,-0x10(%rbp)
+  400a02:	48 83 7d f0 00       	cmpq   $0x0,-0x10(%rbp)
+  400a07:	75 2e                	jne    400a37 <main+0x203>
+  400a09:	48 8b 05 50 08 20 00 	mov    0x200850(%rip),%rax        # 601260 <__bss_start>
+  400a10:	48 89 c2             	mov    %rax,%rdx
+  400a13:	b8 78 0c 40 00       	mov    $0x400c78,%eax
+  400a18:	48 89 d1             	mov    %rdx,%rcx
+  400a1b:	ba 42 00 00 00       	mov    $0x42,%edx
+  400a20:	be 01 00 00 00       	mov    $0x1,%esi
+  400a25:	48 89 c7             	mov    %rax,%rdi
+  400a28:	e8 03 fd ff ff       	callq  400730 <fwrite@plt>
+  400a2d:	bf 01 00 00 00       	mov    $0x1,%edi
+  400a32:	e8 79 fc ff ff       	callq  4006b0 <exit@plt>
+  400a37:	f2 0f 10 15 39 08 20 	movsd  0x200839(%rip),%xmm2        # 601278 <delta>
+  400a3e:	00 
+  400a3f:	f2 0f 10 0d 31 08 20 	movsd  0x200831(%rip),%xmm1        # 601278 <delta>
+  400a46:	00 
+  400a47:	f2 0f 2a 45 fc       	cvtsi2sdl -0x4(%rbp),%xmm0
+  400a4c:	66 0f 28 d9          	movapd %xmm1,%xmm3
+  400a50:	f2 0f 5e d8          	divsd  %xmm0,%xmm3
+  400a54:	66 0f 28 c3          	movapd %xmm3,%xmm0
+  400a58:	b9 bb 0c 40 00       	mov    $0x400cbb,%ecx
+  400a5d:	8b 55 fc             	mov    -0x4(%rbp),%edx
+  400a60:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  400a64:	66 0f 28 ca          	movapd %xmm2,%xmm1
+  400a68:	48 89 ce             	mov    %rcx,%rsi
+  400a6b:	48 89 c7             	mov    %rax,%rdi
+  400a6e:	b8 02 00 00 00       	mov    $0x2,%eax
+  400a73:	e8 c8 fc ff ff       	callq  400740 <fprintf@plt>
+  400a78:	48 8b 45 f0          	mov    -0x10(%rbp),%rax
+  400a7c:	48 89 c7             	mov    %rax,%rdi
+  400a7f:	e8 8c fc ff ff       	callq  400710 <fclose@plt>
+  400a84:	bf 00 00 00 00       	mov    $0x0,%edi
+  400a89:	e8 22 fc ff ff       	callq  4006b0 <exit@plt>
   400a8e:	90                   	nop
   400a8f:	90                   	nop
 
