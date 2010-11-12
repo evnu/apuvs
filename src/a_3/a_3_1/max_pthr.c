@@ -13,42 +13,32 @@
 
 clock_t begin, end, delta;
 int max_thr = 10000;
+int countsome;
 
-void* go(void* i){
-	pthread_t th;
-	long threadnr = (long)i;
-	if(threadnr < max_thr){
-		threadnr++;
-		// TODO WTF! Asking for raceconditions, are we?
-		begin=clock();
-		pthread_create(&th,NULL,go, (void *)threadnr);
-		end=clock();
-		delta+=(end-begin);
-		pthread_join(th,NULL);
-	}else{
-		printf("CLOCKS_PER_SEC: %ld\n",CLOCKS_PER_SEC);
-		printf("Delta: %ld\n",(long)delta);
-		printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
-	}
+void* go(){
+	countsome++;
 	return NULL; /* we have to return something.. NULL is better than some random value */
 }
 
 
 int main (int argc, char **argv){
+	int i;
 	if (argc > 1) {
 		sscanf (argv[1], "%d", &max_thr);
 	}
-
-	long i=1;
+	
 	pthread_t thr;
+	
+	for(i = 1;i<=max_thr;i++){
 	begin=clock();
-	if(pthread_create(&thr,NULL,go,(void *)i) >= 0){
-		end=clock();
-		delta=end-begin;
-		pthread_join(thr,NULL);
+	pthread_create(&thr,NULL,go,NULL);
+	end=clock();
+	delta+=end-begin;
+	pthread_join(thr,NULL);
 	}
-	else
-		perror("pthread_create failed: ");
+	printf("Delta: %d\n ",(int)delta);
+	printf("Sec/Thread: %.8f\n",(double)(delta/max_thr)/(double)CLOCKS_PER_SEC);
+
 	exit(0);
 
 }
