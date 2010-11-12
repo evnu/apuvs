@@ -9,9 +9,13 @@
 #include <unistd.h>
 #include <assert.h>
 
-clock_t begin, end;
+#include "messuretime.h"
+
+// accumulated time in ms
 double delta = 0;
 char *outputfile = "../data/fork.dat";
+
+struct timeval begin, end;
 
 int main (int argc, char **argv){
 	unsigned int numforks = 10;
@@ -30,12 +34,12 @@ int main (int argc, char **argv){
 
 	for (i = 0; i < numforks; i++) {
 		// master counts actual creation time
-		begin = clock();
+		gettimeofday(&begin, NULL);
 			cid = fork ();
-		end = clock();
+		gettimeofday(&end, NULL);
 		
 		if (cid > 0) {
-			delta += (end-begin)/(double)CLOCKS_PER_SEC; // divide to convert to seconds
+			delta += mdiff (&begin, &end);
 		}
 		if (cid == 0) {
 			/* wait for parent */
@@ -50,6 +54,7 @@ int main (int argc, char **argv){
 			// to the excercise description)
 			// int stat;
 			// waitpid (pid, &stat, 0);
+
 			exit (EXIT_SUCCESS); /* child doesn't need to clean up or print */
 		}
 		if (cid < 0) {
@@ -65,8 +70,7 @@ int main (int argc, char **argv){
 	printf ("Delta is: %.8f\n", delta);
 	// only parent process reaches this line
 	printf("CLOCKS_PER_SEC: %lu\n",CLOCKS_PER_SEC);
-	printf("%d processes started %.8f Sec/Process\n",i,
-			delta/i); 
+	printf("%d processes started %.8f ms/Process\n", i, delta/i); 
 	
 	/* print data to file */
 	FILE  *fp = fopen (outputfile, "a+");
