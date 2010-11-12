@@ -8,7 +8,7 @@
 #			-DINPUT="input filename" gnuplot.gpi | gnuplot
 
 set terminal postscript eps enhanced color
-set output 'data/png/FILENAME.eps'
+set output 'data/graphs/FILENAME.eps'
 #set key box linestyle 2
 set key below
 
