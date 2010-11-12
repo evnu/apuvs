@@ -12,13 +12,14 @@
 #include <sys/time.h> 
 
 clock_t begin, end, delta;
-int max_thr = 1000;
+int max_thr = 10000;
 
 void* go(void* i){
 	pthread_t th;
 	long threadnr = (long)i;
 	if(threadnr < max_thr){
 		threadnr++;
+		// TODO WTF! Asking for raceconditions, are we?
 		begin=clock();
 		pthread_create(&th,NULL,go, (void *)threadnr);
 		end=clock();
@@ -29,11 +30,15 @@ void* go(void* i){
 		printf("Delta: %ld\n",(long)delta);
 		printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
 	}
-
+	return NULL; /* we have to return something.. NULL is better than some random value */
 }
 
 
-int main(){
+int main (int argc, char **argv){
+	if (argc > 1) {
+		sscanf (argv[1], "%d", &max_thr);
+	}
+
 	long i=1;
 	pthread_t thr;
 	begin=clock();
