@@ -17,6 +17,8 @@ static struct timeval begin, end;
 static double delta;
 static int max_thr = 10000;
 
+static char *outputfile = "../data/pthread.dat";
+
 // mutex to avoid race conditions
 // the time needed to acquire the mutex isn't messured
 pthread_mutex_t taketime = PTHREAD_MUTEX_INITIALIZER;
@@ -56,18 +58,29 @@ void *go (void *i) {
 			 ))
 		{
 			printf ("Aborting due to errno = %d\n", pthread_error_number);
-			printf("CLOCKS_PER_SEC: %ld\n",CLOCKS_PER_SEC);
-			printf("Delta: %ld\n",(long)delta);
-			printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
+			printf ("Delta is: %.8f\n", delta);
+			printf("%d Threads started %.8f ms/Thread\n",max_thr
+					,((double)delta)/threadnr);
 		}
 		gettimeofday (&end, NULL);
 		delta += mdiff (&begin, &end);
 		(void) pthread_mutex_unlock (&taketime);
 		(void) pthread_join(th,NULL);
 	}else{
-		printf("CLOCKS_PER_SEC: %ld\n",CLOCKS_PER_SEC);
-		printf("Delta: %ld\n",(long)delta);
-		printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
+		printf ("Delta is: %.8f\n", delta);
+		printf("%d Threads started %.8f ms/Thread\n",max_thr
+				,((double)delta)/threadnr);
+		/* print that to a file */
+		FILE* fp = fopen (outputfile, "a+");
+		if (!fp) {
+			fprintf (stderr, "Couldn't open %s\n", outputfile);
+			fprintf (stderr, "Aborting...\n");
+			exit (EXIT_FAILURE);
+		}
+		fprintf (fp, "%lu %.8f %.8f\n", threadnr,
+				delta/threadnr,
+				delta
+				);
 	}
 	return NULL; /* we have to return something.. NULL is better than some random value */
 }
