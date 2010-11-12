@@ -11,19 +11,41 @@
 #include <time.h>
 #include <sys/time.h> 
 
-clock_t begin, end, delta;
+#include "messuretime.h"
+
+struct timeval begin, end;
+double delta;
 int max_thr = 10000;
 
-void* go(void* i){
-	pthread_t th;
-	long threadnr = (long)i;
+// mutex to avoid race conditions
+// the time needed to acquire the mutex isn't messured
+pthread_mutex_t taketime = PTHREAD_MUTEX_INITIALIZER;
+
+// the thread function
+void* go(void* i);
+
+int main (int argc, char **argv){
+	if (argc > 1) {
+		sscanf (argv[1], "%d", &max_thr);
+	}
+	long i = 1;
+	// just call the recursive function
+	go ((void *) (&i));
+
+	exit(EXIT_SUCCESS);
+}
+
+void *go (void *i) {
+	long threadnr = * ((long*)(i));
 	if(threadnr < max_thr){
-		threadnr++;
-		// TODO WTF! Asking for raceconditions, are we?
-		begin=clock();
-		pthread_create(&th,NULL,go, (void *)threadnr);
-		end=clock();
-		delta+=(end-begin);
+		pthread_t th;
+		pthread_mutex_lock (&taketime);
+			threadnr++;
+			gettimeofday (&begin, NULL);
+				pthread_create(&th,NULL,go, (void *)(&threadnr));
+			gettimeofday (&end, NULL);
+			delta+=mdiff (&begin, &end);
+		pthread_mutex_unlock (&taketime);
 		pthread_join(th,NULL);
 	}else{
 		printf("CLOCKS_PER_SEC: %ld\n",CLOCKS_PER_SEC);
@@ -31,24 +53,4 @@ void* go(void* i){
 		printf("%d Threads started %.8f Sec/Thread\n",max_thr,((float)delta/max_thr)/CLOCKS_PER_SEC);
 	}
 	return NULL; /* we have to return something.. NULL is better than some random value */
-}
-
-
-int main (int argc, char **argv){
-	if (argc > 1) {
-		sscanf (argv[1], "%d", &max_thr);
-	}
-
-	long i=1;
-	pthread_t thr;
-	begin=clock();
-	if(pthread_create(&thr,NULL,go,(void *)i) >= 0){
-		end=clock();
-		delta=end-begin;
-		pthread_join(thr,NULL);
-	}
-	else
-		perror("pthread_create failed: ");
-	exit(0);
-
 }
