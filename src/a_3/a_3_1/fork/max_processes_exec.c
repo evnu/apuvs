@@ -45,7 +45,7 @@ int main (int argc, char **argv){
 			delta += mdiff (&begin, &end);
 		}
 		if (cid == 0) {
-			// we exec echo to see how long exec takes approximately.
+			// we exec echo to see how exec affects cpu load
 			if (execlp ("echo", "echo", "-n", "", NULL)) {
 				/* if exec returns, something went badly wrong */
 				fprintf (stderr, "ERROR: calling exec produced error %d\n", errno);
