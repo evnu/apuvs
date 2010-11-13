@@ -11,9 +11,12 @@
 #include <pthread.h>
 #include <time.h>
 #include <sys/time.h> 
+#include "pthread/messuretime.h"
 
-clock_t begin, end, delta;
-int max_thr = 10000;
+static double delta = 0;
+static struct timeval begin, end;
+int max_thr = 100;
+
 
 void* go(){
 	volatile int i = 1;
@@ -27,18 +30,19 @@ int main (int argc, char **argv){
 	if (argc > 1) {
 		sscanf (argv[1], "%d", &max_thr);
 	}
-	
+
 	pthread_t thr;
 		
 	for(i = 1;i<=max_thr;i++){
-	begin=clock();
-	pthread_create(&thr,NULL,go,NULL);
-	end=clock();
-	delta+=end-begin;
+	gettimeofday(&begin, NULL);
+	pthread_create(&thr, NULL, go, NULL);
+	gettimeofday(&end, NULL);
+	delta+=mdiff(&begin, &end);
 	}
-	printf("Delta: %d\n ",(int)delta);
-	printf("Sec/Thread: %.8f\n",((double)delta/(double)max_thr)/(double)CLOCKS_PER_SEC);
-
+	pthread_join(thr,NULL);
+	printf("Delta: %.8f\n ",delta);
+	printf("Sec/Thread: %.8f\n",delta/max_thr);
+	
 	exit(0);
 
 }

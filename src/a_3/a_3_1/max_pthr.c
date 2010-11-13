@@ -9,10 +9,14 @@
 #include <stdlib.h>
 #include <pthread.h>
 #include <time.h>
-#include <sys/time.h> 
+#include <sys/time.h>
+#include "pthread/messuretime.h"
 
-clock_t begin, end, delta;
+static double delta = 0;
+static struct timeval begin, end;
 int max_thr = 10000;
+static const char *outputfile = "./data/max_pthr.dat";
+static unsigned int output = 1;
 
 void* go(){
 	return NULL; 
@@ -23,18 +27,34 @@ int main (int argc, char **argv){
 	if (argc > 1) {
 		sscanf (argv[1], "%d", &max_thr);
 	}
+	if (argc > 2) {
+		sscanf (argv[2], "%u", &output);
+	}
+
 	
 	pthread_t thr;
 	
 	for(i = 1;i<=max_thr;i++){
-		begin=clock(); 
+		gettimeofday(&begin,NULL); 
 		pthread_create(&thr,NULL,go,NULL);
-		end=clock();
-		delta+=end-begin;
+		gettimeofday(&end,NULL);
+		delta+=mdiff(&begin,&end);
 	}
 	pthread_join(thr,NULL); 
-	printf("Delta: %d\n ",(int)delta);
-	printf("Sec/Thread: %.8f\n",((double)delta/(double)max_thr)/(double)CLOCKS_PER_SEC);
+	printf("Delta: %.8f\n ",delta);
+	printf("%.8fms/Thread\n",delta/max_thr);
 
+	if(output){
+		FILE  *fp = fopen (outputfile, "a+");
+		if (!fp) {
+			fprintf (stderr, "Couldn't write to file ../data/max_pthr.dat. Exiting disgracefully...\n");
+			exit (EXIT_FAILURE);
+		}
+
+		// structure: processes time/thread delta(sum)
+		fprintf (fp, "%d %.8f %.8f\n", max_thr, delta / max_thr, delta);
+		fclose (fp);
+
+	}
 	exit(0);
 }
