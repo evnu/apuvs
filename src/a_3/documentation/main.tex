@@ -90,7 +90,7 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 \subsubsection{Zusammenfassung}
 Offensichtlich benötigt die Erzeugung von Prozessen die meiste Zeit. Da bei
 \verb|fork()| ein neuer Prozess durch komplette Kopie des bestehenden Prozesses
-durchgeführt wird, ergibt sich ein größerer Overhead als bei den anderen Varianten. Zwar
+erzeugt wird, ergibt sich ein größerer Overhead als bei den anderen Varianten. Zwar
 kann durch \emph{Copy-On-Write} einiges an Zeit eingespart werden (denn falls danach per
 exec ein neues Programm in dem Prozess gestartet wird muss sowieso neu auf den Speicher
 zugegriffen werden), doch bereits die Interaktion mit dem Kernel benötigt mehr Zeit als
