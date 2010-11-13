@@ -11,10 +11,12 @@
 
 #include "messuretime.h"
 
-double delta = 0;
-char *outputfile = "../data/fork_childsworking.dat";
+static double delta = 0;
+static const char *outputfile = "../data/fork_childsworking.dat";
 
-struct timeval begin, end;
+static struct timeval begin, end;
+
+static unsigned int output = 1;
 
 void bufferEcho (void);
 
@@ -23,6 +25,9 @@ int main (int argc, char **argv){
 
 	if (argc > 1) {
 		sscanf (argv[1], "%u", &numforks);
+	}
+	if (argc > 2) {
+		sscanf (argv[2], "%u", &output);
 	}
 
 	// maybe it isn't sane to start more than 100000 processes
@@ -76,15 +81,17 @@ int main (int argc, char **argv){
 	// only parent process reaches this line
 	printf("%d processes started %.8f ms/Process\n",i, delta/i); 
 	
-	/* print data to file */
-	FILE  *fp = fopen (outputfile, "a+");
-	if (!fp) {
-		fprintf (stderr, "Couldn't write to file ../data/fork.dat. Exiting disgracefully...\n");
-		exit (EXIT_FAILURE);
-	}
+	if (output) {
+		/* print data to file */
+		FILE  *fp = fopen (outputfile, "a+");
+		if (!fp) {
+			fprintf (stderr, "Couldn't write to file ../data/fork.dat. Exiting disgracefully...\n");
+			exit (EXIT_FAILURE);
+		}
 
-	// structure: processes time/fork delta(sum)
-	fprintf (fp, "%d %.8f %.8f\n", i, delta / i, delta);
-	fclose (fp);
+		// structure: processes time/fork delta(sum)
+		fprintf (fp, "%d %.8f %.8f\n", i, delta / i, delta);
+		fclose (fp);
+	}
 	exit(EXIT_SUCCESS);
 }

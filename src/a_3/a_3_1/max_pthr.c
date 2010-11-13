@@ -18,7 +18,6 @@ void* go(){
 	return NULL; 
 }
 
-
 int main (int argc, char **argv){
 	int i;
 	if (argc > 1) {
@@ -28,15 +27,14 @@ int main (int argc, char **argv){
 	pthread_t thr;
 	
 	for(i = 1;i<=max_thr;i++){
-	begin=clock();
-	pthread_create(&thr,NULL,go,NULL);
-	end=clock();
-	delta+=end-begin;
-	pthread_join(thr,NULL);
+		begin=clock(); 
+		pthread_create(&thr,NULL,go,NULL);
+		end=clock();
+		delta+=end-begin;
 	}
+	pthread_join(thr,NULL); 
 	printf("Delta: %d\n ",(int)delta);
 	printf("Sec/Thread: %.8f\n",((double)delta/(double)max_thr)/(double)CLOCKS_PER_SEC);
 
 	exit(0);
-
 }

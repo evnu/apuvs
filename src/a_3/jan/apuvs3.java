@@ -58,12 +58,12 @@ public class apuvs3 {
 
         Date begin = new Date();
         for(int i = 0; i <= numberOfThreads; i++){
-            list.add(new DoALittle());
+            list.add(new Thread());
         }
         Date end = new Date();
         Long time = (end.getTime() - begin.getTime());
-        System.out.println("It takes " + Float.toString((float)time/(float)numberOfThreads) + " milliseconds"
-                + " to create a thread");
+        System.out.println(numberOfThreads + " "
+                + Float.toString((float)time/(float)numberOfThreads) + " " + time);
     }
 }
 
@@ -103,7 +103,6 @@ class DoSleeping extends Thread {
     @Override
     public void run() {
         try {
-            System.out.println("sleeping");
             while (run)
                 sleep(1000l);
         } catch (Exception e) {
