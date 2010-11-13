@@ -13,10 +13,8 @@
 
 clock_t begin, end, delta;
 int max_thr = 10000;
-int countsome;
 
 void* go(){
-	countsome++;
 	return NULL; /* we have to return something.. NULL is better than some random value */
 }
 
@@ -37,7 +35,7 @@ int main (int argc, char **argv){
 	pthread_join(thr,NULL);
 	}
 	printf("Delta: %d\n ",(int)delta);
-	printf("Sec/Thread: %.8f\n",(double)(delta/max_thr)/(double)CLOCKS_PER_SEC);
+	printf("Sec/Thread: %.8f\n",((double)delta/(double)max_thr)/(double)CLOCKS_PER_SEC);
 
 	exit(0);
 
