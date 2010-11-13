@@ -13,10 +13,9 @@
 
 clock_t begin, end, delta;
 int max_thr = 10000;
-int countsome;
+int countsome = 0;
 
 void* go(){
-	countsome++;
 	return NULL; /* we have to return something.. NULL is better than some random value */
 }
 
@@ -30,15 +29,15 @@ int main (int argc, char **argv){
 	pthread_t thr;
 	
 	for(i = 1;i<=max_thr;i++){
-	begin=clock();
-	pthread_create(&thr,NULL,go,NULL);
-	end=clock();
-	delta+=end-begin;
-	pthread_join(thr,NULL);
+		begin=clock(); // TODO i don't really trust clock... maybe we should use gettimeofday?
+			pthread_create(&thr,NULL,go,NULL);
+		end=clock();
+		delta+=end-begin;
+		countsome = 0;
 	}
+	pthread_join(thr,NULL); // join the last thread
 	printf("Delta: %d\n ",(int)delta);
 	printf("Sec/Thread: %.8f\n",(double)(delta/max_thr)/(double)CLOCKS_PER_SEC);
 
 	exit(0);
-
 }
