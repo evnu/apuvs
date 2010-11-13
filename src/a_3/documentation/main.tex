@@ -100,16 +100,26 @@ bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
 	\begin{center}
 		\lstinputlisting[ ] {../a_3_1/fork/max_processes.c}
 	\end{center}
-	\caption{Fork mit arbeitenden Kindprozessen}
+	\caption{Fork}
 	\label{fig:fork_listing}
 \end{figure}
+
 \begin{figure}[h!]
 	\begin{center}
 		\lstinputlisting[ ] {../a_3_1/fork/max_processes_exec.c}
 	\end{center}
-	\caption{Fork mit arbeitenden Kindprozessen}
+	\caption{Fork mit exec}
 	\label{fig:fork_exec_listing}
 \end{figure}
+
+\begin{figure}[h!]
+	\begin{center}
+		\lstinputlisting[ ] {../a_3_1/fork/messuretime.h}
+	\end{center}
+	\caption{Der header zur Zeitberechnung wird von allen fork Varianten eingebunden.}
+	\label{fig:messuretime}
+\end{figure}
+
 \section{Aufgabe 3.2}
 \subsubsection{a)}
 \subsubsection{Prozesse}
