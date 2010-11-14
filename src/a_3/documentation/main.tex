@@ -134,6 +134,15 @@ bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
 	\caption{Der header zur Zeitberechnung wird von allen fork Varianten eingebunden.}
 	\label{fig:messuretime}
 \end{figure}
+\subsection{b)}
+\subsubsection{Erzeugung von POSIX-Threads}
+Um festzustellen wieviel Zeit die Erzeugung eines POSIX-Threads auf dem oben angegebenen System durchschnittlich
+in Anspruch nimmt wurde dem Test-Programm max\_pthr 60 mal aufgerufen wobei die Anzahl zu erzeuegender Threads
+jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum folgenden Graphen.
+
+%TODO: GRAPH max_pthr hier
+
+Im Schnitt benötigt die Erzeugung eines POSIX-Threads 0.523893ms.
 
 \section{Aufgabe 3.2}
 \subsubsection{a)}
