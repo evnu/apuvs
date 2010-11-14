@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <time.h>
 #include <sys/time.h>
+#include <unistd.h>
 #include "pthread/messuretime.h"
 
 static double delta = 0;
@@ -18,7 +19,11 @@ int max_thr = 10000;
 static const char *outputfile = "./data/max_pthr.dat";
 static unsigned int output = 1;
 
+static char done = 0;
+
 void* go(){
+	while (!done)
+		sleep (100);
 	return NULL; 
 }
 
@@ -30,7 +35,6 @@ int main (int argc, char **argv){
 	if (argc > 2) {
 		sscanf (argv[2], "%u", &output);
 	}
-
 	
 	pthread_t thr;
 	
@@ -40,6 +44,10 @@ int main (int argc, char **argv){
 		gettimeofday(&end,NULL);
 		delta+=mdiff(&begin,&end);
 	}
+	// set "done"
+	done = 1;
+
+	// wait for last thread to complete
 	pthread_join(thr,NULL); 
 	printf("Delta: %.8f\n ",delta);
 	printf("%.8fms/Thread\n",delta/max_thr);
