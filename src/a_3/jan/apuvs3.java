@@ -14,11 +14,11 @@ public class apuvs3 {
      */
     public static void main(String[] args) {
 
-        if(args.length == 0 || !(args[0].equals("a") || args[0].equals("b")
+        if(args.length < 2 || !(args[0].equals("a") || args[0].equals("b")
                 || args[0].equals("time"))){
             System.out.println("Usage: apuvs3 a #threads | b #threads | time #threads");
             System.out.println("a uses sleeping threads, b uses threads doing calculation, time times thread creation time");
-            System.out.println("use STRG+C to kill the program...otherwise it will continue to create threads");
+            System.out.println("the second argument specifies the number of threads to be created");
             System.exit(-1);
         }
 
@@ -40,6 +40,11 @@ public class apuvs3 {
             System.out.println("Starting thread #" + Integer.toString(list.size()));
             thread.start();
         }
+        try{
+            Thread.sleep(10000l);
+        } catch (Exception e){
+            e.printStackTrace();
+        }
         return;
     }
 
@@ -51,6 +56,11 @@ public class apuvs3 {
             list.add(thread);
             System.out.println("Starting thread #" + Integer.toString(list.size()));
             thread.start();
+        }
+        try{
+            Thread.sleep(10000l);
+        } catch (Exception e){
+            e.printStackTrace();
         }
         return;
     }

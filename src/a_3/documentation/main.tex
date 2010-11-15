@@ -52,6 +52,7 @@ Buffers:          352748 kB
 Cached:           541128 kB
 [...]
 \end{verbatim}
+
 \subsubsection{POSIX-Thread}
 Der Großteil der Auswertung von POSIX-Threads erfolgte auf folgender Maschine:
 \begin{verbatim}
@@ -67,6 +68,19 @@ Cached:           425560 kB
 [...]
 \end{verbatim}
 
+\subsection{Java-Threads}
+Die Auswertung von Java-Threads erfolgte auf folgender Maschine:
+\begin{verbatim}
+%uname -a
+Linux maschine 2.6.32-25-generic #45-Ubuntu SMP Sat Oct 16 19:52:42 UTC 2010 x86_64 GNU/Linux
+
+%cat /proc/meminfo
+MemTotal:        3954236 kB
+MemFree:          546992 kB
+Buffers:          385536 kB
+Cached:          1311248 kB
+[\ldots]
+\end{verbatim}
 
 \section{Aufgabe 3.1}
 \subsection{a)}
@@ -81,6 +95,10 @@ Cached:           425560 kB
 			\includegraphics[scale=0.5]{../a_3_1/data/graphs/fork_exec}
 			\label{fig:fork_exec}
 		}
+		\subfigure[Java-Threads]{
+			\includegraphics[scale=0.5]{../a_3_1/data/graphs/javathreads}
+			\label{fig:javathreads}
+		}
 	\end{center}
 \end{figure}
 
@@ -89,7 +107,7 @@ benötigt die Erzeugung eines Prozesses per \verb|fork()| ca. $0.5$ms.
 Hierbei ist zu beachten, dass \ref{fig:fork_exec} nur die Zeit zur Erstellung der Prozesse
 misst, aber nicht die für \verb|exec()| benötigte Zeit. \\
 Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
-\begin{figure}[h!]
+ \begin{figure}[h!] 
 	\begin{center}
 		\begin{tabular}[h!]{c|c}
 			\hline
@@ -109,7 +127,7 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 	\end{center}
 	\caption{Fork}
 	\label{fig:fork_listing}
-\end{figure}
+\end{figure} 
 
 \begin{figure}[h!]
 	\begin{center}
@@ -129,12 +147,28 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 \subsection{b)}
 \subsubsection{Erzeugung von POSIX-Threads}
 Um festzustellen wieviel Zeit die Erzeugung eines POSIX-Threads auf dem oben angegebenen System durchschnittlich
-in Anspruch nimmt wurde dem Test-Programm max\_pthr 60 mal aufgerufen wobei die Anzahl zu erzeuegender Threads
+in Anspruch nimmt wurde dem Test-Programm max\_pthr 60 mal aufgerufen wobei die Anzahl zu erzeugender Threads
 jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum folgenden Graphen.
 
 %TODO: GRAPH max_pthr hier
 
 Im Schnitt benötigt die Erzeugung eines POSIX-Threads 0.523893ms.
+
+\subsection{c}
+\subsubsection{Erzeugung von Java-Threads}
+Die Erzeugung der Java-Threads wurde auf gleiche Art und Weise getestet wie bei der Erzeugung der POSIX-Threads.
+Es wurden 61 Programmaufrufe mit gemacht und die Zeit zu Erzeugung von 1 bis 30000 Threads gemessen.
+Das Ergeniss ist im Diagramm \ref{fig:javathreads} zu sehen.
+
+Im Durchschnitt benötigt die Erzeugung eines Java-Threads 0.00823688ms.
+
+\begin{figure}[h!]
+	\begin{center}
+		\lstinputlisting[ ] {../jan/apuvs3.java}
+	\end{center}
+	\caption{Java-Threads}
+	\label{fig:java_listing}
+\end{figure} 
 
 \subsection{Zusammenfassung}
 % TODO add your stuff here
@@ -145,12 +179,16 @@ kann durch \emph{Copy-On-Write} einiges an Zeit eingespart werden (denn falls da
 exec ein neues Programm in dem Prozess gestartet wird muss sowieso neu auf den Speicher
 zugegriffen werden), doch bereits die Interaktion mit dem Kernel benötigt mehr Zeit als
 bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
-\section{Aufgabe 3.2}
+Dieses Phänomen kann man bei der Erzeugung der Java-Threads beobachten. Java-Threads sind
+zwar keinen reinen User-Level-Threads, aber die Verwaltung wird durch die JVM übernommen.
+Das hat zur Folge das weniger, beziehungsweise keine Systemcalls nötig sind um einen
+Thread zu erzeugen. \footnote{warscheinlich hält die JVM von Anfang an einen Thread-Pool vor}
+\section{Aufgabe 3.2} 
 \subsubsection{a)}
-\subsubsection{Prozesse}
+\subsubsection{Prozesse} 
 Das Kommandozeilenwerkzeug \verb|ulimit| gibt die obere Grenze der maximalen Anzahl an
 möglichen Nutzerprozessen an:
-\begin{verbatim}
+\begin{verbatim} 
 % ulimit -u
 30030
 \end{verbatim}
@@ -160,6 +198,12 @@ entstehende Programm mit einer wachsenden Zahl parametrisiert. Diese Zahl gibt a
 wieviele Prozesse durch das Programm gestarten werden sollen. Hierdurch ergab sich, dass
 auf dem Testsystem auch die Erzeugung von fast $30000$ Prozessen keine merkliche
 Verzögerung mit sich brachte.
+
+\subsubsection{Java-Threads}
+Da Java-Threads von der JVM verwaltet werden, gibt es keine Betriebssystem-seitige Begrenzung der Threadanzahl.
+Auch bei Java-Threads belasten schlafende Threads das System kaum. Selbst bei 10000 Threads bleibt
+das System benutzbar, es tritt kein Thrashing auf.
+
 \subsection{b)}
 \subsubsection{Prozesse}
 Der folgenden Betrachtung liegt der weiter unten gegebene Quelltext zugrunde.
@@ -200,4 +244,10 @@ Interessanterweise benötigt aber die Erzeugung von Prozessen mehr Zeit als in A
 	\caption{Fork mit arbeitenden Kindprozessen}
 	\label{fig:fork_childsworking_listing}
 \end{figure}
+
+\subsubsection{Java-Threads}
+Erzeugt man relativ viele Threads, die arbeiten, kommt es sehr schnell zu einem Thrashing-Effekt, der das System
+unter Umständen unbenutzbar macht. Bereits bei 100 erzeugten Java-Threads beanspruchen die Kontextwechsel der Threads
+das System so, das es deutliche Reaktionsprobleme hat. Bei 300 Threads ist das System unbenutzbar, da der größte Teil
+der Rechenzeit für das Scheduling verschwendet wird.
 \end{document}
