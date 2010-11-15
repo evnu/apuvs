@@ -148,17 +148,42 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 \subsubsection{Erzeugung von POSIX-Threads}
 Um festzustellen wieviel Zeit die Erzeugung eines POSIX-Threads auf dem oben angegebenen System durchschnittlich
 in Anspruch nimmt wurde dem Test-Programm max\_pthr 60 mal aufgerufen wobei die Anzahl zu erzeugender Threads
-jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum folgenden Graphen.
-
-%TODO: GRAPH max_pthr hier
-
+jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum folgenden Graphen \ref{max_pthr}.
+\begin{figure}[h!]
+	\begin{center}
+		\subfigure[POSIX-Threads]{
+			\includegraphics[scale=0.5]{../a_3_1/data/graphs/max_pthr}
+			\label{fig:max_pthr}
+		}
+	\end{center}
+\end{figure}
 Im Schnitt benötigt die Erzeugung eines POSIX-Threads 0.523893ms.
+
+
+\begin{figure}[h!]
+	\begin{center}
+		\lstinputlisting[ ] {../a_3_1/max_pthr.c}
+	\end{center}
+	\caption{POSIX-Threads Sleep}
+	\label{fig:max_pthr_listing}
+\end{figure} 
+\begin{figure}[h!]
+	\begin{center}
+		\lstinputlisting[ ] {../a_3_1/max_pthr_do.c}
+	\end{center}
+	\caption{POSIX-Threads do Something}
+	\label{fig:max_pthr_do_listing}
+\end{figure} 
+
+
+
+
 
 \subsection{c}
 \subsubsection{Erzeugung von Java-Threads}
 Die Erzeugung der Java-Threads wurde auf gleiche Art und Weise getestet wie bei der Erzeugung der POSIX-Threads.
 Es wurden 61 Programmaufrufe mit gemacht und die Zeit zu Erzeugung von 1 bis 30000 Threads gemessen.
-Das Ergeniss ist im Diagramm \ref{fig:javathreads} zu sehen.
+Das Ergebnis ist im Diagramm \ref{fig:javathreads} zu sehen.
 
 Im Durchschnitt benötigt die Erzeugung eines Java-Threads 0.00823688ms.
 
@@ -250,4 +275,6 @@ Erzeugt man relativ viele Threads, die arbeiten, kommt es sehr schnell zu einem 
 unter Umständen unbenutzbar macht. Bereits bei 100 erzeugten Java-Threads beanspruchen die Kontextwechsel der Threads
 das System so, das es deutliche Reaktionsprobleme hat. Bei 300 Threads ist das System unbenutzbar, da der größte Teil
 der Rechenzeit für das Scheduling verschwendet wird.
+
+
 \end{document}
