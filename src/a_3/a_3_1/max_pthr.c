@@ -11,7 +11,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <unistd.h>
-#include "pthread/messuretime.h"
+#include "messuretime.h"
 
 static double delta = 0;
 static struct timeval begin, end;
@@ -40,8 +40,12 @@ int main (int argc, char **argv){
 	
 	for(i = 1;i<=max_thr;i++){
 		gettimeofday(&begin,NULL); 
-		pthread_create(&thr,NULL,go,NULL);
+		int i = pthread_create(&thr,NULL,go,NULL);
 		gettimeofday(&end,NULL);
+		if(i!=0){
+			printf("pthread_create failed! Abort...");
+			exit(-1);
+		}
 		delta+=mdiff(&begin,&end);
 	}
 	// set "done"
