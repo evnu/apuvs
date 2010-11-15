@@ -16,45 +16,47 @@ public class apuvs3 {
 
         if(args.length == 0 || !(args[0].equals("a") || args[0].equals("b")
                 || args[0].equals("time"))){
-            System.out.println("Usage: apuvs3 a|b|time");
+            System.out.println("Usage: apuvs3 a #threads | b #threads | time #threads");
             System.out.println("a uses sleeping threads, b uses threads doing calculation, time times thread creation time");
             System.out.println("use STRG+C to kill the program...otherwise it will continue to create threads");
             System.exit(-1);
         }
 
         if(args[0].equals("a"))
-            a();
+            a(Integer.parseInt(args[1]));
         if(args[0].equals("b"))
-            b();
+            b(Integer.parseInt(args[1]));
         if(args[0].equals("time"))
-            time();
+            time(Integer.parseInt(args[1]));
+        return;
     }
 
-    private static void a(){
+    private static void a(int i){
         ArrayList<Thread> list = new ArrayList<Thread>();
-        while (true) {
-            Thread thread = null;
-            thread = new DoSleeping();
+        while (i > list.size()) {
+            Thread thread = new DoSleeping();
+            thread.setDaemon(true);
             list.add(thread);
             System.out.println("Starting thread #" + Integer.toString(list.size()));
             thread.start();
         }
+        return;
     }
 
-    private static void b() {
+    private static void b(int i) {
         ArrayList<Thread> list = new ArrayList<Thread>();
-        while (true) {
-            Thread thread = null;
-            thread = new DoALittle();
+        while (i > list.size()) {
+            Thread thread = new DoALittle();
+            thread.setDaemon(true);
             list.add(thread);
             System.out.println("Starting thread #" + Integer.toString(list.size()));
             thread.start();
         }
+        return;
     }
 
-    private static void time() {
+    private static void time(int numberOfThreads) {
         ArrayList<Thread> list = new ArrayList<Thread>();
-        int numberOfThreads = 20000;
 
         Date begin = new Date();
         for(int i = 0; i <= numberOfThreads; i++){
@@ -63,7 +65,8 @@ public class apuvs3 {
         Date end = new Date();
         Long time = (end.getTime() - begin.getTime());
         System.out.println(numberOfThreads + " "
-                + Float.toString((float)time/(float)numberOfThreads) + " " + time);
+                + Double.toString((double)time/(double)numberOfThreads) + " " + time);
+        return;
     }
 }
 

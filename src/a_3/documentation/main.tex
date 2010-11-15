@@ -52,6 +52,21 @@ Buffers:          352748 kB
 Cached:           541128 kB
 [...]
 \end{verbatim}
+\subsubsection{POSIX-Thread}
+Der Großteil der Auswertung von POSIX-Threads erfolgte auf folgender Maschine:
+\begin{verbatim}
+% uname -a
+Linux Zero2 2.6.35-ARCH #1 SMP PREEMPT Sat Oct 30 21:22:26 CEST 2010 
+x86_64 Intel(R) Core(TM)2 Duo CPU T9400 @ 2.53GHz GenuineIntel GNU/Linux
+
+% cat /proc/meminfoi
+MemTotal:        3948772 kB
+MemFree:         3143348 kB
+Buffers:           67712 kB
+Cached:           425560 kB
+[...]
+\end{verbatim}
+
 
 \section{Aufgabe 3.1}
 \subsection{a)}
@@ -87,14 +102,6 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 	\label{fig:fork_mean}
 \end{figure}
 
-\subsubsection{Zusammenfassung}
-Offensichtlich benötigt die Erzeugung von Prozessen die meiste Zeit. Da bei
-\verb|fork()| ein neuer Prozess durch komplette Kopie des bestehenden Prozesses
-erzeugt wird, ergibt sich ein größerer Overhead als bei den anderen Varianten. Zwar
-kann durch \emph{Copy-On-Write} einiges an Zeit eingespart werden (denn falls danach per
-exec ein neues Programm in dem Prozess gestartet wird muss sowieso neu auf den Speicher
-zugegriffen werden), doch bereits die Interaktion mit dem Kernel benötigt mehr Zeit als
-bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
 
 \begin{figure}[h!]
 	\begin{center}
@@ -119,7 +126,25 @@ bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
 	\caption{Der header zur Zeitberechnung wird von allen fork Varianten eingebunden.}
 	\label{fig:messuretime}
 \end{figure}
+\subsection{b)}
+\subsubsection{Erzeugung von POSIX-Threads}
+Um festzustellen wieviel Zeit die Erzeugung eines POSIX-Threads auf dem oben angegebenen System durchschnittlich
+in Anspruch nimmt wurde dem Test-Programm max\_pthr 60 mal aufgerufen wobei die Anzahl zu erzeuegender Threads
+jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum folgenden Graphen.
 
+%TODO: GRAPH max_pthr hier
+
+Im Schnitt benötigt die Erzeugung eines POSIX-Threads 0.523893ms.
+
+\subsection{Zusammenfassung}
+% TODO add your stuff here
+Offensichtlich benötigt die Erzeugung von Prozessen die meiste Zeit. Da bei
+\verb|fork()| ein neuer Prozess durch komplette Kopie des bestehenden Prozesses
+erzeugt wird, ergibt sich ein größerer Overhead als bei den anderen Varianten. Zwar
+kann durch \emph{Copy-On-Write} einiges an Zeit eingespart werden (denn falls danach per
+exec ein neues Programm in dem Prozess gestartet wird muss sowieso neu auf den Speicher
+zugegriffen werden), doch bereits die Interaktion mit dem Kernel benötigt mehr Zeit als
+bei Erzeugung von Threads mittels einer \emph{user-level threading library}.
 \section{Aufgabe 3.2}
 \subsubsection{a)}
 \subsubsection{Prozesse}
@@ -147,7 +172,7 @@ Der folgenden Betrachtung liegt der weiter unten gegebene Quelltext zugrunde.
 	\end{center}
 \end{figure}
 Erzeugt man eine Vielzahl (mehr als 200) von arbeitenden Kindprozessen, so kommt es unter Umständen zu
-starkem \emph{thrashing}: die einzelnen Prozesse können zwar noch arbeiten, der großteil
+starkem \emph{thrashing}: die einzelnen Prozesse können zwar noch arbeiten, der Großteil
 der CPU-Zeit wird aber für Kontextwechsel verschwendet.\\
 Dass dies mit der einfachen Berechenung der Prozesse auf der CPU zusammenhängt und nicht
 nur mit dem Platzverbrauch der einzelnen Prozesse zeigt folgendes Beispiel:
