@@ -26,7 +26,6 @@ identifierstyle=\ttfamily,
 basicstyle=\tiny,
 numbers=left,
 numberstyle=\tiny,
-label=nodeadlock1
 }
 
 \title{APUVS, Blatt 3}
@@ -111,7 +110,7 @@ benötigt die Erzeugung eines Prozesses per \verb|fork()| ca. $0.5$ms.
 Hierbei ist zu beachten, dass \ref{fig:fork_exec} nur die Zeit zur Erstellung der Prozesse
 misst, aber nicht die für \verb|exec()| benötigte Zeit. \\
 Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
- \begin{figure}[h!] 
+ \begin{figure}[h!]
 	\begin{center}
 		\begin{tabular}[h!]{c|c}
 			\hline
@@ -125,51 +124,13 @@ Hieraus ergeben sich die Durchschnittswerte aus Tabelle \ref{fig:fork_mean}.
 \end{figure}
 
 
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/fork/max_processes.c}
-	\end{center}
-	\caption{Fork}
-	\label{fig:fork_listing}
-\end{figure} 
-
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/fork/max_processes_exec.c}
-	\end{center}
-	\caption{Fork mit exec}
-	\label{fig:fork_exec_listing}
-\end{figure}
-
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/fork/messuretime.h}
-	\end{center}
-	\caption{Der Header zur Zeitberechnung wird von allen fork Varianten eingebunden.}
-	\label{fig:messuretime}
-\end{figure}
 \subsection*{b)}
 \subsubsection*{Erzeugung von POSIX-Threads}
 Um festzustellen wieviel Zeit die Erzeugung eines POSIX-Threads auf dem oben angegebenen System durchschnittlich
-in Anspruch nimmt wurde dem Test-Programm \ref{fig:max_pthr_listing} 60 mal aufgerufen wobei die Anzahl zu erzeugender Threads
+in Anspruch nimmt wurde dem Test-Programm \verb|max_pthr.c| 60 mal aufgerufen wobei die Anzahl zu erzeugender Threads
 jeweils um 500 erhöht wurde. Die ms/Thread wurden aufgezeichnet und führten zum Graphen \ref{fig:max_pthr}.
 Im Schnitt benötigt die Erzeugung eines POSIX-Threads 0.523893ms.
 
-
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/max_pthr.c}
-	\end{center}
-	\caption{POSIX-Threads Sleep}
-	\label{fig:max_pthr_listing}
-\end{figure} 
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/max_pthr_do.c}
-	\end{center}
-	\caption{POSIX-Threads do Something}
-	\label{fig:max_pthr_do_listing}
-\end{figure} 
 
 
 
@@ -183,16 +144,9 @@ Das Ergebnis ist im Diagramm \ref{fig:javathreads} zu sehen.
 
 Im Durchschnitt benötigt die Erzeugung eines Java-Threads 0.00823688ms.
 
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../jan/apuvs3.java}
-	\end{center}
-	\caption{Java-Threads}
-	\label{fig:java_listing}
-\end{figure} 
+
 
 \subsection*{Zusammenfassung}
-% TODO add your stuff here
 Offensichtlich benötigt die Erzeugung von Prozessen die meiste Zeit. Da bei
 \verb|fork()| ein neuer Prozess durch komplette Kopie des bestehenden Prozesses
 erzeugt wird, ergibt sich ein größerer Overhead als bei den anderen Varianten. Zwar
@@ -215,7 +169,7 @@ möglichen Nutzerprozessen an:
 30030
 \end{verbatim}
 Dies wird auch durch die Grafik \ref{fig:fork_sleep} untermauert. Die zugrunde liegenden
-Daten wurden durch ein Shellscript erbracht, welches das aus \ref{fig:fork_listing}
+Daten wurden durch ein Shellscript erbracht, welches das aus \ref{lst:fork_listing}
 entstehende Programm mit einer wachsenden Zahl parametrisiert. Diese Zahl gibt an,
 wieviele Prozesse durch das Programm gestarten werden sollen. Hierdurch ergab sich, dass
 auf dem Testsystem auch die Erzeugung von fast $30000$ Prozessen keine merkliche
@@ -263,21 +217,25 @@ Swap:         8191          0       8191
 Die 500 erzeugten Prozesse bringen keinen großen Platzverbrauch mit sich.
 Interessanterweise benötigt aber die Erzeugung von Prozessen mehr Zeit als in Aufgabe
 3.1a).
-\begin{figure}[h!]
-	\begin{center}
-		\lstinputlisting[ ] {../a_3_1/fork/max_processes_childsworking.c}
-	\end{center}
-	\caption{Fork mit arbeitenden Kindprozessen}
-	\label{fig:fork_childsworking_listing}
-\end{figure}
 
 \subsubsection*{POSIX-Threads}
+Es genügen schon verhältnismäßig wenige arbeitende Threads um das System voll auszulasten. Vorrausgesetzt die 
+Threads haben genug zu tun (oder befinden sich in einer Endlosschleife) zeigt sich ähnlich wie bei Java-Threads
+schnell eine starke Beanspruchung des Systems (ab 100 Threads merklich beansprucht).
 
 \subsubsection*{Java-Threads}
 Erzeugt man relativ viele Threads, die arbeiten, kommt es sehr schnell zu einem Thrashing-Effekt, der das System
 unter Umständen unbenutzbar macht. Bereits bei 100 erzeugten Java-Threads beanspruchen die Kontextwechsel der Threads
 das System so, das es deutliche Reaktionsprobleme hat. Bei 300 Threads ist das System unbenutzbar, da der größte Teil
 der Rechenzeit für das Scheduling verschwendet wird.
-
-
+\subsection*{Quellcode (Prozesse)}
+\lstinputlisting[ caption=Fork, captionpos=b, label=lst:fork_listing] {../a_3_1/fork/max_processes.c}
+\lstinputlisting[ caption=Fork with Exec, captionpos=b, label=lst:fork_exec_listing] {../a_3_1/fork/max_processes_exec.c}
+\lstinputlisting[ caption=Header File f\"ur Zeitmessung,captionpos=b, label=lst:messuretime] {../a_3_1/fork/messuretime.h}
+\lstinputlisting[ caption=Fork Kindprozesse arbeiten,captionpos=b, label=lst:fork_childsworking_listing] {../a_3_1/fork/max_processes_childsworking.c}
+\subsection*{Quellcode (POSIX-Threads)}
+\lstinputlisting[ caption=POSIX-Threads mit Sleep(),captionpos=b, label=lst:max_pthr_listing] {../a_3_1/max_pthr.c}
+\lstinputlisting[ caption=POSIX-Threads mit Endlosschleife,captionpos=b, label=lst:max_pthr_do_listing] {../a_3_1/max_pthr_do.c}
+\subsection*{Quellcode (Java-Threads)}
+\lstinputlisting[ caption=Java-Threads,captionpos=b, label=lst:java_listing] {../jan/apuvs3.java}
 \end{document}

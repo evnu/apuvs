@@ -11,12 +11,11 @@
 #include <pthread.h>
 #include <time.h>
 #include <sys/time.h> 
-#include "pthread/messuretime.h"
+#include "messuretime.h"
 
 static double delta = 0;
 static struct timeval begin, end;
 int max_thr = 100;
-
 
 void* go(){
 	volatile int i = 1;
