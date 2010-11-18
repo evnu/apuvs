@@ -20,6 +20,7 @@ public class Main extends Thread{
 
         String[] names = {"Machiaveli", "Russel", "Sokrates",
                             "Kant", "Leibnitz"};
+
         int numberOfPhilosophers = 5;
         Fork[] forks = new Fork[numberOfPhilosophers];
         Philosopher[] philosophers =new Philosopher[numberOfPhilosophers];
@@ -33,14 +34,14 @@ public class Main extends Thread{
 
         for(int i = 0; i < numberOfPhilosophers; i++){
             philosophers[i] = new Philosopher(names[i],
-                    forks[i % numberOfPhilosophers],
-                    forks[(i + 1) % numberOfPhilosophers]);
+                    forks[(i + 1) % (numberOfPhilosophers)],
+                    forks[i % (numberOfPhilosophers)]);
             philosophers[i].start();
-            try {
-                sleep(3000l);
+            /*try {
+                sleep(2l);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }*/
         }
     }
 }
