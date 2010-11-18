@@ -20,6 +20,8 @@ public class Main extends Thread{
 
         String[] names = {"Machiaveli", "Russel", "Sokrates",
                             "Kant", "Leibnitz"};
+        long unregular = 2000;
+
         int numberOfPhilosophers = 5;
         Fork[] forks = new Fork[numberOfPhilosophers];
         Philosopher[] philosophers =new Philosopher[numberOfPhilosophers];
@@ -37,7 +39,8 @@ public class Main extends Thread{
                     forks[(i + 1) % numberOfPhilosophers]);
             philosophers[i].start();
             try {
-                sleep(3000l);
+                sleep(unregular);
+                unregular /= 2;
             } catch (InterruptedException ex) {
                 Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
             }

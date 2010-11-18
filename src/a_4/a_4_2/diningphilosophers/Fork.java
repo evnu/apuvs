@@ -15,14 +15,16 @@ public class Fork {
     private boolean taken = false;
 
     public synchronized boolean take() {
-        if (taken) {
-            return false;
-        }
+        while(taken);
         taken = true;
         return true;
     }
 
     public synchronized void putDown(){
         this.taken = false;
+    }
+
+    public boolean isTaken(){
+        return taken;
     }
 }
