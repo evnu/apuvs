@@ -70,7 +70,7 @@ do
 		for i in $(seq 1 10)
 		do
 			./summation_ascending_nums $size $num_threads 
-		done |grep TIME
+		done |grep TIME| sed 's/TIME: //g'
 		)
 		echo $num_threads $size $(smallest $evaluation) >> $DATADIR/"ascending.smallest.$num_threads".dat
 		echo $num_threads $size $(median $evaluation) >> $DATADIR/"ascending.median.$num_threads".dat
