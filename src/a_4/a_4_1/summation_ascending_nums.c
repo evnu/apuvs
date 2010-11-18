@@ -12,6 +12,7 @@
 #include <sys/time.h>
 
 #include "basic_functions.h"
+#include "messuretime.h"
 
 #define ARBITRARY_BOUND 10000
 
@@ -59,7 +60,10 @@ int main (int argc, char **argv) {
 	}
 
 	gettimeofday (&end, NULL);
+
 	assert (sum == (array_size*(array_size+1))/2 - array_size);
+
+	printf ("TIME: %.8f\n", mdiff (&begin, &end));
 
 	return EXIT_SUCCESS;
 }
