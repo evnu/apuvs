@@ -4,17 +4,20 @@
 //        Created:  18.11.2010 12:57:58
 // =====================================================================================
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
-#include <omp.h>
 #include <assert.h>
+#include <omp.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
 
 #include "basic_functions.h"
 
 int main (int argc, char **argv) {
 	int array_size = 100;
 	int sum = 0;
+
+	struct timeval begin, end;
 
 	if (argc > 1) {
 		sscanf (argv[1], "%d", &array_size);
@@ -31,10 +34,11 @@ int main (int argc, char **argv) {
 	/* output protocol */
 	protocol ();
 
+	/* messure time */
+	gettimeofday (&begin, NULL);
 #pragma omp parallel shared(sum)
 	{ /* Parallelized section */
 
-		printf ("this is thread %d\n", omp_get_thread_num ());
 		int internal_sum = 0;
 #pragma omp for
 		for (int i = 0; i < array_size; i++) {
@@ -44,6 +48,8 @@ int main (int argc, char **argv) {
 #pragma omp atomic
 			sum += internal_sum;	
 	}
+
+	gettimeofday (&end, NULL);
 
 	assert (sum == array_size);
 
