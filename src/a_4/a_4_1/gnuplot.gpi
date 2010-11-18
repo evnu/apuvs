@@ -7,8 +7,6 @@
 # m4  -DTITLE="title" -DFILENAME="output filename, will be put into data/png/" \
 #			-DINPUT="input filename" gnuplot.gpi | gnuplot
 
-set terminal postscript eps enhanced color
-set output 'graphs/FILENAME1.eps'
 #set key box linestyle 2
 set key below
 
@@ -30,19 +28,21 @@ set style line 2 lt 2 lc rgb "orange" lw 2
 set style line 3 lt 2 lc rgb "yellow" lw 3
 set style line 4 lt 2 lc rgb "green" lw 2
 
-# first plots
+set terminal postscript eps enhanced color
+set output 'graphs/FILENAME1.eps'
 plot "data/FILE.1.dat" using 2:3 w linespoints t "1 thread", \
      "data/FILE.2.dat" using 2:3 w linespoints t "2 thread", \
-     "data/FILE.3.dat" using 2:3 w linespoints t "3 thread", \
-     "data/FILE.4.dat" using 2:3 w linespoints t "4 thread", \
-     "data/FILE.5.dat" using 2:3 w linespoints t "5 thread"
+     "data/FILE.3.dat" using 2:3 w linespoints t "3 thread"
 
-# second plots
 set terminal postscript eps enhanced color
 set output 'graphs/FILENAME2.eps'
+plot "data/FILE.4.dat" using 2:3 w linespoints t "4 thread", \
+     "data/FILE.5.dat" using 2:3 w linespoints t "5 thread", \
+ 		 "data/FILE.6.dat" using 2:3 w linespoints t "6 thread"
 
-plot "data/FILE.6.dat" using 2:3 w linespoints t "6 thread", \
-     "data/FILE.7.dat" using 2:3 w linespoints t "7 thread", \
+set terminal postscript eps enhanced color
+set output 'graphs/FILENAME3.eps'
+plot "data/FILE.7.dat" using 2:3 w linespoints t "7 thread", \
      "data/FILE.8.dat" using 2:3 w linespoints t "8 thread", \
      "data/FILE.9.dat" using 2:3 w linespoints t "9 thread", \
      "data/FILE.10.dat" using 2:3 w linespoints t "10 thread"
