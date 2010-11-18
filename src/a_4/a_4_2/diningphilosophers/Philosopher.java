@@ -28,7 +28,8 @@ public class Philosopher extends Thread{
     public void run() {
 
         while(true){
-            System.out.println(me + "is trying to take left fork.");
+//----------try to get left fork------------------------------------------------
+            System.out.println(me + " is trying to take left fork.");
             if (left.take()){
                 this.hasLeft = true;
                 System.out.println("YAY..." + me + " got the left fork");
@@ -36,24 +37,34 @@ public class Philosopher extends Thread{
             try {
                 sleep(2000l);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE,
+                        null, ex);
             }
-            System.out.println(me + "is trying to take right fork");
+
+//----------try to get right fork-----------------------------------------------
+            System.out.println(me + " is trying to take right fork");
             if (right.take()){
                 this.hasRight = true;
                 System.out.println("YAY..." + me + " got the right fork");
-            }
-            try {
-                sleep(2000l);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            }/*
+              * to prevent deadlock situation put down left fork
+              * to do this simply add this else block here
+              * else{
+              *     left.putDown();
+              *     hasLeft = false;
+              * }
+              * this violates the Hold-and-Wait condition of the
+              * Coffman conditions
+              */
+
+//----------if having both forks eat for a while and put down forks-------------
             if (hasLeft && hasRight){
-                System.out.println(me + " is eating...nomnomnom");
+                System.out.println(me + " is eating...nomnomnomnomnomnomnomnomnomnomn");
                 try {
                     sleep(5000l);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE,
+                            null, ex);
                 }
                 System.out.println(me + " puts down froks");
                 left.putDown();
@@ -63,7 +74,8 @@ public class Philosopher extends Thread{
             try {
                 sleep(2000l);
             } catch (InterruptedException ex) {
-                Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE,
+                        null, ex);
             }
         }
     }
