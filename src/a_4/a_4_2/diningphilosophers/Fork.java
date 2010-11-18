@@ -14,17 +14,21 @@ public class Fork {
 
     private boolean taken = false;
 
-    public synchronized boolean take() {
+    public void take() {
         while(taken);
-        taken = true;
-        return true;
+        changeStatus(true);
     }
 
-    public synchronized void putDown(){
-        this.taken = false;
+    public void putDown(){
+        while(!taken);
+        changeStatus(false);
     }
 
     public boolean isTaken(){
         return taken;
+    }
+
+    private synchronized void changeStatus(boolean newStatus){
+        taken = newStatus;
     }
 }
