@@ -26,7 +26,7 @@ do
 			./summation $size $num_threads 
 		done |grep TIME| awk '{sum=sum+$2;} END {printf sum/NR;}'
 		)
-		echo $num_threads $size $evaluation >> $DATADIR/"summation_$num_threads".dat
+		echo $num_threads $size $evaluation >> $DATADIR/"summation.$num_threads".dat
 	done
 done
 
@@ -47,6 +47,6 @@ do
 			./summation_ascending_nums $size $num_threads 
 		done |grep TIME| awk '{sum=sum+$2;} END {printf sum/NR;}'
 		)
-		echo $num_threads $size $evaluation >> $DATADIR/"ascending_$num_threads".dat
+		echo $num_threads $size $evaluation >> $DATADIR/"ascending.$num_threads".dat
 	done
 done

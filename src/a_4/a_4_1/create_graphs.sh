@@ -3,9 +3,7 @@
 # some m4 calls
 #
 #
-m4 -DTITLE="Fork" -DFILENAME="fork" -DINPUT="data/fork.dat" gnuplot.gpi | gnuplot
-m4 -DTITLE="Fork and Exec" -DFILENAME="fork_exec" -DINPUT="data/fork_exec.dat" gnuplot.gpi |gnuplot
-m4 -DTITLE="Fork with working childs" -DFILENAME="fork_childsworking" -DINPUT="data/fork_childsworking.dat" gnuplot.gpi |gnuplot
-m4 -DTITLE="max_pthr" -DFILENAME="max_pthr" -DINPUT="data/max_pthr.dat" gnuplot.gpi | gnuplot
-m4 -DTITLE="Java Threads" -DFILENAME="javathreads" -DINPUT="data/java.dat" gnuplot.gpi | gnuplot
-
+m4 -DTITLE="Sum up array" -DFILENAME1="summation_first" \
+	-DFILENAME2="summation_snd" -DFILE="summation" gnuplot.gpi | gnuplot
+m4 -DTITLE="Sum up array" -DFILENAME1="ascending_first" \
+	-DFILENAME2="ascending_snd" -DFILE="ascending" gnuplot.gpi | gnuplot
