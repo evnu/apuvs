@@ -17,16 +17,13 @@ public class Main extends Thread{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-
         String[] names = {"Machiaveli", "Russel", "Sokrates",
                             "Kant", "Leibnitz"};
 
-        int numberOfPhilosophers = 5;
-        Fork[] forks = new Fork[numberOfPhilosophers];
-        Philosopher[] philosophers =new Philosopher[numberOfPhilosophers];
+        int numberOfPhilosophers = names.length;
 
-        if(args.length > 1)
-            numberOfPhilosophers = Integer.parseInt(args[0]);
+        Fork[] forks = new Fork[numberOfPhilosophers];
+        Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
 
         for(int i = 0; i < numberOfPhilosophers; i++){
             forks[i] = new Fork();
@@ -37,7 +34,12 @@ public class Main extends Thread{
                     forks[(i + 1) % (numberOfPhilosophers)],
                     forks[i % (numberOfPhilosophers)]);
             philosophers[i].start();
-            /*try {
+
+
+            /* The following code is needed if we decide to 
+						 * use sleep sometime later
+						 *
+						 * try {
                 sleep(2l);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Philosopher.class.getName()).log(Level.SEVERE, null, ex);
