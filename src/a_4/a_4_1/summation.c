@@ -12,6 +12,7 @@
 #include <sys/time.h>
 
 #include "basic_functions.h"
+#include "messuretime.h"
 
 int main (int argc, char **argv) {
 	int array_size = 100;
@@ -36,6 +37,7 @@ int main (int argc, char **argv) {
 
 	/* messure time */
 	gettimeofday (&begin, NULL);
+
 #pragma omp parallel shared(sum)
 	{ /* Parallelized section */
 
@@ -52,6 +54,8 @@ int main (int argc, char **argv) {
 	gettimeofday (&end, NULL);
 
 	assert (sum == array_size);
+
+	printf ("TIME: %.8f\n", mdiff (&begin, &end));
 
 	return EXIT_SUCCESS;
 }

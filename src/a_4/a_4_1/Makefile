@@ -1,6 +1,6 @@
 .PHONY: clean
 
-CFLAGS+=-std=c99 -fopenmp
+CFLAGS+=-std=c99 -fopenmp -Wall
 
 all: summation summation_ascending_nums
 
