@@ -1,0 +1,53 @@
+# easy plots from data/
+#		I assume that files in data/ contain 3 columns:
+#    first column determines the number of processes/threads
+#    the second column specifies the average creation time per process/thread
+#    the third column specifies the total creation time for n processes/threads
+# usage:
+# m4  -DTITLE="title" -DFILENAME="output filename, will be put into data/png/" \
+#			-DINPUT="input filename" gnuplot.gpi | gnuplot
+
+set terminal postscript eps enhanced color
+set output 'graphs/FILENAME.eps'
+#set key box linestyle 2
+set key below
+
+set title "TITLE"
+
+set xlabel "Processes/Threads"
+set ylabel "ms"
+
+# erase axes
+set border 3
+set xtics nomirror
+set ytics nomirror
+
+# lets define some colours..
+set style line 1 lt 2 lc rgb "red" lw 3
+set style line 2 lt 2 lc rgb "orange" lw 2
+set style line 3 lt 2 lc rgb "yellow" lw 3
+set style line 4 lt 2 lc rgb "green" lw 2
+
+# watch out for this AWESOME gnuploting!
+
+set multiplot
+set origin 0.0,0.0
+set size 1.0,1.0
+
+plot "INPUT" using 1:3 w linespoints smooth cspline t "Total Creation Time"
+
+set origin 0.1,0.5
+set size 0.4,0.5
+
+set title
+# for the following, see http://gnuplot.sourceforge.net/demo/tics.html
+set xtics rotate by 45
+set xtics out offset 0,-2.0
+set ytics rotate by -45
+set ytics out offset 0,-2.0
+set xlabel
+set ylabel
+plot "INPUT" using 1:2 w lines smooth cspline t "Average Creation Time" ls 2
+
+set nomultiplot
+
