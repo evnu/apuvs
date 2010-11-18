@@ -1,0 +1,48 @@
+# easy plots from data/
+#		I assume that files in data/ contain 3 columns:
+#    first column determines the number of processes/threads
+#    the second column specifies the average creation time per process/thread
+#    the third column specifies the total creation time for n processes/threads
+# usage:
+# m4  -DTITLE="title" -DFILENAME="output filename, will be put into data/png/" \
+#			-DINPUT="input filename" gnuplot.gpi | gnuplot
+
+set terminal postscript eps enhanced color
+set output 'graphs/FILENAME1.eps'
+#set key box linestyle 2
+set key below
+
+set title "TITLE"
+
+set xlabel "Size of array in bytes"
+set ylabel "ms"
+
+set logscale x
+
+# erase axes
+set border 3
+set xtics nomirror
+set ytics nomirror
+
+# lets define some colours..
+set style line 1 lt 2 lc rgb "red" lw 3
+set style line 2 lt 2 lc rgb "orange" lw 2
+set style line 3 lt 2 lc rgb "yellow" lw 3
+set style line 4 lt 2 lc rgb "green" lw 2
+
+# first plots
+plot "data/FILE.1.dat" using 2:3 w linespoints t "1 thread", \
+     "data/FILE.2.dat" using 2:3 w linespoints t "2 thread", \
+     "data/FILE.3.dat" using 2:3 w linespoints t "3 thread", \
+     "data/FILE.4.dat" using 2:3 w linespoints t "4 thread", \
+     "data/FILE.5.dat" using 2:3 w linespoints t "5 thread"
+
+# second plots
+set terminal postscript eps enhanced color
+set output 'graphs/FILENAME2.eps'
+
+plot "data/FILE.6.dat" using 2:3 w linespoints t "6 thread", \
+     "data/FILE.7.dat" using 2:3 w linespoints t "7 thread", \
+     "data/FILE.8.dat" using 2:3 w linespoints t "8 thread", \
+     "data/FILE.9.dat" using 2:3 w linespoints t "9 thread", \
+     "data/FILE.10.dat" using 2:3 w linespoints t "10 thread"

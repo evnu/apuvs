@@ -16,13 +16,21 @@
 
 int main (int argc, char **argv) {
 	int array_size = 100;
+	unsigned int number_of_threads;
 	int sum = 0;
 
 	struct timeval begin, end;
 
+	/* determine command line arguments */
 	if (argc > 1) {
 		sscanf (argv[1], "%d", &array_size);
 	}
+	if (argc > 2) {
+		sscanf (argv[2], "%u", &number_of_threads);
+		assert (number_of_threads != 0);
+		omp_set_num_threads (number_of_threads);
+	}
+
 	char *array = malloc (array_size);
 	
 	if (!array) {
@@ -40,7 +48,6 @@ int main (int argc, char **argv) {
 
 #pragma omp parallel shared(sum)
 	{ /* Parallelized section */
-
 		int internal_sum = 0;
 #pragma omp for
 		for (int i = 0; i < array_size; i++) {
