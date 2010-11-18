@@ -10,6 +10,8 @@
 #include <omp.h>
 #include <assert.h>
 
+#include "basic_functions.h"
+
 int main (int argc, char **argv) {
 	int array_size = 100;
 	int sum = 0;
@@ -25,6 +27,9 @@ int main (int argc, char **argv) {
 	}
 
 	memset (array, 1, array_size);
+
+	/* output protocol */
+	protocol ();
 
 #pragma omp parallel shared(sum)
 	{ /* Parallelized section */

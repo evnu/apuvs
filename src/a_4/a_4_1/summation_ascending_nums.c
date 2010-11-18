@@ -10,6 +10,8 @@
 #include <omp.h>
 #include <assert.h>
 
+#include "basic_functions.h"
+
 #define ARBITRARY_BOUND 10000
 
 int main (int argc, char **argv) {
@@ -33,6 +35,9 @@ int main (int argc, char **argv) {
 	for (int i = 0; i < array_size; i++) {
 		array[i] = i;
 	}
+
+	/* output protocol */
+	protocol ();
 
 #pragma omp parallel shared(sum)
 	{ /* Parallelized section */
