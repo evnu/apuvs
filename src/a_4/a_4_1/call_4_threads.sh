@@ -26,6 +26,7 @@ smallest () {
 
 ###### get maximum
 biggest () {
+	echo "The maximum function is _awefully_ broken!"
 	args=($(for i in $*; do echo $i; done | sort -n | rev))
 	echo ${args[0]}
 }
