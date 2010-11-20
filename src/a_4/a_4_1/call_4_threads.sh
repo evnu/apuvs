@@ -24,6 +24,12 @@ smallest () {
 	echo ${args[0]}
 }
 
+###### get maximum
+biggest () {
+	args=($(for i in $*; do echo $i; done | sort -n | rev))
+	echo ${args[0]}
+}
+
 ###### calculate mean
 average () {
 	args=$(for i in $*; do echo $i; done | \
@@ -46,6 +52,7 @@ do
 	done |grep TIME | sed 's/TIME: //g'
 	)
 	echo $num_threads $size $(smallest $evaluation) >> $DATADIR/"4_summation.smallest".dat
+	echo $num_threads $size $(smallest $evaluation) >> $DATADIR/"4_summation.biggest".dat
 	echo $num_threads $size $(median $evaluation) >> $DATADIR/"4_summation.median".dat
 	echo $num_threads $size $(average $evaluation) >> $DATADIR/"4_summation".dat
 done
@@ -65,6 +72,7 @@ arraysize=$(seq 0 100 10000)
 		done |grep TIME| sed 's/TIME: //g'
 		)
 		echo $num_threads $size $(smallest $evaluation) >> $DATADIR/"4_ascending.smallest.dat"
+		echo $num_threads $size $(smallest $evaluation) >> $DATADIR/"4_ascending.biggest.dat"
 		echo $num_threads $size $(median $evaluation) >> $DATADIR/"4_ascending.median".dat
 		echo $num_threads $size $(average $evaluation) >> $DATADIR/"4_ascending".dat
 	done
