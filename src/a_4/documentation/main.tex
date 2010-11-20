@@ -54,11 +54,17 @@ Cached:           541128 kB
 \begin{itemize}
 	\item Quelltexte vgl. \pageref{src:sum} und \pageref{src:ascend}
 	\item Stabilstes Ergebnis: 2-3 Threads.
+	\item Mittelwert nicht verlässlich, Median auch etwas irreführend, keine ausführliche
+		statistische Betrachtung.
 	\item Mit 4 kann schneller sein, hat aber oft sehr starke Ausreißer --- daher nützt
 		Mittelwertstimmung zur Abschätzung der Leistung auch relativ wenig (Varianz zu groß)
 	\item Zeitanstieg annähernd linear. Anzahl der Threads bringt nur geringen Gewinn, mehr
 		als 4 Threads werfen das Programm auf einen ähnlichen Zeitverbrauch wie bei der
 		Verwendung nur eines Threads zurück.
+		\begin{itemize}
+			\item Vergleich besonders Graph zu aufsteigender Zahlenfolge: Ausbruch erscheint bei
+				ca. 4k und 8k.. Cachelines?
+		\end{itemize}
 	\item Muster in Graphik deutet auf starke Varianz hin, ähnelt aber dem Graph bei
 		Verwendung der schnellsten Zeit (nicht beigefügt)
 \end{itemize}
@@ -109,9 +115,9 @@ Cached:           541128 kB
 \end{figure}
 
 
-\pagebreak
-\section*{Quelltexte}
-\subsection*{Aufgabe 4.1}
+\clearpage
+\section{Quelltexte}
+\subsection{Aufgabe 4.1}
 \subsubsection{Einfache Summation}
 \label{src:sum}
 \lstinputlisting{../a_4_1/summation.c}
