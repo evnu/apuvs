@@ -1,0 +1,33 @@
+# plot the data for fixed number of threads
+set key below
+
+set title "TITLE"
+
+set xlabel "Size of array in bytes"
+set ylabel "ms"
+
+# erase axes
+set border 3
+set xtics nomirror
+set ytics nomirror
+
+# lets define some colours..
+set style line 1 lt 1 lc rgb "red" lw 3
+set style line 2 lt 1 lc rgb "orange" lw 2
+set style line 3 lt 1 lc rgb "yellow" lw 3
+set style line 4 lt 1 lc rgb "green" lw 2
+
+set terminal postscript eps enhanced color
+
+# we don't want any restrictions here
+set output 'graphs/FILENAME2.eps'
+plot "data/FILE.biggest.dat" ls 3 w linespoints t "Slowest of 30 runs"
+
+set output 'graphs/FILENAME3.eps'
+plot "data/FILE.dat" ls 3 w linespoints t "Average execution time of 30 runs"
+
+
+set yrange [0.4:2] # fix size
+set output 'graphs/FILENAME1.eps'
+plot "data/FILE.smallest.dat" ls 1 w linespoints t "Fastest of 30 run", \
+     "data/FILE.median.dat"   ls 2 w linespoints t "Median of 30 runs"
