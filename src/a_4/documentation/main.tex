@@ -167,12 +167,69 @@ die Ausführungszeit, sondern auch die Problemgröße.
 	\label{fig:summation_4threads_slowest}
 \end{figure}
 \clearpage
+
+\section*{Aufgabe 4.2}
+Die Dining Philosophers wurden mit Java und \verb|synchronized| Methoden
+implementiert (siehe Quelltexte \ref{src:java}. Das Programm produziert ein
+Deadlock. Zur Auflösung des Deadlocks ist bereits ein Codefragment im Quelltext
+\ref{src:java} vorbereitet und kommentiert. 
+Der Deadlock wird hervor gerufen, da alle Philosophen als erstes versuchen die
+linke Gabel aufzunehmen. Haben sie dies geschafft, versuchen sie dir rechte
+Gabel aufzunehmen. Da die Methode \verb|Fork.take()| die private
+synchronized-Methode \verb|Fork.changeStatus()| aufruft sobald die Gabel
+verfügbar ist (und so lange eine busy-wait macht), sind alle 4
+Coffman-Bedingungen erfüllt:\\
+\begin{tabular}{lp{11cm}}
+  No Preemption     & Die Philosophen müssen selbst die Gabeln wieder freigeben \\
+  Hold and Wait     & Hat ein Philosoph die linke Gabel aufgenommen, behält er sie solange, bis er auch die rechte Gabel hat um zu essen. \\
+  Mutual Exclusion  & Jede Gabel kann nur im Besitz eines Philosophen sein. \\
+  Circular Wait     & Die zirkuläre Abhängigkeit ist natürlich im Problem der speisenden Philosophen gegeben und durch die runde Tafel illustiert.
+\end{tabular} \\
+Der Deadlock ist sehr leicht zu vermeiden. Wie im Quelltext beschrieben ist es
+ausreichend, vor dem Aufnehmen der rechten Gabel zu testen, ob diese in
+Benutzung ist. Ist sie weg, wird auch die linke Gabel wieder auf den Tisch
+gelegt. Damit ist die Hold-and-Wait Bedingung gebrochen und es kann nicht mehr
+zu einem Deadlock kommen. Es kann allerdings dazu kommen, dass ein Philosoph
+verhungert.
+Der Ablauf mit Deadlock \footnote{die Aufrufe von sleep() erzeugen den Deadlock
+gleich am Anfang, sonst dauert es unter Umständen sehr lange}:
+\begin{verbatim}
+Machiaveli got his left fork\ldotsWOOHOO
+Russel got his left fork\ldotsWOOHOO
+Leibnitz got his left fork\ldotsWOOHOO
+Kant got his left fork\ldotsWOOHOO
+Sokrates got his left fork\ldotsWOOHOO
+\end{verbatim}
+Ohne Deadlock ist ein mögliches Ablaufprotokoll:
+\begin{verbatim}
+Machiaveli got his left fork\ldotsWOOHOO
+Russel got his left fork\ldotsWOOHOO
+Leibnitz got his left fork\ldotsWOOHOO
+Kant got his left fork\ldotsWOOHOO
+Sokrates got his left fork\ldotsWOOHOO
+Machiaveli puts his left fork down\ldots.right fork is used
+Leibnitz puts his left fork down\ldots.right fork is used
+Russel got his right fork\ldotsWOOHOO
+Russel is eating\ldotsnomnomnomnomnomnomnomnomnomnomn
+Sokrates puts his left fork down\ldots.right fork is used
+Kant puts his left fork down\ldots.right fork is used
+Leibnitz got his left fork\ldotsWOOHOO
+Sokrates got his left fork\ldotsWOOHOO
+Kant got his left fork\ldotsWOOHOO
+Leibnitz puts his left fork down\ldots.right fork is used
+Sokrates puts his left fork down\ldots.right fork is used
+Kant got his right fork\ldotsWOOHOO
+Kant is eating\ldotsnomnomnomnomnomnomnomnomnomnomn
+Russel puts down his dirty forks
+Russel got his left fork\ldotsWOOHOO
+Leibnitz got his left fork\ldotsWOOHOO
+\end{verbatim}
 \section{Quelltexte}
 \subsection{Aufgabe 4.1}
 \subsubsection{Aufrufskript}
 \label{src:call}
 \lstinputlisting[language=Bash]{../a_4_1/call.sh}
-
+ 
 \subsubsection{Einfache Summation}
 \label{src:sum}
 \lstinputlisting{../a_4_1/summation.c}
@@ -189,5 +246,10 @@ die Ausführungszeit, sondern auch die Problemgröße.
 \label{src:basic}
 \lstinputlisting{../a_4_1/basic_functions.h}
 \lstinputlisting{../a_4_1/basic_functions.c}
-
+\subsection{Aufgabe 4.2}
+\subsubsection{Java Quelltexte}
+\label{src:java}
+\lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Main.java}
+\lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Fork.java}
+\lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Philosopher.java}
 \end{document}
