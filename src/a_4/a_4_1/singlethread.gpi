@@ -21,13 +21,13 @@ set terminal postscript eps enhanced color
 
 # we don't want any restrictions here
 set output 'graphs/FILENAME2.eps'
-plot "data/FILE.biggest.dat" ls 3 w linespoints t "Slowest of 30 runs"
+plot "data/FILE.biggest.dat" ls 2 w points t "Slowest of 30 runs"
 
 set output 'graphs/FILENAME3.eps'
-plot "data/FILE.dat" ls 3 w linespoints t "Average execution time of 30 runs"
+plot "data/FILE.dat" ls 2 w points t "Average execution time of 30 runs"
 
 
 set yrange [0.4:2] # fix size
 set output 'graphs/FILENAME1.eps'
-plot "data/FILE.smallest.dat" ls 1 w linespoints t "Fastest of 30 run", \
-     "data/FILE.median.dat"   ls 2 w linespoints t "Median of 30 runs"
+plot "data/FILE.smallest.dat" ls 1 w points t "Fastest of 30 run", \
+     "data/FILE.median.dat"   ls 2 w points t "Median of 30 runs"
