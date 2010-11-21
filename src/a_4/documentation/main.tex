@@ -51,23 +51,54 @@ Cached:           541128 kB
 [...]
 \end{verbatim}
 
+\subsubsection*{1.}
+Auf unserem Testsystem werden standardmäßig 4 Threads verwendet. Dies entspricht auch der
+in \url{http://ark.intel.com/Product.aspx?id=47341} angegebenen Anzahl von gleichzeitig
+möglichen Threads (wobei hierbei Hyperthreading genutzt wird und nicht echte
+Parallelität auf 4 Kernen).
+
+\subsubsection*{2.}
+Unser Aufrufskript \verb|call.sh| auf Seite \pageref{src:call} ruft zwei Programme auf:
 \begin{itemize}
-	\item Quelltexte vgl. \pageref{src:sum} und \pageref{src:ascend}
-	\item Stabilstes Ergebnis: 2-3 Threads.
-	\item Mittelwert nicht verlässlich, Median auch etwas irreführend, keine ausführliche
-		statistische Betrachtung.
-	\item Mit 4 kann schneller sein, hat aber oft sehr starke Ausreißer --- daher nützt
-		Mittelwertstimmung zur Abschätzung der Leistung auch relativ wenig (Varianz zu groß)
-	\item Zeitanstieg annähernd linear. Anzahl der Threads bringt nur geringen Gewinn, mehr
-		als 4 Threads werfen das Programm auf einen ähnlichen Zeitverbrauch wie bei der
-		Verwendung nur eines Threads zurück.
-		\begin{itemize}
-			\item Vergleich besonders Graph zu aufsteigender Zahlenfolge: Ausbruch erscheint bei
-				ca. 4k und 8k.. Cachelines?
-		\end{itemize}
-	\item Muster in Graphik deutet auf starke Varianz hin, ähnelt aber dem Graph bei
-		Verwendung der schnellsten Zeit (nicht beigefügt)
+	\item \verb|summation|, vgl. Seite \pageref{src:sum}
+	\item \verb|summation_ascending_nums|, vgl. Seite \pageref{src:ascend}
 \end{itemize}
+
+\verb|summation| führt die in der Aufgabenstellung beschriebene Berechnung durch
+(Summation $\sum_{i=1}^{n} 1 = n$). \verb|summation_ascending_nums| berechnet hingegen
+$\sum_{i=1}^{n} i = \frac{n (n+1)}{2}$. \\
+
+Überraschenderweise kommt es bei beiden Programmen zu großen Unterschieden in den
+Laufzeiten, je nach Anzahl von Threads und Arraygröße. Die Diagramme \ref{fig:summation_1_3},
+\ref{fig:summation_4_6} und \ref{fig:summation_7_10} stellen für \verb|summation| den
+Median der Durchlaufzeiten von 30 Durchläufen dar, wobei jeder Durchlauf eine Summation eines
+Arrays mit gegebener Anzahl an Elementen und mit einer festen Anzahl von Threads (gesetzt
+über \verb|omp_set_num_threads()|) durchführt. Für \verb|summation_ascending_nums| sind dies
+entsprechend die Abbildungen \ref{fig:ascending_1_3}, \ref{fig:ascending_4_6} und
+\ref{fig:ascending_7_10}. Wir haben hier mit Absicht die Darstellung des Medians gewählt,
+da eine Durchschnittsbildung aufgrund der sehr großen Varianz der Ausführungszeiten zu
+stark durch Ausreißer dominiert wird. \\
+Betrachtet man hierzu die Abbildungen \ref{fig:summation_4threads_avg},
+\ref{fig:summation_4threads_slowest} und \ref{fig:summation_4threads_median}, so ergibt
+sich, dass die Ausführung von \verb|summation| bei Verwendung von 4 Threads
+\emph{oft} schneller ist als bei einer anderen Anzahl von Threads. Jedoch kommt es immer wieder zu sehr starken
+Ausreißern, wie in Abbildung \ref{fig:summation_4threads_slowest} dargestellt wird. Durch
+Ausreißer im zweistelligen Millisekundenbereich (und somit einem Unterschied in mehreren
+Größenordnungen) wird der Durchschnittswert zu sehr verfälscht, als dass dieser noch eine
+starke Aussagekraft hätte.\\
+Trotz der mehrfachen Ausführung jedes einzelnen Aufrufs (jeder Aufruf wird 30 mal
+wiederholt, siehe Aufrufskript Seite \pageref{src:call}) können temporäre Seiteneffekte
+nicht ausgeschlossen werden. \\
+Anhand des Medians lässt sich aber mit einiger Sicherheit festhalten, dass die
+Verwendung von vier Threads auf der gegebenen Testmaschine zumeist das schnellste Ergebnis
+liefert. Bei wachsender Arraygröße benötigt das Programm in der Ausführung auch mehr Zeit.
+Wie in den Abbildungen zu sehen ist, ist das Anstieg aber nahezu linear. Wie in Abbildung
+\ref{fig:summation_4_6} benötigt die Ausführung von \verb|summation| mit 4 Threads am
+wenigsten Zeit, wobei bei kleineren Arraygrößen (vgl. hierzu die Diagramme zu den
+Ausführungszeiten von \verb|summation_ascending_nums|) die Verwendung eines einzelnen
+Threads durchaus noch schneller sein kann. Somit bestimmt nicht nur die Anzahl der Threads
+die Ausführungszeit, sondern auch die Problemgröße.
+
 
 % some graphs
 \begin{figure}[!h]
@@ -114,10 +145,34 @@ Cached:           541128 kB
 	\label{fig:ascending_7_10}
 \end{figure}
 
-
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{../a_4_1/graphs/4_summation_average.eps}
+	\end{center}
+	\caption{Summation mit 4 Threads, hohe Auflösung}
+	\label{fig:summation_4threads_avg}
+\end{figure}
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{../a_4_1/graphs/4_summation_fastestandmedian.eps}
+	\end{center}
+	\caption{Summation mit 4 Threads, hohe Auflösung, schnellster Run und Median}
+	\label{fig:summation_4threads_median}
+\end{figure}
+\begin{figure}[!h]
+	\begin{center}
+		\includegraphics[width=0.5\textwidth]{../a_4_1/graphs/4_summation_slowest.eps}
+	\end{center}
+	\caption{Summation mit 4 Threads, hohe Auflösung, langsamster Run}
+	\label{fig:summation_4threads_slowest}
+\end{figure}
 \clearpage
 \section{Quelltexte}
 \subsection{Aufgabe 4.1}
+\subsubsection{Aufrufskript}
+\label{src:call}
+\lstinputlisting[language=Bash]{../a_4_1/call.sh}
+
 \subsubsection{Einfache Summation}
 \label{src:sum}
 \lstinputlisting{../a_4_1/summation.c}
