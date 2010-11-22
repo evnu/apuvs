@@ -194,36 +194,57 @@ verhungert.
 Der Ablauf mit Deadlock \footnote{die Aufrufe von sleep() erzeugen den Deadlock
 gleich am Anfang, sonst dauert es unter Umständen sehr lange}:
 \begin{verbatim}
-Machiaveli got his left fork\ldotsWOOHOO
-Russel got his left fork\ldotsWOOHOO
-Leibnitz got his left fork\ldotsWOOHOO
-Kant got his left fork\ldotsWOOHOO
-Sokrates got his left fork\ldotsWOOHOO
+Machiaveli got his left fork...WOOHOO
+Russel got his left fork...WOOHOO
+Leibnitz got his left fork...WOOHOO
+Kant got his left fork...WOOHOO
+Sokrates got his left fork...WOOHOO
 \end{verbatim}
 Ohne Deadlock ist ein mögliches Ablaufprotokoll:
 \begin{verbatim}
-Machiaveli got his left fork\ldotsWOOHOO
-Russel got his left fork\ldotsWOOHOO
-Leibnitz got his left fork\ldotsWOOHOO
-Kant got his left fork\ldotsWOOHOO
-Sokrates got his left fork\ldotsWOOHOO
-Machiaveli puts his left fork down\ldots.right fork is used
-Leibnitz puts his left fork down\ldots.right fork is used
-Russel got his right fork\ldotsWOOHOO
-Russel is eating\ldotsnomnomnomnomnomnomnomnomnomnomn
-Sokrates puts his left fork down\ldots.right fork is used
-Kant puts his left fork down\ldots.right fork is used
-Leibnitz got his left fork\ldotsWOOHOO
-Sokrates got his left fork\ldotsWOOHOO
-Kant got his left fork\ldotsWOOHOO
-Leibnitz puts his left fork down\ldots.right fork is used
-Sokrates puts his left fork down\ldots.right fork is used
-Kant got his right fork\ldotsWOOHOO
-Kant is eating\ldotsnomnomnomnomnomnomnomnomnomnomn
+Machiaveli got his left fork...WOOHOO
+Russel got his left fork...WOOHOO
+Leibnitz got his left fork...WOOHOO
+Kant got his left fork...WOOHOO
+Sokrates got his left fork...WOOHOO
+Machiaveli puts his left fork down....right fork is used
+Leibnitz puts his left fork down....right fork is used
+Russel got his right fork...WOOHOO
+Russel is eating...nomnomnomnomnomnomnomnomnomnomn
+Sokrates puts his left fork down....right fork is used
+Kant puts his left fork down....right fork is used
+Leibnitz got his left fork...WOOHOO
+Sokrates got his left fork...WOOHOO
+Kant got his left fork...WOOHOO
+Leibnitz puts his left fork down....right fork is used
+Sokrates puts his left fork down....right fork is used
+Kant got his right fork...WOOHOO
+Kant is eating...nomnomnomnomnomnomnomnomnomnomn
 Russel puts down his dirty forks
-Russel got his left fork\ldotsWOOHOO
-Leibnitz got his left fork\ldotsWOOHOO
+Russel got his left fork...WOOHOO
+Leibnitz got his left fork...WOOHOO
 \end{verbatim}
+\section*{Aufgabe 4.3}
+Vorteile von \emph{DRAGON} gegenüber \emph{MESI}:
+\begin{itemize}
+	\item Kürzere Zugriffszeit: Da bei einer Schreiboperation Werte immer in allen Caches
+		geändert werden, können Daten in den Caches nicht ungültig werden. Dadurch kommt es 
+		nicht zu späteren cachemisses.\footnote{Falls ein Datum nicht geteilt wird, also nur
+		ein Prozessor dieses im Cache haben will, dann muss kein Update durchgeführt werden.
+		Vergleiche hierzu Folie 27.}
+	\item \emph{DRAGON} spart Bandbreite gegenüber \emph{MESI}: Da bei einem Update nur das
+		eigentliche Datum auf den Bus gegeben werden muss,\footnote{Vgl. vorherige Fußnote} und nicht der gesamte Block wie bei
+		\emph{MESI}, wird weniger Bandbreite "`verschwendet"'.
+\end{itemize}
+
+Neben den genannten Vorteilen hat \emph{DRAGON} aber auch Nachteile:
+\begin{itemize}
+	\item Unmittelbar aufeinanderfolgende Schreiboperationen eines Prozessors erzeugen unter
+		Umständen mehrere Update-Transaktionen (da die Daten über verschiedene Caches "`synchronisiert"`
+		werden müssen). Dies steht im Gegensatz zu \emph{MESI}, da ein Prozessor bei
+		\emph{MESI} exklusives Schreibrecht hat und dieses behält, bis ein anderer Prozessor
+		das exklusive Schreibrecht erhält.
+\end{itemize}
 \section{Quelltexte}
 \subsection{Aufgabe 4.1}
 \subsubsection{Aufrufskript}
@@ -252,4 +273,5 @@ Leibnitz got his left fork\ldotsWOOHOO
 \lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Main.java}
 \lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Fork.java}
 \lstinputlisting[language=Java]{../a_4_2/diningphilosophers/Philosopher.java}
+
 \end{document}
