@@ -1,0 +1,17 @@
+Um an die Verbreitung der Programmiersprache C anzuknüpfen, wurde C++ als
+Erweiterung von C gemäß dem damaligen Stand von 1990 (ISO/IEC 9899:1990, auch
+kurz C90 genannt) entworfen.
+Die Kompatibilität mit C zwingt C++ aber auch zur Fortführung einiger dadurch
+übernommener Nachteile. Dazu zählt die teilweise schwer verständliche C-Syntax,
+der als überholt geltende Präprozessor sowie verschiedene von der jeweiligen
+Plattform abhängige Details der Sprache. Plattformabhängigkeiten erschweren die
+Portierung von C++-Programmen zwischen unterschiedlichen Rechnertypen,
+Betriebssystemen und Compilern.
+Die letzten Änderungen an C fanden im Jahr 1999 statt (ISO/IEC 9899:1999, auch
+kurz C99 genannt), also nach der Normung von C++, sodass dort eingeflossene
+Änderungen nicht in C++ berücksichtigt werden konnten. C-Compiler, die den Stand
+der ISO-Norm von 1999 umsetzen, sind aber noch nicht sehr verbreitet. Die
+theoretisch dadurch entstandenen Inkompatibilitäten spielen deshalb in der
+Praxis bislang keine große Rolle. Um dennoch einem Auseinanderdriften der
+Sprachen vorzubeugen, werden die Spracherweiterungen von C bei der in Arbeit
+befindlichen C++-Version berücksichtigt.

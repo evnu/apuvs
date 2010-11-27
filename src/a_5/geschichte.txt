@@ -1,0 +1,49 @@
+C++ wurde von Bjarne Stroustrup ab 1979 in den AT&T Bell Laboratories
+entwickelt. Ausgangspunkt waren Untersuchungen des UNIX-Betriebssystemkerns in
+Bezug auf verteiltes Rechnen.
+Auf die Idee für eine neue Programmiersprache war Stroustrup schon durch
+Erfahrungen mit der Programmiersprache Simula im Rahmen seiner Doktorarbeit an
+der Cambridge University gekommen. Simula erschien zwar geeignet für den Einsatz
+in großen Software-Projekten, die Struktur der Sprache erschwerte aber die für
+viele praktische Anwendungen erforderliche Erzeugung hocheffizienter Programme.
+Demgegenüber ließen sich effiziente Programme zwar mit der Sprache BCPL
+schreiben, für große Projekte war BCPL aber wiederum ungeeignet.
+Mit den Erfahrungen aus seiner Doktorarbeit erweiterte Stroustrup nun die
+Programmiersprache C um ein Klassenkonzept, für das die Sprache Simula-67 das
+primäre Vorbild war. Die Wahl fiel auf die Programmiersprache C, eine
+Mehrzwecksprache, die schnellen Code produzierte und einfach auf andere
+Plattformen zu portieren war. Als dem Betriebssystem UNIX beiliegende Sprache
+hatte C außerdem eine nicht unerhebliche Verbreitung. Zunächst fügte er der
+Sprache Klassen (mit Datenkapselung) hinzu, dann abgeleitete Klassen, ein
+strengeres Typsystem, Inline-Funktionen und Standard-Argumente.
+Während Stroustrup „C with Classes“ („C mit Klassen“) entwickelte (woraus später
+C++ wurde), schrieb er auch cfront, einen Compiler, der aus C with Classes
+zunächst C-Code als Zwischenresultat erzeugte. Die erste kommerzielle Version
+von cfront erschien im Oktober 1985.
+1983 wurde C with Classes in C++ umbenannt. Erweiterungen darin waren: virtuelle
+Funktionen, Überladen von Funktionsnamen und Operatoren, Referenzen, Konstanten,
+änderbare Freispeicherverwaltung und eine verbesserte Typüberprüfung. Die
+Möglichkeit von Kommentaren, die an das Zeilenende gebunden sind, wurde wieder
+aus BCPL übernommen (//).
+1985 erschien die erste Version von C++, die eine wichtige Referenzversion
+darstellte, da die Sprache damals noch nicht standardisiert war. 1989 erschien
+die Version 2.0 von C++. Neu darin waren Mehrfachvererbung, abstrakte Klassen,
+statische Elementfunktionen, konstante Elementfunktionen und die Erweiterung des
+Schutzmodells um protected. 1990 erschien das Buch The Annotated C++ Reference
+Manual, das als Grundlage für den darauffolgenden Standardisierungsprozess
+diente.
+Relativ spät wurden der Sprache Templates, Ausnahmebehandlung, Namensräume,
+neuartige Typumwandlungen und Boolesche Typen hinzugefügt.
+Im Zuge der Weiterentwicklung der Sprache C++ entstand auch eine gegenüber C
+erweiterte Standardbibliothek. Erste Ergänzung war die Stream-I/O-Bibliothek,
+die Ersatz für traditionelle C-Funktionen wie zum Beispiel printf() und scanf()
+bietet. Eine der wesentlichen Erweiterungen der Standardbibliothek kam später
+durch die Integration großer Teile der bei Hewlett-Packard entwickelten Standard
+Template Library (STL) hinzu.
+Nach jahrelanger Arbeit wurde schließlich 1998 die endgültige Fassung der
+Sprache C++ (ISO/IEC 14882:1998) genormt. 2003 wurde ISO/IEC 14882:2003
+verabschiedet, eine Nachbesserung der Norm von 1998.
+Die vorhandenen Performance-Probleme der Sprache C++, die Rechenzeit und
+Speicherplatz betreffen, werden auf hohem Niveau zusammen mit Lösungen im
+Technical Report ISO/IEC TR 18015:2006 diskutiert. Das Dokument ist zum Download
+von ISO freigegeben.
