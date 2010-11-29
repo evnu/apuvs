@@ -30,7 +30,7 @@ using namespace std;
  */
 void Tokenize(const string &str, vector<string> &tokens){
 
-    const string delimiters = " \n\t.,;:-+/?!()[]";
+    const string delimiters = " \"\n\t.,;:-+/?!()[]";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
     string::size_type tokenEnd = str.find_first_of(delimiters, tokenBegin);
@@ -46,7 +46,7 @@ void Tokenize(const string &str, vector<string> &tokens){
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  map
+ *         Name:  mapFile
  *  Description:  opens file and processes it line by line; emits vector of
  *  <word,1> maps
  * =====================================================================================
@@ -89,10 +89,45 @@ printMap ( multimap<string, int> &toPrint)
 
 /* 
  * ===  FUNCTION  ======================================================================
+ *         Name:  mapSize
+ *  Description:  calculate size of map including \n for each key and value
+ * =====================================================================================
+ */
+    int
+mapSize ( multimap<string, int> toCount )
+{
+    multimap<string,int>::iterator it;
+    int size = 0;
+    for ( it=toCount.begin() ; it != toCount.end(); it++ ){
+        size += (*it).first.length() * sizeof(char) + 1;
+        size += sizeof((*it).second) + sizeof(char);
+    }
+    return size;
+}		/* -----  end of function mapSize  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  serializeMap
+ *  Description:  
+ * =====================================================================================
+ */
+    void
+serializeMap ( multimap<string, int> &toSerialize, string &serialized )
+{
+    multimap<string,int>::iterator it;
+    for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
+        serialized +=  (*it).first + "\n";
+    }
+    return ;
+}		/* -----  end of function serializeMap  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
  *         Name:  main
  *  Description:  checks cl-arguments and does all MPI stuff
  * =====================================================================================
  */
+
     int
 main ( int argc, char *argv[] )
 {
@@ -120,7 +155,11 @@ main ( int argc, char *argv[] )
         // apply map
         multimap<string, int> countedWords;
         mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-        printMap(countedWords);
+        printMap( countedWords );
+        cout << "Mapsize is " << mapSize( countedWords ) << endl;
+        string serialMap = "";
+        serializeMap( countedWords, serialMap );
+        cout << serialMap << endl;
         // reduce
         // done
     }
