@@ -22,7 +22,6 @@
 
 using namespace std;
 
-
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  Tokenize
@@ -44,6 +43,49 @@ void Tokenize(const string &str, vector<string> &tokens){
         tokenEnd = str.find_first_of(delimiters, tokenBegin);
     }
 }
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  map
+ *  Description:  opens file and processes it line by line; emits vector of
+ *  <word,1> maps
+ * =====================================================================================
+ */
+    void
+mapFile ( char* fileName, multimap<string,int> &outputMap )
+{
+    string line;
+    cout << fileName << endl;
+    ifstream file(fileName);
+    if(file.is_open()){
+        while( getline( file, line ) ){
+            vector<string> token;
+            Tokenize( line, token);
+            
+            for(vector<string>::iterator i = token.begin(); i != token.end(); i++){
+                outputMap.insert(pair<string, int>(*i, 1));
+            }
+        }
+    }
+
+
+    return ;
+}		/* -----  end of function map  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  printMap
+ *  Description:  just for debuging
+ * =====================================================================================
+ */
+    void
+printMap ( multimap<string, int> &toPrint)
+{
+    multimap<string,int>::iterator it;
+    for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
+            cout << (*it).first << " => " << (*it).second << endl;
+    return ;
+}		/* -----  end of function printMap  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -74,32 +116,11 @@ main ( int argc, char *argv[] )
     //partition quick and quite dirty ;) but should work
     for(int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
         //cout << myID << ": i have file " << argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)] << endl; 
-        // open files and read content
-        int fileLength = 0;
-        char *buffer;
-
-        ifstream file(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)]);
-        if(file.is_open()){
-            //find out length of file
-            file.seekg(0, ios::end);
-            fileLength = file.tellg();
-            file.seekg (0, ios::beg);
-            //create apropriate buffer
-            buffer = new char[fileLength];
-
-            //read the whole file as a block
-            file.read(buffer, fileLength);
-            file.close();
-        }
-
-        //tokenize
-        vector<string> tokens;
-        Tokenize(buffer, tokens);
-        for(vector<string>::iterator i = tokens.begin(); i != tokens.end(); i++){
-            cout << *i << endl;
-        }
 
         // apply map
+        multimap<string, int> countedWords;
+        mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
+        printMap(countedWords);
         // reduce
         // done
     }
