@@ -55,7 +55,6 @@ void Tokenize(const string &str, vector<string> &tokens){
 mapFile ( char* fileName, multimap<string,int> &outputMap )
 {
     string line;
-    cout << fileName << endl;
     ifstream file(fileName);
     if(file.is_open()){
         while( getline( file, line ) ){
@@ -155,8 +154,8 @@ main ( int argc, char *argv[] )
         // apply map
         multimap<string, int> countedWords;
         mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-        printMap( countedWords );
-        cout << "Mapsize is " << mapSize( countedWords ) << endl;
+        //printMap( countedWords );
+        //cout << "Mapsize is " << mapSize( countedWords ) << endl;
         string serialMap = "";
         serializeMap( countedWords, serialMap );
         cout << serialMap << endl;
