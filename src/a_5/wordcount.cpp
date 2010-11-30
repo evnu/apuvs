@@ -20,6 +20,8 @@
 #include <mpi.h>
 #include <stdlib.h>
 
+#define NUMBEROFDIGITSINANINTEGER 11
+
 using namespace std;
 
 /* 
@@ -70,7 +72,6 @@ void mapFile ( char* fileName, map<string,int> &outputMap )
         }
     }
 
-
     return ;
 }		/* -----  end of function map  ----- */
 
@@ -111,15 +112,20 @@ int mapSize ( map<string, int> toCount )
  *  Description:  
  * =====================================================================================
  */
-void serializeMap ( map<string, int> &toSerialize, string &serialized )
+string serializeMap ( map<string, int> &toSerialize )
 {
-    map<string,int>::iterator it;
-    for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
+		char * buf = new char[NUMBEROFDIGITSINANINTEGER];//calloc (NUMBEROFDIGITSINANINTEGER, sizeof(char));
+		string serialized;
+    for ( map<string,int>::iterator it=toSerialize.begin(); 
+					it != toSerialize.end(); it++ )
+		{
         serialized += (*it).first + "\n";
-        serialized += "1\n";
-        //serialized += (*it).second + "\n";
+				sprintf (buf, "%d\n", (*it).second);
+        serialized += buf;
     }
-    return ;
+
+		delete[] buf;
+		return serialized;
 }		/* -----  end of function serializeMap  ----- */
 
 /* 
@@ -158,8 +164,8 @@ int main ( int argc, char *argv[] )
     }
     printMap( countedWords );
     //cout << "Mapsize is " << mapSize( countedWords ) << endl;
-    string serialMap = "";
-    serializeMap( countedWords, serialMap );
+    string serialMap = serializeMap( countedWords );
+		cout << serialMap << endl;
     //cout << serialMap << endl;
     // reduce
     // done
