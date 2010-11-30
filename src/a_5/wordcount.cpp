@@ -52,8 +52,9 @@ void Tokenize(const string &str, vector<string> &tokens){
  * =====================================================================================
  */
     void
-mapFile ( char* fileName, multimap<string,int> &outputMap )
+mapFile ( char* fileName, map<string,int> &outputMap )
 {
+    pair<map<string,int>::iterator,bool> ret;
     string line;
     ifstream file(fileName);
     if(file.is_open()){
@@ -62,7 +63,10 @@ mapFile ( char* fileName, multimap<string,int> &outputMap )
             Tokenize( line, token);
             
             for(vector<string>::iterator i = token.begin(); i != token.end(); i++){
-                outputMap.insert(pair<string, int>(*i, 1));
+                ret = outputMap.insert(pair<string, int>(*i, 1));
+                if(!ret.second){
+                    (*(ret.first)).second++;
+                }
             }
         }
     }
@@ -78,9 +82,9 @@ mapFile ( char* fileName, multimap<string,int> &outputMap )
  * =====================================================================================
  */
     void
-printMap ( multimap<string, int> &toPrint)
+printMap ( map<string, int> &toPrint)
 {
-    multimap<string,int>::iterator it;
+    map<string,int>::iterator it;
     for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
             cout << (*it).first << " => " << (*it).second << endl;
     return ;
@@ -93,9 +97,9 @@ printMap ( multimap<string, int> &toPrint)
  * =====================================================================================
  */
     int
-mapSize ( multimap<string, int> toCount )
+mapSize ( map<string, int> toCount )
 {
-    multimap<string,int>::iterator it;
+    map<string,int>::iterator it;
     int size = 0;
     for ( it=toCount.begin() ; it != toCount.end(); it++ ){
         size += (*it).first.length() * sizeof(char) + 1;
@@ -111,9 +115,9 @@ mapSize ( multimap<string, int> toCount )
  * =====================================================================================
  */
     void
-serializeMap ( multimap<string, int> &toSerialize, string &serialized )
+serializeMap ( map<string, int> &toSerialize, string &serialized )
 {
-    multimap<string,int>::iterator it;
+    map<string,int>::iterator it;
     for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
         serialized += (*it).first + "\n";
         serialized += "1\n";
@@ -154,7 +158,7 @@ main ( int argc, char *argv[] )
         //cout << myID << ": i have file " << argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)] << endl; 
 
         // apply map
-        multimap<string, int> countedWords;
+        map<string, int> countedWords;
         mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
         printMap( countedWords );
         //cout << "Mapsize is " << mapSize( countedWords ) << endl;
