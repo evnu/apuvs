@@ -114,29 +114,6 @@ int mapSize (map<string, int> toCount)
     return size;
 }		/* -----  end of function mapSize  ----- */
 
-/* 
- * ===  FUNCTION  ======================================================================
- *         Name:  serializeMap
- *  Description:  
- * =====================================================================================
- */
-string serializeMap (map<string, int> &toSerialize)
-{
-		char * buf = new char[NUMBEROFDIGITSINANINTEGER];//calloc (NUMBEROFDIGITSINANINTEGER, sizeof(char));
-		string serialized;
-    for (map<string,int>::iterator it=toSerialize.begin(); 
-					it != toSerialize.end(); it++)
-		{
-        serialized += (*it).first + "\n";
-				sprintf (buf, "%d\n", (*it).second);
-        serialized += buf;
-    }
-
-		delete[] buf;
-		return serialized;
-}		/* -----  end of function serializeMap  ----- */
-
-
 string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	string str (serialize.first);
 	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
