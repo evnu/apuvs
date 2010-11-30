@@ -128,6 +128,11 @@ string serializeMap ( map<string, int> &toSerialize )
 		return serialized;
 }		/* -----  end of function serializeMap  ----- */
 
+int wordToPE(string word, int *numPEs){
+	char first = *(word.c_str());
+	return (first - 'a') % *numPEs;
+}
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
