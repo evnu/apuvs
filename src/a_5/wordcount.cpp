@@ -13,16 +13,22 @@
  * =====================================================================================
  */
 
-#include <iostream>
-#include <fstream>
+#include <algorithm>
 #include <cassert>
-#include <vector>
+#include <fstream>
+#include <iostream>
 #include <mpi.h>
 #include <stdlib.h>
+#include <vector>
+#include <cctype>
+#include <string>
 
 #define NUMBEROFDIGITSINANINTEGER 11
 
 using namespace std;
+
+// prototypes
+string toLower (string);
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -39,7 +45,7 @@ void Tokenize(const string &str, vector<string> &tokens){
 
     while(string::npos != tokenBegin || string::npos != tokenEnd){
         //add token to vector
-        tokens.push_back(str.substr(tokenBegin, tokenEnd - tokenBegin));
+        tokens.push_back(toLower (str.substr(tokenBegin, tokenEnd - tokenBegin)));
         //and find new token
         tokenBegin = str.find_first_not_of(delimiters, tokenEnd);
         tokenEnd = str.find_first_of(delimiters, tokenBegin);
@@ -71,6 +77,7 @@ void mapFile ( char* fileName, map<string,int> &outputMap )
             }
         }
     }
+		// TODO Throw error if file not opened
 
     return ;
 }		/* -----  end of function map  ----- */
@@ -114,7 +121,7 @@ int mapSize ( map<string, int> toCount )
  */
 string serializeMap ( map<string, int> &toSerialize )
 {
-		char * buf = new char[NUMBEROFDIGITSINANINTEGER];//calloc (NUMBEROFDIGITSINANINTEGER, sizeof(char));
+		char * buf = new char[NUMBEROFDIGITSINANINTEGER];
 		string serialized;
     for ( map<string,int>::iterator it=toSerialize.begin(); 
 					it != toSerialize.end(); it++ )
@@ -127,6 +134,17 @@ string serializeMap ( map<string, int> &toSerialize )
 		delete[] buf;
 		return serialized;
 }		/* -----  end of function serializeMap  ----- */
+
+
+char convertMe (char c) {
+	return tolower (c);
+}
+
+string toLower (string str) {
+	std::transform (str.begin (), str.end (), str.begin (), convertMe);
+	return str;
+}
+
 
 /* 
  * ===  FUNCTION  ======================================================================
