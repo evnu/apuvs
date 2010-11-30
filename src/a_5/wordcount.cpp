@@ -51,8 +51,7 @@ void Tokenize(const string &str, vector<string> &tokens){
  *  <word,1> maps
  * =====================================================================================
  */
-    void
-mapFile ( char* fileName, multimap<string,int> &outputMap )
+void mapFile ( char* fileName, multimap<string,int> &outputMap )
 {
     string line;
     ifstream file(fileName);
@@ -77,8 +76,7 @@ mapFile ( char* fileName, multimap<string,int> &outputMap )
  *  Description:  just for debuging
  * =====================================================================================
  */
-    void
-printMap ( multimap<string, int> &toPrint)
+void printMap ( multimap<string, int> &toPrint)
 {
     multimap<string,int>::iterator it;
     for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
@@ -92,8 +90,7 @@ printMap ( multimap<string, int> &toPrint)
  *  Description:  calculate size of map including \n for each key and value
  * =====================================================================================
  */
-    int
-mapSize ( multimap<string, int> toCount )
+int mapSize ( multimap<string, int> toCount )
 {
     multimap<string,int>::iterator it;
     int size = 0;
@@ -110,8 +107,7 @@ mapSize ( multimap<string, int> toCount )
  *  Description:  
  * =====================================================================================
  */
-    void
-serializeMap ( multimap<string, int> &toSerialize, string &serialized )
+void serializeMap ( multimap<string, int> &toSerialize, string &serialized )
 {
     multimap<string,int>::iterator it;
     for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
@@ -129,8 +125,7 @@ serializeMap ( multimap<string, int> &toSerialize, string &serialized )
  * =====================================================================================
  */
 
-    int
-main ( int argc, char *argv[] )
+int main ( int argc, char *argv[] )
 {
     if(argc < 2){
         cout	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
