@@ -51,11 +51,7 @@ void Tokenize(const string &str, vector<string> &tokens){
  *  <word,1> maps
  * =====================================================================================
  */
-<<<<<<< HEAD
 void mapFile ( char* fileName, map<string,int> &outputMap )
-=======
-void mapFile ( char* fileName, multimap<string,int> &outputMap )
->>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     pair<map<string,int>::iterator,bool> ret;
     string line;
@@ -84,11 +80,7 @@ void mapFile ( char* fileName, multimap<string,int> &outputMap )
  *  Description:  just for debuging
  * =====================================================================================
  */
-<<<<<<< HEAD
 void printMap ( map<string, int> &toPrint)
-=======
-void printMap ( multimap<string, int> &toPrint)
->>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     map<string,int>::iterator it;
     for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
@@ -102,12 +94,7 @@ void printMap ( multimap<string, int> &toPrint)
  *  Description:  calculate size of map including \n for each key and value
  * =====================================================================================
  */
-<<<<<<< HEAD
-    int
-mapSize ( map<string, int> toCount )
-=======
-int mapSize ( multimap<string, int> toCount )
->>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
+int mapSize ( map<string, int> toCount )
 {
     map<string,int>::iterator it;
     int size = 0;
@@ -124,12 +111,7 @@ int mapSize ( multimap<string, int> toCount )
  *  Description:  
  * =====================================================================================
  */
-<<<<<<< HEAD
-    void
-serializeMap ( map<string, int> &toSerialize, string &serialized )
-=======
-void serializeMap ( multimap<string, int> &toSerialize, string &serialized )
->>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
+void serializeMap ( map<string, int> &toSerialize, string &serialized )
 {
     map<string,int>::iterator it;
     for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
