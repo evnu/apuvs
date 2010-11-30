@@ -92,8 +92,8 @@ void mapFile (char* fileName, map<string,int> &outputMap)
 void reduce ( string &toReduce, map<string, int> &reduced )
 {
     string delimiters = "\n";
-    string::size_type begin = str.find_first_not_of(delimiters, 0);
-    string::size_type end = str.find_first_of(delimiters, begin);
+    string::size_type begin = toReduce.find_first_not_of(delimiters, 0);
+    string::size_type end = toReduce.find_first_of(delimiters, begin);
 
     while(string::npos != begin || string::npos != end){
     }
