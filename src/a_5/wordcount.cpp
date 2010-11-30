@@ -83,6 +83,24 @@ void mapFile (char* fileName, map<string,int> &outputMap)
 
 /* 
  * ===  FUNCTION  ======================================================================
+ *         Name:  reduce
+ *  Description:  
+ * =====================================================================================
+ */
+void reduce ( string &toReduce, map<string, int> &reduced )
+{
+    string delimiters = "\n";
+    string::size_type begin = str.find_first_not_of(delimiters, 0);
+    string::size_type end = str.find_first_of(delimiters, begin);
+
+    while(string::npos != begin || string::npos != end){
+    }
+
+    return ;
+}		/* -----  end of function reduce  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
  *         Name:  printMap
  *  Description:  just for debuging
  * =====================================================================================
