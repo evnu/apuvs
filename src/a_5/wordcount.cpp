@@ -115,7 +115,9 @@ serializeMap ( multimap<string, int> &toSerialize, string &serialized )
 {
     multimap<string,int>::iterator it;
     for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
-        serialized +=  (*it).first + "\n";
+        serialized += (*it).first + "\n";
+        serialized += "1\n";
+        //serialized += (*it).second + "\n";
     }
     return ;
 }		/* -----  end of function serializeMap  ----- */
@@ -154,11 +156,11 @@ main ( int argc, char *argv[] )
         // apply map
         multimap<string, int> countedWords;
         mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-        //printMap( countedWords );
+        printMap( countedWords );
         //cout << "Mapsize is " << mapSize( countedWords ) << endl;
         string serialMap = "";
         serializeMap( countedWords, serialMap );
-        cout << serialMap << endl;
+        //cout << serialMap << endl;
         // reduce
         // done
     }
