@@ -78,8 +78,8 @@ void mapFile (char* fileName, map<string,int> &outputMap)
             }
         }
     }
-		// TODO Throw error if file not opened
-
+    else cout << "Couldn't open File: " << fileName << "\n";   
+    
     return ;
 }		/* -----  end of function map  ----- */
 
@@ -228,7 +228,7 @@ int main (int argc, char *argv[]) {
 		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
 			string &message = (*it).second;
 			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
-			cout << myID << " send " << (*it).first << " the following: " << (*it).second << endl;
+			cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
 		}
 
     //cout << "Mapsize is " << mapSize(countedWords) << endl;
