@@ -13,6 +13,7 @@
  * =====================================================================================
  */
 
+#include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <cassert>
@@ -21,6 +22,7 @@
 #include <mpi.h>
 #include <stdlib.h>
 #include <string>
+#include <cstdlib>
 
 #define NUMBEROFDIGITSINANINTEGER 11
 
@@ -37,7 +39,7 @@ string toLower (string);
  */
 void tokenize(const string &str, vector<string> &tokens){
 
-    const string delimiters = " \"\n\t.,;:-+/?!()[]";
+    const string delimiters = " \"\n\t.,;:-+/?!()[]„";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
     string::size_type tokenEnd = str.find_first_of(delimiters, tokenBegin);
@@ -134,9 +136,20 @@ string serializeMap (map<string, int> &toSerialize)
 		return serialized;
 }		/* -----  end of function serializeMap  ----- */
 
-int wordToPE(string word, int numPEs){
+
+string serializeTuple (pair<const basic_string<char>, int> &serialize) {
+	string str (serialize.first);
+	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
+	sprintf (buf, ":%d\n", serialize.second);
+	str += buf;
+	delete[] buf;
+	return str;
+}
+
+
+int wordToPE(const string &word, int numPEs){
 	char first = *(word.c_str());
-	return (first - 'a') % numPEs;
+	return (abs(first - 'a')) % numPEs;
 }
 
 
@@ -145,7 +158,7 @@ char convertMe (char c) {
 }
 
 string toLower (string str) {
-	std::transform (str.begin (), str.end (), str.begin (), convertMe);
+	transform (str.begin (), str.end (), str.begin (), convertMe);
 	return str;
 }
 
@@ -165,7 +178,6 @@ int main (int argc, char *argv[]) {
     //initialize MPI stuff
     MPI::Init(argc, argv);
 
-    map<string, int> countedWords;
     int numPEs = MPI::COMM_WORLD.Get_size();
     int myID = MPI::COMM_WORLD.Get_rank();
 
@@ -174,24 +186,48 @@ int main (int argc, char *argv[]) {
     length = (argc - 1) / numPEs; //base chunk for every PE
     rest = (argc - 1) % numPEs; //rest of files to spread around
 
-    //partition quick and quite dirty ;) but should work
-
     /*
 		 * map
 		 *
 		 * only apply map if there are enough files to look at. if the rank of the pe is to
 		 * big, omit this step and wait for the reduce step.
      */
+    map<string, int> countedWords;
 		if (myID < argc - 1){
 			for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
 				// apply map
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
 			}
     }
-    printMap(countedWords);
+    //printMap(countedWords);
+
+		/* We successfully fullfiled the map step. Now we have to find out, to which PEs we
+		 * have to send a message containing (key,value) pairs. */ 
+		
+		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
+		// the second is a marker that we don't want to send any more messages
+		map<int, string> messages; 
+		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
+			// determine, which pe needs this message
+			int receiver = wordToPE ((*it).first, numPEs);
+			pair<map<int,string>::iterator,bool> ret;
+
+			string serialized = serializeTuple (*it);
+			ret = messages.insert(pair<int,string> (receiver, serialized));
+			// if the receiver already existed in the map, just append the next message to the
+			// old one
+			if (!ret.second) {
+				(*(ret.first)).second += serialized;
+			}
+		}
+
+		for (map<int,string>::iterator it = messages.begin (); it != messages.end (); it ++) {
+			cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
+		}
+
     //cout << "Mapsize is " << mapSize(countedWords) << endl;
-    string serialMap = serializeMap(countedWords);
-		cout << serialMap << endl;
+    //string serialMap = serializeMap(countedWords);
+		//cout << serialMap << endl;
     //cout << serialMap << endl;
 		
 		/* reduce */
