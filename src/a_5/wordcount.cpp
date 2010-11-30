@@ -166,7 +166,7 @@ int main ( int argc, char *argv[] )
     map<string, int> countedWords;
     int numPEs = MPI::COMM_WORLD.Get_size();
     int myID = MPI::COMM_WORLD.Get_rank();
-    assert(numPEs <= argc - 1); //we should have at least as many files as PEs?!
+    //assert(numPEs <= argc - 1); //we should have at least as many files as PEs?!
 
     int length, rest;
 
@@ -178,7 +178,9 @@ int main ( int argc, char *argv[] )
         //cout << myID << ": i have file " << argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)] << endl; 
 
         // apply map
-        mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
+        if(myID < argc - 1){
+            mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
+        }
     }
     printMap( countedWords );
     //cout << "Mapsize is " << mapSize( countedWords ) << endl;
