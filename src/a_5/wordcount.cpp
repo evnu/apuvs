@@ -139,6 +139,7 @@ int main ( int argc, char *argv[] )
     //initialize MPI stuff
     MPI::Init(argc, argv);
 
+    map<string, int> countedWords;
     int numPEs = MPI::COMM_WORLD.Get_size();
     int myID = MPI::COMM_WORLD.Get_rank();
     assert(numPEs <= argc - 1); //we should have at least as many files as PEs?!
@@ -153,16 +154,15 @@ int main ( int argc, char *argv[] )
         //cout << myID << ": i have file " << argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)] << endl; 
 
         // apply map
-        map<string, int> countedWords;
         mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-        printMap( countedWords );
-        //cout << "Mapsize is " << mapSize( countedWords ) << endl;
-        string serialMap = "";
-        serializeMap( countedWords, serialMap );
-        //cout << serialMap << endl;
-        // reduce
-        // done
     }
+    printMap( countedWords );
+    //cout << "Mapsize is " << mapSize( countedWords ) << endl;
+    string serialMap = "";
+    serializeMap( countedWords, serialMap );
+    //cout << serialMap << endl;
+    // reduce
+    // done
 
     MPI::Finalize();
     return EXIT_SUCCESS;
