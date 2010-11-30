@@ -123,12 +123,10 @@ string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	return str;
 }
 
-
 int wordToPE(const string &word, int numPEs){
 	char first = *(word.c_str());
 	return (abs(first - 'a')) % numPEs;
 }
-
 
 char convertMe (char c) {
 	return tolower (c);
@@ -139,6 +137,25 @@ string toLower (string str) {
 	return str;
 }
 
+map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
+		map<int, string> messageMapper; 
+		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
+			// determine which pe needs this message
+			int receiver = wordToPE ((*it).first, numPEs);
+
+			// serialize a single pair
+			string serializedMessage = serializeTuple (*it);
+
+			// try to insert new message into message mapper
+			pair<map<int,string>::iterator,bool> ret = messageMapper.insert(pair<int,string> (receiver, serializedMessage));
+
+			// if the receiver already existed in the map (and therefore insert failed), just append the message
+			if (!ret.second) 
+				(*(ret.first)).second += serializedMessage;
+		}
+
+		return messageMapper;
+}
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -183,23 +200,17 @@ int main (int argc, char *argv[]) {
 		
 		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
 		// the second is a marker that we don't want to send any more messages
-		map<int, string> messages; 
-		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
-			// determine, which pe needs this message
-			int receiver = wordToPE ((*it).first, numPEs);
-			pair<map<int,string>::iterator,bool> ret;
+		map<int, string> messageMapper = mapMessages (countedWords, numPEs);
 
-			string serialized = serializeTuple (*it);
-			ret = messages.insert(pair<int,string> (receiver, serialized));
-			// if the receiver already existed in the map, just append the next message to the
-			// old one
-			if (!ret.second) {
-				(*(ret.first)).second += serialized;
-			}
-		}
+		//for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
+		//}
 
-		for (map<int,string>::iterator it = messages.begin (); it != messages.end (); it ++) {
-			cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
+		/*Send the actual messages to the PEs*/ 
+		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+			string &message = (*it).second;
+			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
+			cout << myID << " send " << (*it).first << " the following: " << (*it).second << endl;
 		}
 
     //cout << "Mapsize is " << mapSize(countedWords) << endl;
