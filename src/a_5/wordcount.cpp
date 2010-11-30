@@ -51,8 +51,11 @@ void Tokenize(const string &str, vector<string> &tokens){
  *  <word,1> maps
  * =====================================================================================
  */
-    void
-mapFile ( char* fileName, map<string,int> &outputMap )
+<<<<<<< HEAD
+void mapFile ( char* fileName, map<string,int> &outputMap )
+=======
+void mapFile ( char* fileName, multimap<string,int> &outputMap )
+>>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     pair<map<string,int>::iterator,bool> ret;
     string line;
@@ -81,8 +84,11 @@ mapFile ( char* fileName, map<string,int> &outputMap )
  *  Description:  just for debuging
  * =====================================================================================
  */
-    void
-printMap ( map<string, int> &toPrint)
+<<<<<<< HEAD
+void printMap ( map<string, int> &toPrint)
+=======
+void printMap ( multimap<string, int> &toPrint)
+>>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     map<string,int>::iterator it;
     for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
@@ -96,8 +102,12 @@ printMap ( map<string, int> &toPrint)
  *  Description:  calculate size of map including \n for each key and value
  * =====================================================================================
  */
+<<<<<<< HEAD
     int
 mapSize ( map<string, int> toCount )
+=======
+int mapSize ( multimap<string, int> toCount )
+>>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     map<string,int>::iterator it;
     int size = 0;
@@ -114,8 +124,12 @@ mapSize ( map<string, int> toCount )
  *  Description:  
  * =====================================================================================
  */
+<<<<<<< HEAD
     void
 serializeMap ( map<string, int> &toSerialize, string &serialized )
+=======
+void serializeMap ( multimap<string, int> &toSerialize, string &serialized )
+>>>>>>> a7c9fcc8b06cead0614b04d21d3f6fd5f5d474d3
 {
     map<string,int>::iterator it;
     for ( it=toSerialize.begin() ; it != toSerialize.end(); it++ ){
@@ -133,8 +147,7 @@ serializeMap ( map<string, int> &toSerialize, string &serialized )
  * =====================================================================================
  */
 
-    int
-main ( int argc, char *argv[] )
+int main ( int argc, char *argv[] )
 {
     if(argc < 2){
         cout	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
