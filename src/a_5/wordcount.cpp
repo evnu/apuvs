@@ -96,6 +96,7 @@ void reduce ( string &toReduce, map<string, int> &reduced )
     string::size_type end = toReduce.find_first_of(delimiters, begin);
 
     while(string::npos != begin || string::npos != end){
+    //what's supposed to be here?...
     }
 
     return ;
