@@ -46,7 +46,7 @@ void tokenize(const string &str, vector<string> &tokens){
 
     while (string::npos != tokenBegin || string::npos != tokenEnd){
         //add token to vector
-        tokens.push_back(str.substr(tokenBegin, tokenEnd - tokenBegin));
+        tokens.push_back(toLower(str.substr(tokenBegin, tokenEnd - tokenBegin)));
         //and find new token
         tokenBegin = str.find_first_not_of(delimiters, tokenEnd);
         tokenEnd = str.find_first_of(delimiters, tokenBegin);
