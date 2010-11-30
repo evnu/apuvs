@@ -58,15 +58,15 @@ void Tokenize(const string &str, vector<string> &tokens){
  *  <word,1> maps
  * =====================================================================================
  */
-void mapFile ( char* fileName, map<string,int> &outputMap )
+void mapFile (char* fileName, map<string,int> &outputMap)
 {
     pair<map<string,int>::iterator,bool> ret;
     string line;
     ifstream file(fileName);
     if(file.is_open()){
-        while( getline( file, line ) ){
+        while(getline(file, line)){
             vector<string> token;
-            Tokenize( line, token);
+            Tokenize(line, token);
             
             for(vector<string>::iterator i = token.begin(); i != token.end(); i++){
                 ret = outputMap.insert(pair<string, int>(*i, 1));
@@ -87,10 +87,10 @@ void mapFile ( char* fileName, map<string,int> &outputMap )
  *  Description:  just for debuging
  * =====================================================================================
  */
-void printMap ( map<string, int> &toPrint)
+void printMap (map<string, int> &toPrint)
 {
     map<string,int>::iterator it;
-    for ( it=toPrint.begin() ; it != toPrint.end(); it++ )
+    for (it=toPrint.begin() ; it != toPrint.end(); it++)
             cout << (*it).first << " => " << (*it).second << endl;
     return ;
 }		/* -----  end of function printMap  ----- */
@@ -101,11 +101,11 @@ void printMap ( map<string, int> &toPrint)
  *  Description:  calculate size of map including \n for each key and value
  * =====================================================================================
  */
-int mapSize ( map<string, int> toCount )
+int mapSize (map<string, int> toCount)
 {
     map<string,int>::iterator it;
     int size = 0;
-    for ( it=toCount.begin() ; it != toCount.end(); it++ ){
+    for (it=toCount.begin() ; it != toCount.end(); it++){
         size += (*it).first.length() * sizeof(char) + 1;
         size += sizeof((*it).second) + sizeof(char);
     }
@@ -118,12 +118,12 @@ int mapSize ( map<string, int> toCount )
  *  Description:  
  * =====================================================================================
  */
-string serializeMap ( map<string, int> &toSerialize )
+string serializeMap (map<string, int> &toSerialize)
 {
 		char * buf = new char[NUMBEROFDIGITSINANINTEGER];//calloc (NUMBEROFDIGITSINANINTEGER, sizeof(char));
 		string serialized;
-    for ( map<string,int>::iterator it=toSerialize.begin(); 
-					it != toSerialize.end(); it++ )
+    for (map<string,int>::iterator it=toSerialize.begin(); 
+					it != toSerialize.end(); it++)
 		{
         serialized += (*it).first + "\n";
 				sprintf (buf, "%d\n", (*it).second);
@@ -156,8 +156,7 @@ string toLower (string str) {
  * =====================================================================================
  */
 
-int main ( int argc, char *argv[] )
-{
+int main (int argc, char *argv[]) {
     if(argc < 2){
         cout	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
         exit(-2);
@@ -169,7 +168,6 @@ int main ( int argc, char *argv[] )
     map<string, int> countedWords;
     int numPEs = MPI::COMM_WORLD.Get_size();
     int myID = MPI::COMM_WORLD.Get_rank();
-    //assert(numPEs <= argc - 1); //we should have at least as many files as PEs?!
 
     int length, rest;
 
@@ -177,22 +175,28 @@ int main ( int argc, char *argv[] )
     rest = (argc - 1) % numPEs; //rest of files to spread around
 
     //partition quick and quite dirty ;) but should work
-    for(int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
-        //cout << myID << ": i have file " << argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)] << endl; 
 
-        // apply map
-        if(myID < argc - 1){
-            mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-        }
+    /*
+		 * map
+		 *
+		 * only apply map if there are enough files to look at. if the rank of the pe is to
+		 * big, omit this step and wait for the reduce step.
+     */
+		if(myID < argc - 1){
+			for(int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
+				// apply map
+				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
+			}
     }
-    printMap( countedWords );
-    //cout << "Mapsize is " << mapSize( countedWords ) << endl;
-    string serialMap = serializeMap( countedWords );
+    printMap(countedWords);
+    //cout << "Mapsize is " << mapSize(countedWords) << endl;
+    string serialMap = serializeMap(countedWords);
 		cout << serialMap << endl;
     //cout << serialMap << endl;
-    // reduce
-    // done
+		
+		/* reduce */
 
+		/*We are done here - clean up the mess*/ 
     MPI::Finalize();
     return EXIT_SUCCESS;
 }
