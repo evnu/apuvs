@@ -17,12 +17,17 @@
 #include <fstream>
 #include <cassert>
 #include <vector>
+#include <cctype>
 #include <mpi.h>
 #include <stdlib.h>
+#include <string>
 
 #define NUMBEROFDIGITSINANINTEGER 11
 
 using namespace std;
+
+// prototypes
+string toLower (string);
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -71,6 +76,7 @@ void mapFile ( char* fileName, map<string,int> &outputMap )
             }
         }
     }
+		// TODO Throw error if file not opened
 
     return ;
 }		/* -----  end of function map  ----- */
@@ -128,9 +134,19 @@ string serializeMap ( map<string, int> &toSerialize )
 		return serialized;
 }		/* -----  end of function serializeMap  ----- */
 
-int wordToPE(string word, int *numPEs){
+int wordToPE(string word, int numPEs){
 	char first = *(word.c_str());
-	return (first - 'a') % *numPEs;
+	return (first - 'a') % numPEs;
+}
+
+
+char convertMe (char c) {
+	return tolower (c);
+}
+
+string toLower (string str) {
+	std::transform (str.begin (), str.end (), str.begin (), convertMe);
+	return str;
 }
 
 /* 
