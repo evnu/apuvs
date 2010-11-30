@@ -31,18 +31,18 @@ string toLower (string);
 
 /* 
  * ===  FUNCTION  ======================================================================
- *         Name:  Tokenize
+ *         Name:  tokenize
  *  Description:  simple string tokenizer
  * =====================================================================================
  */
-void Tokenize(const string &str, vector<string> &tokens){
+void tokenize(const string &str, vector<string> &tokens){
 
     const string delimiters = " \"\n\t.,;:-+/?!()[]";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
     string::size_type tokenEnd = str.find_first_of(delimiters, tokenBegin);
 
-    while(string::npos != tokenBegin || string::npos != tokenEnd){
+    while (string::npos != tokenBegin || string::npos != tokenEnd){
         //add token to vector
         tokens.push_back(str.substr(tokenBegin, tokenEnd - tokenBegin));
         //and find new token
@@ -63,14 +63,14 @@ void mapFile (char* fileName, map<string,int> &outputMap)
     pair<map<string,int>::iterator,bool> ret;
     string line;
     ifstream file(fileName);
-    if(file.is_open()){
-        while(getline(file, line)){
+    if (file.is_open()){
+        while (getline(file, line)){
             vector<string> token;
-            Tokenize(line, token);
+            tokenize(line, token);
             
-            for(vector<string>::iterator i = token.begin(); i != token.end(); i++){
+            for (vector<string>::iterator i = token.begin(); i != token.end(); i++){
                 ret = outputMap.insert(pair<string, int>(*i, 1));
-                if(!ret.second){
+                if (!ret.second){
                     (*(ret.first)).second++;
                 }
             }
@@ -157,7 +157,7 @@ string toLower (string str) {
  */
 
 int main (int argc, char *argv[]) {
-    if(argc < 2){
+    if (argc < 2){
         cout	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
         exit(-2);
     }
@@ -182,8 +182,8 @@ int main (int argc, char *argv[]) {
 		 * only apply map if there are enough files to look at. if the rank of the pe is to
 		 * big, omit this step and wait for the reduce step.
      */
-		if(myID < argc - 1){
-			for(int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
+		if (myID < argc - 1){
+			for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
 				// apply map
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
 			}
