@@ -25,6 +25,8 @@
 #include <cstdlib>
 
 #define NUMBEROFDIGITSINANINTEGER 11
+#define REDUCE 0
+#define MARKER 1
 
 using namespace std;
 
@@ -101,6 +103,20 @@ for (it = toReduce.begin();it != toReduce.end(); it++){
     }
 
     return ;
+}		/* -----  end of function reduce  ----- */
+
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  printMap
+ *  Description:  just for debuging
+ * =====================================================================================
+ */
+void printMap (map<string, int> &toPrint)
+{
+    map<string,int>::iterator it;
+    for (it=toPrint.begin() ; it != toPrint.end(); it++)
+            cout << (*it).first << " => " << (*it).second << endl;
+    return ;
 }		/* -----  end of function printMap  ----- */
 
 /* 
@@ -143,8 +159,7 @@ string toLower (string str) {
 	return str;
 }
 
-map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
-		map<int, string> messageMap; 
+map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &countedWords, int numPEs) {
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
 			int receiver = wordToPE ((*it).first, numPEs);
@@ -206,24 +221,80 @@ int main (int argc, char *argv[]) {
 		
 		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
 		// the second is a marker that we don't want to send any more messages
-		map<int, string> messageMap = mapMessages (countedWords, numPEs);
 
-		//for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
-			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
-		//}
+		// initialize message map with empty messages
+		map<int, string> messageMap;
+		for (int i = 0; i < numPEs; i++) 
+			messageMap[i] = "";
 
-		/*Send the actual messages to the PEs*/ 
+	  mapMessages (messageMap, countedWords, numPEs);
+
+		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
 			string &message = (*it).second;
-			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
-			cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
+			// only send if this if the receiver != sender
+			if ((*it).first != myID) 
+				MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
 		}
-
-    //cout << "Mapsize is " << mapSize(countedWords) << endl;
-    //string serialMap = serializeMap(countedWords);
-		//cout << serialMap << endl;
-    //cout << serialMap << endl;
 		
+		/* Wait for messages from all PEs */ 
+		bool *doneWithPE = new bool[numPEs];
+		for (int i = 0; i < numPEs; i++) {
+			doneWithPE[i] = false;
+		}
+		doneWithPE[myID] = true;
+
+		int numberOfFinishedMessages = numPEs - 1;
+		
+		// TODO check if condition is right...
+		string myMessages;
+		while (numberOfFinishedMessages) {
+			MPI_Status status;
+			int msglen;
+
+			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+			MPI_Get_count (&status, MPI_CHAR, &msglen);
+
+			assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
+			assert (!doneWithPE[status.MPI_SOURCE]);
+			doneWithPE[status.MPI_SOURCE] = true;
+
+			// wether we got a message with a certain length or not, we recognize this
+			// communication as finished
+			if (!msglen) {
+				// throw message away
+				MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+			} else {
+				int msglen;
+				MPI_Get_count (&status, MPI_CHAR, &msglen);
+				
+				char *buf;
+				
+				// As we don't know how big the messages will be, there must be some error handling. 
+				try {
+					buf = new char[msglen];
+				} catch (std::bad_alloc) {
+					cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
+					std::abort ();
+				}
+
+				// receive message
+				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+
+				// add the message to the PEs workload
+				messageMap[myID] += buf;
+
+				delete[] buf;
+			}
+			numberOfFinishedMessages--;
+		}
+		
+		delete[] doneWithPE;
+
+		cout << myID << ": I received the following workload: " << messageMap[myID] << endl;
+
+		// receive messages
+
 		/* reduce */
 
 		/*We are done here - clean up the mess*/ 
