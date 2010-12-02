@@ -297,11 +297,8 @@ int main (int argc, char *argv[]) {
 		
 		delete[] doneWithPE;
 
-		cout << myID << ": I received the following workload: " << messageMap[myID] << endl;
-
-		// receive messages
-
 		/* reduce */
+		map<string, int> reduced = reduce (messageMap[myID]);
 
 		/*We are done here - clean up the mess*/ 
     MPI::Finalize();
