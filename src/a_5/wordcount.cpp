@@ -49,12 +49,16 @@ void tokenize(const string &str, vector<string> &tokens){
     while (string::npos != tokenBegin || string::npos != tokenEnd){
         //add token to vector
 				string test = toLower(str.substr(tokenBegin, tokenEnd - tokenBegin));
+
+#ifndef NDEBUG
+				/*  we only check for non-printable characters if we are in debugging mode. */
 				for (string::iterator it = test.begin (); it != test.end (); it++) {
 					if (!isprint ((*it))) {
-						cerr << "Found unprintable character: " << (*it) << " = " << (int) (*it) << endl;
+						cerr << "Found non-printable character: " << (*it) << " = " << (int) (*it) << endl;
 					}
-					assert (isprint ((*it)));
 				}
+#endif
+
 				tokens.push_back(test);
         //and find new token
         tokenBegin = str.find_first_not_of(delimiters, tokenEnd);
