@@ -243,19 +243,34 @@ int main (int argc, char *argv[]) {
 		// TODO check if condition is right...
 		string myMessages;
 		while (numberOfFinishedMessages) {
-			int source;
-			int tag;
-			MPI::Status status;
-			MPI::COMM_WORLD.Probe(source, tag, status);
-			if (tag == 1) {  /*We recognize tag 1 as the end marker*/ 
-				assert (source >= 0 && source < numPEs); // sanity check
-				assert (!doneWithPE[source]);
-				doneWithPE[source] = true;
+			MPI_Status status;
+			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
+
+			int msglen;
+			MPI_Get_count (&status, MPI_CHAR, &msglen);
+			// we recognize a message of length zero as the marker.
+			if (msglen == 0 && status.MPI_TAG == 1) {
+				assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
+				assert (!doneWithPE[status.MPI_SOURCE]);
+				doneWithPE[status.MPI_SOURCE] = true;
+				// throw message away
+				// MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, stat.MPI_TAG, MPI_COMM_WORLD, &status);
 			} else {
+				int msglen;
+				MPI_Get_count (&status, MPI_CHAR, &msglen);
 				// receive message
-				// TODO XXX
+				char *buf = new char[msglen]; // TODO catch exception
+				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+
+				// add the message to the PEs workload
+				messageMapper[myID] += buf;
+				delete[] buf;
 			}
 		}
+		
+		delete[] doneWithPE;
+
+		cout << myID << ": I received the following workload: " << messageMapper[myID] << endl;
 
 		// receive messages
 
