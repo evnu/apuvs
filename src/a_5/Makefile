@@ -8,5 +8,6 @@ wordcount_mpi: wordcount.cpp
 clean:
 	@echo cleaning..
 	-rm wordcount_mpi > /dev/null
+	-rm reduced-* > /dev/null
 
 .PHONY: clean
