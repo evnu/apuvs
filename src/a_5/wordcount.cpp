@@ -97,7 +97,6 @@ void reduce ( string &toReduce, map<string, int> &reduced )
 
     while(string::npos != begin || string::npos != end){
     //what's supposed to be here?...
-    //the reducing of course...dooooh
     }
 
     return ;
