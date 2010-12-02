@@ -89,14 +89,15 @@ void mapFile (char* fileName, map<string,int> &outputMap)
  *  Description:  
  * =====================================================================================
  */
-void reduce ( string &toReduce, map<string, int> &reduced )
+void reduce ( map<string,int> &toReduce, map<string, int> &reduced )
 {
-    string delimiters = "\n";
-    string::size_type begin = toReduce.find_first_not_of(delimiters, 0);
-    string::size_type end = toReduce.find_first_of(delimiters, begin);
+    map<string,int> bufMap;
+    map<string,int>::iterator it;
+for (it = toReduce.begin();it != toReduce.end(); it++){
+	pair<map<string,int>::iterator,bool> ret = bufMap.insert(pair<string,int> ((*it).first , (*it).second));
+	if (!ret.second) 
+		(*(ret.first)).second += (*it).second;
 
-    while(string::npos != begin || string::npos != end){
-    //what's supposed to be here?...
     }
 
     return ;
