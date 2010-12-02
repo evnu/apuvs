@@ -97,6 +97,7 @@ void reduce ( string &toReduce, map<string, int> &reduced )
 
     while(string::npos != begin || string::npos != end){
     //what's supposed to be here?...
+    //the reducing of course...dooooh
     }
 
     return ;
@@ -214,23 +215,23 @@ int main (int argc, char *argv[]) {
     }
     //printMap(countedWords);
 
-		/* We successfully fullfiled the map step. Now we have to find out, to which PEs we
-		 * have to send a message containing (key,value) pairs. */ 
-		
-		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
-		// the second is a marker that we don't want to send any more messages
-		map<int, string> messageMapper = mapMessages (countedWords, numPEs);
+    /* We successfully fullfiled the map step. Now we have to find out, to which PEs we
+     * have to send a message containing (key,value) pairs. */ 
+    
+    // each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
+    // the second is a marker that we don't want to send any more messages
+    map<int, string> messageMapper = mapMessages (countedWords, numPEs);
 
-		//for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
-			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
-		//}
+    //for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+        //cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
+    //}
 
-		/*Send the actual messages to the PEs*/ 
-		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
-			string &message = (*it).second;
-			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
-			cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
-		}
+    /*Send the actual messages to the PEs*/ 
+    for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+        string &message = (*it).second;
+        MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
+        cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
+    }
 
     //cout << "Mapsize is " << mapSize(countedWords) << endl;
     //string serialMap = serializeMap(countedWords);
