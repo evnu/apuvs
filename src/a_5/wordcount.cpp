@@ -158,8 +158,7 @@ string toLower (string str) {
 	return str;
 }
 
-map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
-		map<int, string> messageMap; 
+map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &countedWords, int numPEs) {
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
 			int receiver = wordToPE ((*it).first, numPEs);
@@ -221,11 +220,13 @@ int main (int argc, char *argv[]) {
 		
 		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
 		// the second is a marker that we don't want to send any more messages
-		map<int, string> messageMap = mapMessages (countedWords, numPEs);
 
-		//for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
-			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
-		//}
+		// initialize message map with empty messages
+		map<int, string> messageMap;
+		for (int i = 0; i < numPEs; i++) 
+			messageMap[i] = "";
+
+	  mapMessages (messageMap, countedWords, numPEs);
 
 		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
