@@ -100,16 +100,28 @@ void mapFile (char* fileName, map<string,int> &outputMap)
  *  Description:  
  * =====================================================================================
  */
-void reduce ( map<string,int> &toReduce, map<string, int> &reduced )
+map<string, int> reduce ( string &toReduce )
 {
     map<string,int> bufMap;
-    map<string,int>::iterator it;
-for (it = toReduce.begin();it != toReduce.end(); it++){
-	pair<map<string,int>::iterator,bool> ret = bufMap.insert(pair<string,int> ((*it).first , (*it).second));
-	if (!ret.second) 
-		(*(ret.first)).second += (*it).second;
+    string delimiter = "\n";
+    string::size_type tokenBegin = toReduce.find_first_not_of(delimiter, 0);
+    string::size_type tokenEnd = toReduce.find_first_of(delimiter, tokenBegin);
 
+    while (string::npos != tokenBegin || string::npos != tokenEnd){
+        //add pair to return map
+        const char* keyValuePair = toReduce.substr(tokenBegin, tokenEnd - tokenBegin).c_str();
+        char* key = strtok(const_cast<char*>(keyValuePair), ":");
+        int value = atoi(strtok(NULL, ":"));
+        pair<map<string, int>::iterator, bool> ret = bufMap.insert(pair<string, int>(key, value));
+        if (!ret.second) 
+            (*(ret.first)).second += ret.second;
+        //and find new token
+        tokenBegin = toReduce.find_first_not_of(delimiter, tokenEnd);
+        tokenEnd = toReduce.find_first_of(delimiter, tokenBegin);
     }
+
+
+    return bufMap;
 }		/* -----  end of function reduce  ----- */
 
 /* 
@@ -183,6 +195,16 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 
 		return messageMap;
 }
+
+void saveMapToFile(map<string, int> toSave, int id){
+
+    map<string,int>::iterator it;
+    for (it=toSave.begin() ; it != toSave.end(); it++){
+
+    }
+    
+}
+
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
@@ -297,6 +319,7 @@ int main (int argc, char *argv[]) {
 		
 		delete[] doneWithPE;
 
+<<<<<<< HEAD
 		/* reduce */
 		map<string, int> reduced = reduce (messageMap[myID]);
 
