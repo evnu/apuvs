@@ -231,15 +231,9 @@ int main (int argc, char *argv[]) {
 		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
 			string &message = (*it).second;
-			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
-			cout << myID << " send " << (*it).first << endl;
-		}
-
-		/* Send marker to each PE, indicating that we are done with it. */ 
-		for (int pe = 0; pe < numPEs; pe++) {
-			if (pe == myID) 
-				continue;
-			MPI::COMM_WORLD.Send((void*) 0, 0, MPI::CHAR, pe, MARKER);
+			// only send if this if the receiver != sender
+			if ((*it).first != myID) 
+				MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
 		}
 		
 		/* Wait for messages from all PEs */ 
@@ -255,24 +249,24 @@ int main (int argc, char *argv[]) {
 		string myMessages;
 		while (numberOfFinishedMessages) {
 			MPI_Status status;
-			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-
 			int msglen;
+
+			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 			MPI_Get_count (&status, MPI_CHAR, &msglen);
-			// we recognize a message of length zero as the marker.
-			if (status.MPI_TAG == MARKER) {
-				assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
-				assert (!doneWithPE[status.MPI_SOURCE]);
-				doneWithPE[status.MPI_SOURCE] = true;
-				
+
+			assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
+			assert (!doneWithPE[status.MPI_SOURCE]);
+			doneWithPE[status.MPI_SOURCE] = true;
+
+			// wether we got a message with a certain length or not, we recognize this
+			// communication as finished
+			if (!msglen) {
 				// throw message away
 				MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
-				numberOfFinishedMessages--;
 			} else {
 				int msglen;
 				MPI_Get_count (&status, MPI_CHAR, &msglen);
 				
-				// receive message
 				char *buf;
 				
 				// As we don't know how big the messages will be, there must be some error handling. 
@@ -282,12 +276,16 @@ int main (int argc, char *argv[]) {
 					cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
 					std::abort ();
 				}
+
+				// receive message
 				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
 
 				// add the message to the PEs workload
 				messageMap[myID] += buf;
+
 				delete[] buf;
 			}
+			numberOfFinishedMessages--;
 		}
 		
 		delete[] doneWithPE;
