@@ -221,22 +221,44 @@ int main (int argc, char *argv[]) {
 		// the second is a marker that we don't want to send any more messages
 		map<int, string> messageMapper = mapMessages (countedWords, numPEs);
 
-		//for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
-			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
-		//}
-
-		/*Send the actual messages to the PEs*/ 
+		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
 			string &message = (*it).second;
 			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
 			cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
 		}
 
-    //cout << "Mapsize is " << mapSize(countedWords) << endl;
-    //string serialMap = serializeMap(countedWords);
-		//cout << serialMap << endl;
-    //cout << serialMap << endl;
+		/* Send marker to each PE, indicating that we are done with it. */ 
+		for (int pe = 0; pe < numPEs; pe++) {
+			if (pe == myID) 
+				continue;
+			MPI::COMM_WORLD.Send((void*) 0, 0, MPI::CHAR, pe, 1);
+		}
 		
+		/* Wait for messages from all PEs */ 
+		bool *doneWithPE = new bool[numPEs];
+		doneWithPE[myID] = true;
+		int numberOfFinishedMessages = numPEs - 1;
+		
+		// TODO check if condition is right...
+		string myMessages;
+		while (numberOfFinishedMessages) {
+			int source;
+			int tag;
+			MPI::Status status;
+			MPI::COMM_WORLD.Probe(source, tag, status);
+			if (tag == 1) {  /*We recognize tag 1 as the end marker*/ 
+				assert (source >= 0 && source < numPEs); // sanity check
+				assert (!doneWithPE[source]);
+				doneWithPE[source] = true;
+			} else {
+				// receive message
+				// TODO XXX
+			}
+		}
+
+		// receive messages
+
 		/* reduce */
 
 		/*We are done here - clean up the mess*/ 
