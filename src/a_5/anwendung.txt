@@ -1,6 +1,0 @@
-C++ ist eine von der ISO standardisierte höhere Programmiersprache. Sie wurde ab
-1979 von Bjarne Stroustrup bei AT&T als Erweiterung der Programmiersprache C
-entwickelt. C++ wurde als Mehrzwecksprache konzipiert und unterstützt mehrere
-Programmierparadigmen, wie die objektorientierte, generische und prozedurale
-Programmierung. C++ ermöglicht sowohl die effiziente und maschinennahe
-Programmierung als auch eine Programmierung auf hohem Abstraktionsniveau.

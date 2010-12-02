@@ -1,9 +1,0 @@
-Die Sprache C++ legt einen Schwerpunkt auf die Sprachmittel zur Entwicklung von
-Bibliotheken und favorisiert dadurch verallgemeinerte Mechanismen gegenüber in
-die Sprache integrierten Einzellösungen für typische Problemstellungen.
-Eine der Stärken von C++ ist auch die Kombinierbarkeit von effizienter,
-maschinennaher Programmierung mit mächtigen Sprachmitteln, die einfache bis
-komplexe Implementierungsdetails zusammenfassen und weitgehend hinter abstrakten
-Befehlsfolgen verbergen. Dabei kommt vor allem die Template-Metaprogrammierung
-zum Zuge, eine Technik, die eine nahezu kompromisslose Verbindung von Effizienz
-und Abstraktion erlaubt.
