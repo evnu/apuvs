@@ -91,18 +91,28 @@ void mapFile (char* fileName, map<string,int> &outputMap)
  *  Description:  
  * =====================================================================================
  */
-void reduce ( map<string,int> &toReduce, map<string, int> &reduced )
+map<string, int> reduce ( string &toReduce )
 {
     map<string,int> bufMap;
-    map<string,int>::iterator it;
-for (it = toReduce.begin();it != toReduce.end(); it++){
-	pair<map<string,int>::iterator,bool> ret = bufMap.insert(pair<string,int> ((*it).first , (*it).second));
-	if (!ret.second) 
-		(*(ret.first)).second += (*it).second;
+    string delimiter = "\n";
+    string::size_type tokenBegin = str.find_first_not_of(delimiter, 0);
+    string::size_type tokenEnd = str.find_first_of(delimiter, tokenBegin);
 
+    while (string::npos != tokenBegin || string::npos != tokenEnd){
+        //add pair to return map
+        string keyValuePair = toReduce.substr(tokenBegin, tokenEnd - tokenBegin);
+        char* key = strtok(keyValuePair, ":");
+        int value = atoi(strtok(NULL, ":"));
+        pair<map<string, int>::iterator, bool> ret = bufMap.add(pair<string, int>(key, value));
+        if (!ret.second) 
+            (*(ret.first)).second += (*it).second;
+        //and find new token
+        tokenBegin = str.find_first_not_of(delimiter, tokenEnd);
+        tokenEnd = str.find_first_of(delimiter, tokenBegin);
     }
 
-    return ;
+
+    return bufMap;
 }		/* -----  end of function reduce  ----- */
 
 /* 
@@ -293,7 +303,6 @@ int main (int argc, char *argv[]) {
 
 		cout << myID << ": I received the following workload: " << messageMap[myID] << endl;
 
-		// receive messages
 
 		/* reduce */
 
