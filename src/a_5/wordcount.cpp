@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string>
 #include <cstdlib>
+#include <sstream>
 
 #define NUMBEROFDIGITSINANINTEGER 11
 #define REDUCE 0
@@ -197,23 +198,16 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 }
 
 void saveMapToFile(map<string, int> toSave, int id){
-	string filename = "";
-
-	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
-	sprintf (buf, "%d", id);
-	// TODO unugliefy
-	filename = "reduced-";
-	filename += buf;
-	filename += ".txt";
-
-	ofstream file (filename.c_str ());
+	stringstream filename;
+	filename << "reduced-" << id << ".txt";
+	
+	ofstream file (filename.str().c_str ());
 	if (!file.is_open()) {
 		cerr << "Couldn't open " << filename << ". Aborting." << endl;
 		std::abort ();
 	}
 
-	map<string,int>::iterator it;
-	for (it = toSave.begin() ; it != toSave.end(); it++){
+	for (map<string,int>::iterator it = toSave.begin() ; it != toSave.end(); it++){
 		file << (*it).first << ":" << (*it).second << endl;
 	}
 }
