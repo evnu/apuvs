@@ -4,3 +4,4 @@ wordcount_mpi: wordcount.cpp
 
 clean:
 	-rm wordcount_mpi
+	-rm reduced-*
