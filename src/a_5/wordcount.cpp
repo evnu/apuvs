@@ -48,7 +48,18 @@ void tokenize(const string &str, vector<string> &tokens){
 
     while (string::npos != tokenBegin || string::npos != tokenEnd){
         //add token to vector
-        tokens.push_back(toLower(str.substr(tokenBegin, tokenEnd - tokenBegin)));
+				string test = toLower(str.substr(tokenBegin, tokenEnd - tokenBegin));
+
+#ifndef NDEBUG
+				/*  we only check for non-printable characters if we are in debugging mode. */
+				for (string::iterator it = test.begin (); it != test.end (); it++) {
+					if (!isprint ((*it))) {
+						cerr << "Found non-printable character: " << (*it) << " = " << (int) (*it) << endl;
+					}
+				}
+#endif
+
+				tokens.push_back(test);
         //and find new token
         tokenBegin = str.find_first_not_of(delimiters, tokenEnd);
         tokenEnd = str.find_first_of(delimiters, tokenBegin);
@@ -81,8 +92,6 @@ void mapFile (char* fileName, map<string,int> &outputMap)
         }
     }
     else cout << "Couldn't open File: " << fileName << endl;   
-    
-    return ;
 }		/* -----  end of function map  ----- */
 
 /* 
@@ -126,7 +135,6 @@ void printMap (map<string, int> &toPrint)
     map<string,int>::iterator it;
     for (it=toPrint.begin() ; it != toPrint.end(); it++)
             cout << (*it).first << " => " << (*it).second << endl;
-    return ;
 }		/* -----  end of function printMap  ----- */
 
 /* 
@@ -244,7 +252,7 @@ int main (int argc, char *argv[]) {
 			string &message = (*it).second;
 			// only send if this if the receiver != sender
 			if ((*it).first != myID) 
-				MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
+				MPI::COMM_WORLD.Send((void*) message.c_str (), message.size () + 1, MPI::CHAR, (*it).first, REDUCE);
 		}
 		
 		/* Wait for messages from all PEs */ 
