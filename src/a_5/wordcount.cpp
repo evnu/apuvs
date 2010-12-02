@@ -25,6 +25,8 @@
 #include <cstdlib>
 
 #define NUMBEROFDIGITSINANINTEGER 11
+#define REDUCE 0
+#define MARKER 1
 
 using namespace std;
 
@@ -224,20 +226,24 @@ int main (int argc, char *argv[]) {
 		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
 			string &message = (*it).second;
-			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
-			cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
+			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
+			cout << myID << " send " << (*it).first << endl;
 		}
 
 		/* Send marker to each PE, indicating that we are done with it. */ 
 		for (int pe = 0; pe < numPEs; pe++) {
 			if (pe == myID) 
 				continue;
-			MPI::COMM_WORLD.Send((void*) 0, 0, MPI::CHAR, pe, 1);
+			MPI::COMM_WORLD.Send((void*) 0, 0, MPI::CHAR, pe, MARKER);
 		}
 		
 		/* Wait for messages from all PEs */ 
 		bool *doneWithPE = new bool[numPEs];
+		for (int i = 0; i < numPEs; i++) {
+			doneWithPE[i] = false;
+		}
 		doneWithPE[myID] = true;
+
 		int numberOfFinishedMessages = numPEs - 1;
 		
 		// TODO check if condition is right...
@@ -249,12 +255,15 @@ int main (int argc, char *argv[]) {
 			int msglen;
 			MPI_Get_count (&status, MPI_CHAR, &msglen);
 			// we recognize a message of length zero as the marker.
-			if (msglen == 0 && status.MPI_TAG == 1) {
+			if (status.MPI_TAG == MARKER) {
 				assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
+				cout << "mine: " << myID << " his: " << status.MPI_SOURCE << endl;
 				assert (!doneWithPE[status.MPI_SOURCE]);
 				doneWithPE[status.MPI_SOURCE] = true;
+				
 				// throw message away
-				// MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, stat.MPI_TAG, MPI_COMM_WORLD, &status);
+				MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+				numberOfFinishedMessages--;
 			} else {
 				int msglen;
 				MPI_Get_count (&status, MPI_CHAR, &msglen);
