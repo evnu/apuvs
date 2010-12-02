@@ -319,9 +319,14 @@ int main (int argc, char *argv[]) {
 		
 		delete[] doneWithPE;
 
-<<<<<<< HEAD
 		/* reduce */
 		map<string, int> reduced = reduce (messageMap[myID]);
+
+		/* reduce */
+        map<string, int> final = reduce(messageMap[myID]);
+
+        cout << myID << ": " << endl;
+        printMap(final);
 
 		/*We are done here - clean up the mess*/ 
     MPI::Finalize();
