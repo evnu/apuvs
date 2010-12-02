@@ -78,10 +78,10 @@ void mapFile (char* fileName, map<string,int> &outputMap)
             }
         }
     }
-    else cout << "Couldn't open File: " << fileName << "\n";   
+    else cout << "Couldn't open File: " << fileName << endl;   
     
     return ;
-}		/* -----  end of function map  ----- */
+}		/* -----  end of function mapFile  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -96,8 +96,10 @@ void reduce ( string &toReduce, map<string, int> &reduced )
     string::size_type end = toReduce.find_first_of(delimiters, begin);
 
     while(string::npos != begin || string::npos != end){
-    //what's supposed to be here?...
-    //the reducing of course...dooooh
+   	 
+	    
+	//what's supposed to be here?...
+    	//the reducing of course...dooooh
     }
 
     return ;
@@ -158,7 +160,7 @@ string toLower (string str) {
 }
 
 map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
-		map<int, string> messageMapper; 
+		map<int, string> messageMap; 
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
 			int receiver = wordToPE ((*it).first, numPEs);
@@ -167,14 +169,14 @@ map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
 			string serializedMessage = serializeTuple (*it);
 
 			// try to insert new message into message mapper
-			pair<map<int,string>::iterator,bool> ret = messageMapper.insert(pair<int,string> (receiver, serializedMessage));
+			pair<map<int,string>::iterator,bool> ret = messageMap.insert(pair<int,string> (receiver, serializedMessage));
 
 			// if the receiver already existed in the map (and therefore insert failed), just append the message
 			if (!ret.second) 
 				(*(ret.first)).second += serializedMessage;
 		}
 
-		return messageMapper;
+		return messageMap;
 }
 /* 
  * ===  FUNCTION  ======================================================================
@@ -207,11 +209,11 @@ int main (int argc, char *argv[]) {
 		 * big, omit this step and wait for the reduce step.
      */
     map<string, int> countedWords;
-		if (myID < argc - 1){
-			for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
-				// apply map
-				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
-			}
+    if (myID < argc - 1){
+	    for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
+		    // apply map
+		    mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
+	    }
     }
     //printMap(countedWords);
 
@@ -220,14 +222,14 @@ int main (int argc, char *argv[]) {
     
     // each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
     // the second is a marker that we don't want to send any more messages
-    map<int, string> messageMapper = mapMessages (countedWords, numPEs);
+    map<int, string> messageMap = mapMessages (countedWords, numPEs);
 
-    //for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+    //for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
         //cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
     //}
 
     /*Send the actual messages to the PEs*/ 
-    for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+    for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
         string &message = (*it).second;
         MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, 0);
         cout << myID << " send " << (*it).first << " the following: \n" << (*it).second << endl;
