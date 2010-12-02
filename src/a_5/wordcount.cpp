@@ -257,7 +257,6 @@ int main (int argc, char *argv[]) {
 			// we recognize a message of length zero as the marker.
 			if (status.MPI_TAG == MARKER) {
 				assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
-				cout << "mine: " << myID << " his: " << status.MPI_SOURCE << endl;
 				assert (!doneWithPE[status.MPI_SOURCE]);
 				doneWithPE[status.MPI_SOURCE] = true;
 				
@@ -267,10 +266,13 @@ int main (int argc, char *argv[]) {
 			} else {
 				int msglen;
 				MPI_Get_count (&status, MPI_CHAR, &msglen);
+				
 				// receive message
 				char *buf;
+				
+				// As we don't know how big the messages will be, there must be some error handling. 
 				try {
-					buf = new char[msglen]; // TODO catch exception
+					buf = new char[msglen];
 				} catch (std::bad_alloc) {
 					cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
 					std::abort ();
