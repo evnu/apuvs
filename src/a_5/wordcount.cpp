@@ -92,8 +92,6 @@ void mapFile (char* fileName, map<string,int> &outputMap)
         }
     }
     else cout << "Couldn't open File: " << fileName << endl;   
-    
-    return ;
 }		/* -----  end of function map  ----- */
 
 /* 
@@ -111,8 +109,6 @@ void reduce ( string &toReduce, map<string, int> &reduced )
     while(string::npos != begin || string::npos != end){
     //what's supposed to be here?...
     }
-
-    return ;
 }		/* -----  end of function reduce  ----- */
 
 /* 
@@ -126,7 +122,6 @@ void printMap (map<string, int> &toPrint)
     map<string,int>::iterator it;
     for (it=toPrint.begin() ; it != toPrint.end(); it++)
             cout << (*it).first << " => " << (*it).second << endl;
-    return ;
 }		/* -----  end of function printMap  ----- */
 
 /* 
