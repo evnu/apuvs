@@ -80,7 +80,7 @@ void mapFile (char* fileName, map<string,int> &outputMap)
             }
         }
     }
-    else cout << "Couldn't open File: " << fileName << "\n";   
+    else cout << "Couldn't open File: " << fileName << endl;   
     
     return ;
 }		/* -----  end of function map  ----- */
@@ -159,7 +159,7 @@ string toLower (string str) {
 }
 
 map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
-		map<int, string> messageMapper; 
+		map<int, string> messageMap; 
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
 			int receiver = wordToPE ((*it).first, numPEs);
@@ -168,14 +168,14 @@ map<int, string> mapMessages (map<string, int> &countedWords, int numPEs) {
 			string serializedMessage = serializeTuple (*it);
 
 			// try to insert new message into message mapper
-			pair<map<int,string>::iterator,bool> ret = messageMapper.insert(pair<int,string> (receiver, serializedMessage));
+			pair<map<int,string>::iterator,bool> ret = messageMap.insert(pair<int,string> (receiver, serializedMessage));
 
 			// if the receiver already existed in the map (and therefore insert failed), just append the message
 			if (!ret.second) 
 				(*(ret.first)).second += serializedMessage;
 		}
 
-		return messageMapper;
+		return messageMap;
 }
 /* 
  * ===  FUNCTION  ======================================================================
@@ -221,7 +221,11 @@ int main (int argc, char *argv[]) {
 		
 		// each pe receives 1-2 messages from the current pe. the first message (if send) contains the serialized maps. 
 		// the second is a marker that we don't want to send any more messages
-		map<int, string> messageMapper = mapMessages (countedWords, numPEs);
+		map<int, string> messageMap = mapMessages (countedWords, numPEs);
+
+		//for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
+			//cout << myID << " - PE: " << (*it).first << " gets " << (*it).second << endl;
+		//}
 
 		/* Send the actual messages to the PEs */ 
 		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
