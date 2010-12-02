@@ -197,12 +197,25 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 }
 
 void saveMapToFile(map<string, int> toSave, int id){
+	string filename = "";
 
-    map<string,int>::iterator it;
-    for (it=toSave.begin() ; it != toSave.end(); it++){
+	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
+	sprintf (buf, "%d", id);
+	// TODO unugliefy
+	filename = "reduced-";
+	filename += buf;
+	filename += ".txt";
 
-    }
-    
+	ofstream file (filename.c_str ());
+	if (!file.is_open()) {
+		cerr << "Couldn't open " << filename << ". Aborting." << endl;
+		std::abort ();
+	}
+
+	map<string,int>::iterator it;
+	for (it = toSave.begin() ; it != toSave.end(); it++){
+		file << (*it).first << ":" << (*it).second << endl;
+	}
 }
 
 /* 
@@ -322,8 +335,9 @@ int main (int argc, char *argv[]) {
 		/* reduce */
 		map<string, int> final = reduce(messageMap[myID]);
 
-		cout << myID << ": " << endl;
-		printMap(final);
+		saveMapToFile (final, myID);
+
+		// save result
 
 		/*We are done here - clean up the mess*/ 
     MPI::Finalize();
