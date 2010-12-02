@@ -228,7 +228,7 @@ int main (int argc, char *argv[]) {
 		//}
 
 		/* Send the actual messages to the PEs */ 
-		for (map<int,string>::iterator it = messageMapper.begin (); it != messageMapper.end (); it ++) {
+		for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
 			string &message = (*it).second;
 			MPI::COMM_WORLD.Send((void*) message.c_str (), message.size (), MPI::CHAR, (*it).first, REDUCE);
 			cout << myID << " send " << (*it).first << endl;
@@ -284,14 +284,14 @@ int main (int argc, char *argv[]) {
 				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
 
 				// add the message to the PEs workload
-				messageMapper[myID] += buf;
+				messageMap[myID] += buf;
 				delete[] buf;
 			}
 		}
 		
 		delete[] doneWithPE;
 
-		cout << myID << ": I received the following workload: " << messageMapper[myID] << endl;
+		cout << myID << ": I received the following workload: " << messageMap[myID] << endl;
 
 		// receive messages
 
