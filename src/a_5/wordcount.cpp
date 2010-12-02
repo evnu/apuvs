@@ -268,7 +268,13 @@ int main (int argc, char *argv[]) {
 				int msglen;
 				MPI_Get_count (&status, MPI_CHAR, &msglen);
 				// receive message
-				char *buf = new char[msglen]; // TODO catch exception
+				char *buf;
+				try {
+					buf = new char[msglen]; // TODO catch exception
+				} catch (std::bad_alloc) {
+					cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
+					std::abort ();
+				}
 				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
 
 				// add the message to the PEs workload
