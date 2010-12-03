@@ -23,6 +23,7 @@
 #include <stdlib.h>
 #include <string>
 #include <cstdlib>
+#include <sstream>
 
 #define NUMBEROFDIGITSINANINTEGER 11
 #define REDUCE 0
@@ -108,18 +109,19 @@ map<string, int> reduce ( string &toReduce )
     string::size_type tokenEnd = toReduce.find_first_of(delimiter, tokenBegin);
 
     while (string::npos != tokenBegin || string::npos != tokenEnd){
-        //add pair to return map
+				/* add pair to return map */
         const char* keyValuePair = toReduce.substr(tokenBegin, tokenEnd - tokenBegin).c_str();
+				// Note: the following const_cast is safe. strtok doesn't change the given string and we
+				// don't change the received substrings.
         char* key = strtok(const_cast<char*>(keyValuePair), ":");
         int value = atoi(strtok(NULL, ":"));
         pair<map<string, int>::iterator, bool> ret = bufMap.insert(pair<string, int>(key, value));
         if (!ret.second) 
             (*(ret.first)).second += ret.second;
-        //and find new token
+				/* and find new token */
         tokenBegin = toReduce.find_first_not_of(delimiter, tokenEnd);
         tokenEnd = toReduce.find_first_of(delimiter, tokenBegin);
     }
-
 
     return bufMap;
 }		/* -----  end of function reduce  ----- */
@@ -197,23 +199,16 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 }
 
 void saveMapToFile(map<string, int> toSave, int id){
-	string filename = "";
-
-	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
-	sprintf (buf, "%d", id);
-	// TODO unugliefy
-	filename = "reduced-";
-	filename += buf;
-	filename += ".txt";
-
-	ofstream file (filename.c_str ());
+	stringstream filename;
+	filename << "reduced-" << id << ".txt";
+	
+	ofstream file (filename.str().c_str ());
 	if (!file.is_open()) {
 		cerr << "Couldn't open " << filename << ". Aborting." << endl;
 		std::abort ();
 	}
 
-	map<string,int>::iterator it;
-	for (it = toSave.begin() ; it != toSave.end(); it++){
+	for (map<string,int>::iterator it = toSave.begin() ; it != toSave.end(); it++){
 		file << (*it).first << ":" << (*it).second << endl;
 	}
 }
@@ -255,7 +250,6 @@ int main (int argc, char *argv[]) {
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
 			}
     }
-    //printMap(countedWords);
 
 		/* We successfully fullfiled the map step. Now we have to find out, to which PEs we
 		 * have to send a message containing (key,value) pairs. */ 
@@ -279,31 +273,34 @@ int main (int argc, char *argv[]) {
 		}
 		
 		/* Wait for messages from all PEs */ 
+		
+#ifndef NDEBUG
 		bool *doneWithPE = new bool[numPEs];
 		for (int i = 0; i < numPEs; i++) {
 			doneWithPE[i] = false;
 		}
 		doneWithPE[myID] = true;
+#endif
 
 		int numberOfFinishedMessages = numPEs - 1;
 		
-		// TODO check if condition is right...
-		string myMessages;
 		while (numberOfFinishedMessages) {
 			MPI_Status status;
 			int msglen;
 
+			// check for new messages
 			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 			MPI_Get_count (&status, MPI_CHAR, &msglen);
 
+#ifndef NDEBUG
 			assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
 			assert (!doneWithPE[status.MPI_SOURCE]);
 			doneWithPE[status.MPI_SOURCE] = true;
+#endif
 
-			// wether we got a message with a certain length or not, we recognize this
-			// communication as finished
-			if (!msglen) {
-				// throw message away
+			if (msglen <= 1) {
+				/* throw message away - we received a message from a pe which only wanted us to
+				 * know that we won't ever receive any words from it.*/
 				MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
 			} else {
 				int msglen;
@@ -311,7 +308,7 @@ int main (int argc, char *argv[]) {
 				
 				char *buf;
 				
-				// As we don't know how big the messages will be, there must be some error handling. 
+				// As we don't know how big the messages will be, there must be some error handling...
 				try {
 					buf = new char[msglen];
 				} catch (std::bad_alloc) {
@@ -330,16 +327,17 @@ int main (int argc, char *argv[]) {
 			numberOfFinishedMessages--;
 		}
 		
+#ifndef NDEBUG
 		delete[] doneWithPE;
+#endif
 
 		/* reduce */
 		map<string, int> final = reduce(messageMap[myID]);
 
+		/* final steps - save the result */
 		saveMapToFile (final, myID);
 
-		// save result
-
-		/*We are done here - clean up the mess*/ 
+		/* We are done here - clean up the mess */ 
     MPI::Finalize();
     return EXIT_SUCCESS;
 }
