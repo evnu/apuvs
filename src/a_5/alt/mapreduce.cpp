@@ -30,7 +30,7 @@ using namespace std;
  */
 void tokenize(const string &str, vector<string> &tokens){
 
-    const string delimiters = "1234567890 \"\n\t.,;:-+/?!()[]„";
+    const string delimiters = "1234567890 \"\n\t.,;:-+/?!()[]%#~'$*_^&§„";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
     string::size_type tokenEnd = str.find_first_of(delimiters, tokenBegin);
