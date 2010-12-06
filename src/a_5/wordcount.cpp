@@ -10,6 +10,8 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
+ *       NOTE: Compile with -DNDEBUG to disable assert and debugging messages.
+ *
  * =====================================================================================
  */
 
@@ -25,6 +27,9 @@
 #include <cstdlib>
 #include <sstream>
 
+// NUMBEROFDIGITSINANINTEGER is a rough estimate on the length of an integer. An int is
+// probably shorter, but as we calculate the needed size for a given string anyways, that
+// doesn't matter to much.
 #define NUMBEROFDIGITSINANINTEGER 11
 
 using namespace std;
@@ -69,11 +74,10 @@ void tokenize(const string &str, vector<string> &tokens){
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  mapFile
- *  Description:  opens file and processes it line by line; emits vector of
- *  <word,n> maps where n is the ammount of occurences of word in the paramter
- *  file; we don't want to emit just a vector of <word, 1> multimaps (as some
- *  would consider this a purer map-reduce implementation) in order to minimize
- *  data that needs to be send via MPI
+ *  Description:  opens file and processes it line by line; emits a map of type
+ *  <string,int> maps where the integer is the amount of occurences of the key in the parameter
+ *  file; we don't emit a multimap of <word, 1> pairs (some would consider this a purer 
+ *  map-reduce implementation) in order to minimize data that needs to be send via MPI
  * =====================================================================================
  */
 void mapFile (char* fileName, map<string,int> &outputMap)
@@ -85,7 +89,8 @@ void mapFile (char* fileName, map<string,int> &outputMap)
         while (getline(file, line)){
             vector<string> token;
             tokenize(line, token);
-            
+             
+						// construct the actual map
             for (vector<string>::iterator i = token.begin(); i != token.end(); i++){
                 ret = outputMap.insert(pair<string, int>(*i, 1));
                 if (!ret.second){
@@ -102,7 +107,7 @@ void mapFile (char* fileName, map<string,int> &outputMap)
  *         Name:  reduce
  *  Description:  reduce() deserializes the parameter string, adds all
  *  occurences of the same word and emits a map<string, int> with unique words
- *  and their number of occurence in every file that was in the cl-parameter of
+ *  and their number of occurence in every file that was in the commandline-arguments of
  *  the programmcall
  * =====================================================================================
  */
@@ -134,7 +139,7 @@ map<string, int> reduce ( string &toReduce )
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  printMap
- *  Description:  just for debuging
+ *  Description:  just for debugging
  * =====================================================================================
  */
 void printMap (map<string, int> &toPrint)
@@ -171,6 +176,8 @@ int mapSize (map<string, int> toCount)
  */
 string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	string str (serialize.first);
+	// we add 2 to NUMBEROFDIGITSINANINTEGER to make sure that the string is delimited with
+	// \0 
 	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
 	sprintf (buf, ":%d\n", serialize.second);
 	str += buf;
@@ -183,9 +190,9 @@ string serializeTuple (pair<const basic_string<char>, int> &serialize) {
  *         Name:  wordToPE
  *  Description:  takes a word an decides which PE gets it to reduce
  *  it the "number" of the ascii character (first character -'a') and returns
- *  this number modulo the number of PEs
+ *  this number modulo the number of PEs.
  *  this can result in a bad load balancing since we do not consider the
- *  distribution of characters in the language present
+ *  distribution of characters in the language present.
  * =====================================================================================
  */
 int wordToPE(const string &word, int numPEs){
@@ -219,7 +226,7 @@ string toLower (string str) {
  *         Name:  mapMessages
  *  Description:  takes a map<string, int> and the number of available PEs and
  *  emits a map<int, string> where the key is the PE that gets the value; the
- *  value is a string wich is a serilialized map of pairs <word, occurence> that
+ *  value is a string which is a serialized map of pairs <word, occurence> that
  *  is meant to be reduced by one PE
  * =====================================================================================
  */
@@ -267,7 +274,7 @@ void saveMapToFile(map<string, int> toSave, int id){
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
- *  Description:  checks cl-arguments and does all MPI stuff
+ *  Description:  checks commandline-arguments and does all MPI stuff
  * =====================================================================================
  */
 
