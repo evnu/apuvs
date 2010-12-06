@@ -40,6 +40,7 @@ string toLower (string);
  */
 void tokenize(const string &str, vector<string> &tokens){
 
+    //all non-charracters are token delimiters
     const string delimiters = "1234567890 \"\n\t.,;:-+/?!()[]„";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
@@ -69,7 +70,10 @@ void tokenize(const string &str, vector<string> &tokens){
  * ===  FUNCTION  ======================================================================
  *         Name:  mapFile
  *  Description:  opens file and processes it line by line; emits vector of
- *  <word,1> maps
+ *  <word,n> maps where n is the ammount of occurences of word in the paramter
+ *  file; we don't want to emit just a vector of <word, 1> multimaps (as some
+ *  would consider this a purer map-reduce implementation) in order to minimize
+ *  data that needs to be send via MPI
  * =====================================================================================
  */
 void mapFile (char* fileName, map<string,int> &outputMap)
@@ -96,7 +100,10 @@ void mapFile (char* fileName, map<string,int> &outputMap)
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  reduce
- *  Description:  
+ *  Description:  reduce() deserializes the parameter string, adds all
+ *  occurences of the same word and emits a map<string, int> with unique words
+ *  and their number of occurence in every file that was in the cl-parameter of
+ *  the programmcall
  * =====================================================================================
  */
 map<string, int> reduce ( string &toReduce )
@@ -140,7 +147,8 @@ void printMap (map<string, int> &toPrint)
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  mapSize
- *  Description:  calculate size of map including \n for each key and value
+ *  Description:  calculate size of map including \n for each key and value; is
+ *  used to calculate the size 
  * =====================================================================================
  */
 int mapSize (map<string, int> toCount)
@@ -154,6 +162,13 @@ int mapSize (map<string, int> toCount)
     return size;
 }		/* -----  end of function mapSize  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  serializeTuple
+ *  Description:  takes a pair<string, int> and returns it as a serialized
+ *  string of the form "string:int\n"
+ * =====================================================================================
+ */
 string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	string str (serialize.first);
 	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
@@ -161,22 +176,53 @@ string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	str += buf;
 	delete[] buf;
 	return str;
-}
+}		/* -----  end of function serializeTuple  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  wordToPE
+ *  Description:  takes a word an decides which PE gets it to reduce
+ *  it the "number" of the ascii character (first character -'a') and returns
+ *  this number modulo the number of PEs
+ *  this can result in a bad load balancing since we do not consider the
+ *  distribution of characters in the language present
+ * =====================================================================================
+ */
 int wordToPE(const string &word, int numPEs){
 	char first = *(word.c_str());
 	return (abs(first - 'a')) % numPEs;
-}
+}		/* -----  end of function wordToPE  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  convertME
+ *  Description:  needed for toLower()
+ * =====================================================================================
+ */
 char convertMe (char c) {
 	return tolower (c);
-}
+}		/* -----  end of function convertME  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  toLower
+ *  Description:  returns the parameter string with only lower characters
+ * =====================================================================================
+ */
 string toLower (string str) {
 	transform (str.begin (), str.end (), str.begin (), convertMe);
 	return str;
-}
+}		/* -----  end of function toLower  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  mapMessages
+ *  Description:  takes a map<string, int> and the number of available PEs and
+ *  emits a map<int, string> where the key is the PE that gets the value; the
+ *  value is a string wich is a serilialized map of pairs <word, occurence> that
+ *  is meant to be reduced by one PE
+ * =====================================================================================
+ */
 map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &countedWords, int numPEs) {
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
@@ -194,8 +240,15 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 		}
 
 		return messageMap;
-}
+}		/* -----  end of function mapMessages  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  saveMapToFile
+ *  Description:  saves a map to file "reduced-#PE.txt" with the formating
+ *  word:occurence
+ * =====================================================================================
+ */
 void saveMapToFile(map<string, int> toSave, int id){
 	stringstream filename;
 	filename << "reduced-" << id << ".txt";
@@ -209,7 +262,7 @@ void saveMapToFile(map<string, int> toSave, int id){
 	for (map<string,int>::iterator it = toSave.begin() ; it != toSave.end(); it++){
 		file << (*it).first << ":" << (*it).second << endl;
 	}
-}
+}		/* -----  end of function saveMapToFile  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
@@ -239,10 +292,17 @@ int main (int argc, char *argv[]) {
 		 * map
 		 *
 		 * only apply map if there are enough files to look at. if the rank of the pe is to
-		 * big, omit this step and wait for the reduce step.
+		 * big, omit this step and wait for the reduce step. so there is no
+         * limitation of PEs but it can happen that some PEs are idle
      */
     map<string, int> countedWords;
 		if (myID < argc - 1){
+            /*
+             * this takes care of the distribution of the files; every PE gets a
+             * base chunk of #files/#PEs; if there is a rest n the first n PEs
+             * get their base chunk plus one; since we assume even distribution
+             * of length of the files this is a good load balancing
+             */
 			for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
 				// apply map
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);

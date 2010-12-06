@@ -1,0 +1,42 @@
+\documentclass[a4paper,
+12pt,
+BCOR12mm,
+]{scrartcl}
+%scrreport
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage[pdftex]{graphicx}
+\usepackage{listingsutf8}
+\usepackage{grffile}
+\usepackage{epstopdf}
+\usepackage{subfigure}
+\usepackage[a4paper,left=23mm,right=23mm, top=33mm, bottom=66mm]{geometry}
+% lstlisting settings
+\lstset{
+showspaces=false,
+breaklines=true,
+breakindent=0pt,
+frame=single,
+language=C++,
+extendedchars=true,
+inputencoding=utf8/latin1,
+identifierstyle=\ttfamily,
+basicstyle=\tiny,
+numbers=left,
+numberstyle=\tiny,
+}
+
+\title{APUVS, Blatt 5}
+\author{Jan Fajerski and Kai Warncke and Magnus Müller}
+
+\begin{document}
+% NOTE: compile with pdflatex --shell-escape main.tex
+
+\maketitle 
+
+\section{Quelltexte}
+\lstinputlisting{../wordcount.cpp}
+
+\end{document}
