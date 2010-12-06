@@ -1,5 +1,5 @@
 CC=mpic++
-CFLAGS=-c -Wall -pedantic
+CFLAGS=-DNDEBUG -c -Wall -pedantic
 
 all: wordcount_mpi
 

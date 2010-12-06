@@ -1,5 +1,5 @@
 # use -DNDEBUG if you want to avoid some debugging symbols and function calls
-CFLAGS=-Wall -pedantic 
+CFLAGS= -DNDEBUG -Wall -pedantic 
 
 CC=mpic++
 wordcount_mpi: wordcount.cpp

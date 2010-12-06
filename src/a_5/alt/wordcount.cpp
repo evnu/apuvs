@@ -10,6 +10,8 @@
  *       Revision:  none
  *       Compiler:  gcc
  *
+ *       NOTE: Compile with -DNDEBUG to disable assert and debugging messages.
+ *
  * =====================================================================================
  */
 #include "mapreduce.h"
@@ -19,7 +21,7 @@ using namespace std;
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  main
- *  Description:  checks cl-arguments and does all MPI stuff
+ *  Description:  checks commandline-arguments and does all MPI stuff
  * =====================================================================================
  */
 
@@ -44,10 +46,17 @@ int main (int argc, char *argv[]) {
 		 * map
 		 *
 		 * only apply map if there are enough files to look at. if the rank of the pe is to
-		 * big, omit this step and wait for the reduce step.
+		 * big, omit this step and wait for the reduce step. so there is no
+         * limitation of PEs but it can happen that some PEs are idle
      */
     map<string, int> countedWords;
 		if (myID < argc - 1){
+            /*
+             * this takes care of the distribution of the files; every PE gets a
+             * base chunk of #files/#PEs; if there is a rest n the first n PEs
+             * get their base chunk plus one; since we assume even distribution
+             * of length of the files this is a good load balancing
+             */
 			for (int i = 0; i < (myID + 1 <= rest ? length + 1 : length); i++){
 				// apply map
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);

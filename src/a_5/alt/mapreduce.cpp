@@ -7,18 +7,11 @@
  * =====================================================================================
  */
 
-#include <algorithm>
-#include <iostream>
-#include <fstream>
-#include <cassert>
-#include <vector>
-#include <cctype>
-#include <stdlib.h>
-#include <string>
-#include <cstdlib>
-#include <map>
-#include <utility>
 #include "mapreduce.h"
+
+// NUMBEROFDIGITSINANINTEGER is a rough estimate on the length of an integer. An int is
+// probably shorter, but as we calculate the needed size for a given string anyways, that
+// doesn't matter to much.
 
 using namespace std;
 
@@ -30,7 +23,8 @@ using namespace std;
  */
 void tokenize(const string &str, vector<string> &tokens){
 
-    const string delimiters = "1234567890 \"\n\t.,;:-+/?!()[]%#~'$*_^&§„";
+    //all non-charracters are token delimiters
+    const string delimiters = "1234567890 \"\n\t.,;:-+/?!()[]„";
 
     string::size_type tokenBegin = str.find_first_not_of(delimiters, 0);
     string::size_type tokenEnd = str.find_first_of(delimiters, tokenBegin);
@@ -58,8 +52,10 @@ void tokenize(const string &str, vector<string> &tokens){
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  mapFile
- *  Description:  opens file and processes it line by line; emits vector of
- *  <word,1> maps
+ *  Description:  opens file and processes it line by line; emits a map of type
+ *  <string,int> maps where the integer is the amount of occurences of the key in the parameter
+ *  file; we don't emit a multimap of <word, 1> pairs (some would consider this a purer 
+ *  map-reduce implementation) in order to minimize data that needs to be send via MPI
  * =====================================================================================
  */
 void mapFile (char* fileName, map<string,int> &outputMap)
@@ -71,7 +67,8 @@ void mapFile (char* fileName, map<string,int> &outputMap)
         while (getline(file, line)){
             vector<string> token;
             tokenize(line, token);
-            
+             
+						// construct the actual map
             for (vector<string>::iterator i = token.begin(); i != token.end(); i++){
                 ret = outputMap.insert(pair<string, int>(*i, 1));
                 if (!ret.second){
@@ -80,13 +77,16 @@ void mapFile (char* fileName, map<string,int> &outputMap)
             }
         }
     }
-    else cout << "Couldn't open File: " << fileName << endl;   
+    else cerr << "Couldn't open File: " << fileName << endl;   
 }		/* -----  end of function map  ----- */
 
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  reduce
- *  Description:  
+ *  Description:  reduce() deserializes the parameter string, adds all
+ *  occurences of the same word and emits a map<string, int> with unique words
+ *  and their number of occurence in every file that was in the commandline-arguments of
+ *  the programmcall
  * =====================================================================================
  */
 map<string, int> reduce ( string &toReduce )
@@ -132,7 +132,8 @@ void printMap (map<string, int> &toPrint)
 /* 
  * ===  FUNCTION  ======================================================================
  *         Name:  mapSize
- *  Description:  calculate size of map including \n for each key and value
+ *  Description:  calculate size of map including \n for each key and value; is
+ *  used to calculate the size 
  * =====================================================================================
  */
 int mapSize (map<string, int> toCount)
@@ -146,29 +147,69 @@ int mapSize (map<string, int> toCount)
     return size;
 }		/* -----  end of function mapSize  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  serializeTuple
+ *  Description:  takes a pair<string, int> and returns it as a serialized
+ *  string of the form "string:int\n"
+ * =====================================================================================
+ */
 string serializeTuple (pair<const basic_string<char>, int> &serialize) {
 	string str (serialize.first);
+	// we add 2 to NUMBEROFDIGITSINANINTEGER to make sure that the string is delimited with
+	// \0 
 	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
 	sprintf (buf, ":%d\n", serialize.second);
 	str += buf;
 	delete[] buf;
 	return str;
-}
+}		/* -----  end of function serializeTuple  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  wordToPE
+ *  Description:  takes a word an decides which PE gets it to reduce
+ *  it the "number" of the ascii character (first character -'a') and returns
+ *  this number modulo the number of PEs.
+ *  this can result in a bad load balancing since we do not consider the
+ *  distribution of characters in the language present.
+ * =====================================================================================
+ */
 int wordToPE(const string &word, int numPEs){
 	char first = *(word.c_str());
 	return (abs(first - 'a')) % numPEs;
-}
+}		/* -----  end of function wordToPE  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  convertME
+ *  Description:  needed for toLower()
+ * =====================================================================================
+ */
 char convertMe (char c) {
 	return tolower (c);
-}
+}		/* -----  end of function convertME  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  toLower
+ *  Description:  returns the parameter string with only lower characters
+ * =====================================================================================
+ */
 string toLower (string str) {
 	transform (str.begin (), str.end (), str.begin (), convertMe);
 	return str;
-}
+}		/* -----  end of function toLower  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  mapMessages
+ *  Description:  takes a map<string, int> and the number of available PEs and
+ *  emits a map<int, string> where the key is the PE that gets the value; the
+ *  value is a string which is a serialized map of pairs <word, occurence> that
+ *  is meant to be reduced by one PE
+ * =====================================================================================
+ */
 map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &countedWords, int numPEs) {
 		for (map<string, int>::iterator it = countedWords.begin (); it != countedWords.end (); it++) {
 			// determine which pe needs this message
@@ -186,26 +227,26 @@ map<int, string> mapMessages (map<int, string> &messageMap, map<string, int> &co
 		}
 
 		return messageMap;
-}
+}		/* -----  end of function mapMessages  ----- */
 
+/* 
+ * ===  FUNCTION  ======================================================================
+ *         Name:  saveMapToFile
+ *  Description:  saves a map to file "reduced-#PE.txt" with the formating
+ *  word:occurence
+ * =====================================================================================
+ */
 void saveMapToFile(map<string, int> toSave, int id){
-	string filename = "";
-
-	char *buf = new char[NUMBEROFDIGITSINANINTEGER+2];
-	sprintf (buf, "%d", id);
-	// TODO unugliefy
-	filename = "reduced-";
-	filename += buf;
-	filename += ".txt";
-
-	ofstream file (filename.c_str ());
+	stringstream filename;
+	filename << "reduced-" << id << ".txt";
+	
+	ofstream file (filename.str().c_str ());
 	if (!file.is_open()) {
 		cerr << "Couldn't open " << filename << ". Aborting." << endl;
 		std::abort ();
 	}
 
-	map<string,int>::iterator it;
-	for (it = toSave.begin() ; it != toSave.end(); it++){
+	for (map<string,int>::iterator it = toSave.begin() ; it != toSave.end(); it++){
 		file << (*it).first << ":" << (*it).second << endl;
 	}
 }
