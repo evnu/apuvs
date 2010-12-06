@@ -25,7 +25,7 @@ using namespace std;
 
 int main (int argc, char *argv[]) {
     if (argc < 2){
-        cout	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
+        cerr	<< "Not enough arguments\nPlease specify a list of files to be wordcounted" << endl;
         exit(-2);
     }
 
@@ -53,7 +53,6 @@ int main (int argc, char *argv[]) {
 				mapFile(argv[(myID + 1 <= rest ? myID * length + 1 + myID + i: myID * length + 1 + rest + i)], countedWords);
 			}
     }
-    //printMap(countedWords);
 
 		/* We successfully fullfiled the map step. Now we have to find out, to which PEs we
 		 * have to send a message containing (key,value) pairs. */ 
@@ -69,77 +68,73 @@ int main (int argc, char *argv[]) {
 	  mapMessages (messageMap, countedWords, numPEs);
 
 		/* Send the actual messages to the PEs */ 
+		MPI_Request request;
 		for (map<int,string>::iterator it = messageMap.begin (); it != messageMap.end (); it ++) {
 			string &message = (*it).second;
 			// only send if this if the receiver != sender
 			if ((*it).first != myID) 
-				MPI::COMM_WORLD.Send((void*) message.c_str (), message.size () + 1, MPI::CHAR, (*it).first, REDUCE);
+				MPI_Isend ((void*) message.c_str (), message.size () + 1, MPI_CHAR, (*it).first, 0, MPI_COMM_WORLD, &request);
 		}
 		
 		/* Wait for messages from all PEs */ 
+		
+#ifndef NDEBUG
 		bool *doneWithPE = new bool[numPEs];
 		for (int i = 0; i < numPEs; i++) {
 			doneWithPE[i] = false;
 		}
 		doneWithPE[myID] = true;
+#endif
 
 		int numberOfFinishedMessages = numPEs - 1;
 		
-		// TODO check if condition is right...
-		string myMessages;
 		while (numberOfFinishedMessages) {
 			MPI_Status status;
 			int msglen;
 
+			// check for new messages
 			MPI_Probe(MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
 			MPI_Get_count (&status, MPI_CHAR, &msglen);
 
+#ifndef NDEBUG
 			assert (status.MPI_SOURCE >= 0 && status.MPI_SOURCE < numPEs); // sanity check
 			assert (!doneWithPE[status.MPI_SOURCE]);
 			doneWithPE[status.MPI_SOURCE] = true;
+#endif
 
-			// wether we got a message with a certain length or not, we recognize this
-			// communication as finished
-			if (!msglen) {
-				// throw message away
-				MPI_Recv ((void*)0, 0, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
-			} else {
-				int msglen;
-				MPI_Get_count (&status, MPI_CHAR, &msglen);
-				
-				char *buf;
-				
-				// As we don't know how big the messages will be, there must be some error handling. 
-				try {
-					buf = new char[msglen];
-				} catch (std::bad_alloc) {
-					cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
-					std::abort ();
-				}
+			char *buf;
 
-				// receive message
-				MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
-
-				// add the message to the PEs workload
-				messageMap[myID] += buf;
-
-				delete[] buf;
+			// As we don't know how big the messages will be, there must be some error handling...
+			try {
+				buf = new char[msglen];
+			} catch (std::bad_alloc) {
+				cerr << "Fatal error: Couldn't allocate enough memory for the message. Aborting." << endl;
+				std::abort ();
 			}
+
+			// receive message
+			MPI_Recv (buf, msglen, MPI_CHAR, status.MPI_SOURCE, status.MPI_TAG, MPI_COMM_WORLD, &status);
+
+			// add the message to the PEs workload
+			messageMap[myID] += buf;
+
+			delete[] buf;
 			numberOfFinishedMessages--;
 		}
-		
-		delete[] doneWithPE;
 
-		/* reduce */
-		map<string, int> final = reduce(messageMap[myID]);
+#ifndef NDEBUG
+delete[] doneWithPE;
+#endif
 
-		saveMapToFile (final, myID);
+/* reduce */
+map<string, int> final = reduce(messageMap[myID]);
 
-		// save result
+/* final steps - save the result */
+saveMapToFile (final, myID);
 
-		/*We are done here - clean up the mess*/ 
-    MPI::Finalize();
-    return EXIT_SUCCESS;
+/* We are done here - clean up the mess */ 
+MPI::Finalize();
+return EXIT_SUCCESS;
 }
 /* ----------  end of function main  ---------- */
 
