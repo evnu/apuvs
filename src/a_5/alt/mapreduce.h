@@ -18,11 +18,9 @@
 #include <cstdlib>
 #include <map>
 #include <utility>
+#include <sstream>
 
 #define NUMBEROFDIGITSINANINTEGER 11
-#define REDUCE 0
-#define MARKER 1
-
 
 void tokenize(const std::string&, std::vector<std::string>&);
 void mapFile (char*, std::map<std::string,int>&);
