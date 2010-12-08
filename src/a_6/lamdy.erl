@@ -1,8 +1,9 @@
 -module(lamdy).
--export([run/0, distributor/2, buyer/2]).
+-export([run/4, distributor/2, buyer/2]).
 
 distributor(_, Storage) when Storage < 10 ->
-    io:format("DIST: I don't have enough screws....bye bye\n");
+    io:format("DIST: I don't have enough screws....bye bye\n"),
+    exit(empty);
 
 distributor(Acc, Storage) ->
     io:format("DIST: I have ~B screws and ~B creds.\n", [Storage, Acc]),
@@ -15,11 +16,9 @@ distributor(Acc, Storage) ->
             distributor(Acc + Price, Storage - Number)
     end.
 
-buyer(_, 100) -> 
-    io:format("BUYER: I have enough screws...Thanks...going home\n");
-
 buyer(Acc, _) when Acc < 10 ->
-    io:format("BUYER: Darn...i need a dollar..dollar..dollar is what i need\n");
+    io:format("BUYER: Darn...i need a dollar..dollar..dollar is what i need\n"),
+    exit(empty);
 
 buyer(Acc, Storage) ->
     io:format("BUYER: I have ~B screws and ~B creds.\n", [Storage, Acc]),
@@ -31,8 +30,10 @@ buyer(Acc, Storage) ->
             buyer(Newacc, Storage + Number)
     end.
 
-run() ->
-    Distributor = spawn(lamdy, distributor, [50, 2000]),
+run(Dacc, Dstore, Bacc, Bstore) ->
+    Distributor = spawn(lamdy, distributor, [Dacc, Dstore]),
     register(distrib, Distributor),
-    Buyer = spawn (lamdy, buyer, [1000, 0]),
-    register(buy, Buyer).
+    Buyer = spawn (lamdy, buyer, [Bacc, Bstore]),
+    register(buy, Buyer),
+    link(Distributor),
+    link(Buyer).
