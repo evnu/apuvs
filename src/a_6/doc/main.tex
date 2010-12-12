@@ -74,6 +74,16 @@ Marker später, wie in Abbildung \ref{fig:subex7} dargestellt,
 von den Prozessen 2 und 3 konsumiert und diese können wiederrum in den Endzustand
 übergehen.
 
+\subsection{Schlussfolgerung}
+Der Algorithmus ist also stabil gegenüber mehrfachem Start auf unterschiedlichen
+Prozessen, da die Marker nicht überholt werden können (FIFO-Eigenschaft). Es besteht also
+nicht die Gefahr, dass Nachrichten mit in den Schnitt aufgenommen werden, die zu spät
+abgesendet wurden -- also solche Nachrichten, deren Sender bereits den Algorithmus
+abgeschlossen hat. In unserem Beispiel könnte der Prozess 1 in Abildung \ref{fig:subex6} bereits neue Nachrichten an
+Prozess 2 schicken, ohne dass dies den Schnitt kaputt machen würde, denn Prozess 2 wartet
+noch auf einen Marker und erhält diesen wegen der FIFO-Eigenschaft vor der neuen Nachricht
+von Prozess 1.
+
 \begin{figure}[ht!]
   \begin{center}
     \subfigure[Ausgangssituation]      {\label{fig:subex1} \includegraphics[scale=0.5]{graphviz/graphs/example1.pdf}}
