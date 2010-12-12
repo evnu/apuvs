@@ -82,7 +82,9 @@ abgesendet wurden -- also solche Nachrichten, deren Sender bereits den Algorithm
 abgeschlossen hat. In unserem Beispiel könnte der Prozess 1 in Abildung \ref{fig:subex6} bereits neue Nachrichten an
 Prozess 2 schicken, ohne dass dies den Schnitt kaputt machen würde, denn Prozess 2 wartet
 noch auf einen Marker und erhält diesen wegen der FIFO-Eigenschaft vor der neuen Nachricht
-von Prozess 1.
+von Prozess 1. \\
+Damit besteht die \emph{Grenze des Schnitts} (vergleiche Folie 35, Vorlesung 6) auch
+weiterhin nur aus dem Empfang von Markern auf allen eingehenden Kommunikationskanälen.
 
 \begin{figure}[ht!]
   \begin{center}
