@@ -1,0 +1,16 @@
+graph G {
+/*
+    6. part of the example
+    yellow processes wait for secondary markers
+    some processes already consumed some of their secondary markers
+    filled green processes are done
+*/
+    p1 [fillcolor="green", style="filled"];
+    p4 [fillcolor="green", style="filled"];
+    p2 [color="yellow"];
+    p3 [color="yellow"];
+    p1 -- p2 
+    p1 -- p3 [dir=forward, label="M"]
+    p2 -- p4 [dir=back, label="M"]
+    p3 -- p4 
+}

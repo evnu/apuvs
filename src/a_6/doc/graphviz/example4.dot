@@ -1,0 +1,15 @@
+graph G {
+/*
+    4. part of the example
+    blue processes received initial markers
+    yellow processes wait for secondary markers
+*/
+    p1 [color="yellow"];
+    p4 [color="yellow"];
+    p2 [color="blue"];
+    p3 [color="blue"];
+    p1 -- p2 
+    p1 -- p3 [dir=forward, label="M"]
+    p2 -- p4 [dir=back, label="M"]
+    p3 -- p4 
+}

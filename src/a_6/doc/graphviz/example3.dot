@@ -1,0 +1,12 @@
+graph G {
+/*
+    3. part of the example
+    green processes send markers
+*/
+    p1 [color="green"];
+    p4 [color="green"];
+    p1 -- p2 [dir=forward, label="M"]
+    p1 -- p3 [dir=forward, label="M"]
+    p2 -- p4 [dir=back, label="M"]
+    p3 -- p4 [dir=back, label="M"]
+}
