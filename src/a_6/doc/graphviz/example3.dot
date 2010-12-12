@@ -1,10 +1,10 @@
 graph G {
 /*
     3. part of the example
-    green processes send markers
+    red processes send markers on all channels
 */
-    p1 [color="green"];
-    p4 [color="green"];
+    p1 [color="red"];
+    p4 [color="red"];
     p1 -- p2 [dir=forward, label="M"]
     p1 -- p3 [dir=forward, label="M"]
     p2 -- p4 [dir=back, label="M"]

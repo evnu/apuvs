@@ -1,14 +1,13 @@
 graph G {
 /*
     5. part of the example
-    green processes send markers
+    red processes send markers on all channels
     yellow processes wait for secondary markers
-    blue lines are new ones
 */
     p1 [color="yellow"];
     p4 [color="yellow"];
-    p2 [color="green"];
-    p3 [color="green"];
+    p2 [color="red"];
+    p3 [color="red"];
     p1 -- p2 [dir=back, label="M"]
     p1 -- p3 [dir=forward, label="M"]
     p3 -- p1 [dir=forward, label="M"]
