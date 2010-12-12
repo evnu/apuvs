@@ -36,4 +36,31 @@ numberstyle=\tiny,
 
 \maketitle 
 
+\section*{Aufgabe 6.1}
+Die Aufgabenstellung fragt, ob der \emph{Chandy-Lamport-Algorithmus} auch dann einen
+konsistenten Schnitt erstellt, wenn er auf mehreren oder allen Prozessen gleichzeitig
+gestartet wird. Dies geschieht unter der Voraussetzung, dass alle beteiligten Prozesse
+bisher noch keine Markernachrichten bekommen haben. \\
+
+Der Chandy-Lamport-Algorithmus funktioniert korrekt, auch wenn er gleichzeitig auf
+mehreren Prozessen gestartet wird. \\
+
+\begin{figure}[ht!]
+  \begin{center}
+    \subfigure[Ausgangssituation]{\includegraphics[scale=0.5]{graphviz/graphs/example1.pdf}}
+    \subfigure[Algorithmus startet]{\includegraphics[scale=0.5]{graphviz/graphs/example2.pdf}}
+    \subfigure[Marker auf alle Kanäle]{\includegraphics[scale=0.5]{graphviz/graphs/example3.pdf}}
+    \subfigure[Erste Marker konsumiert]{\includegraphics[scale=0.5]{graphviz/graphs/example4.pdf}}
+    \subfigure[Marker auf alle Kanäle]{\includegraphics[scale=0.5]{graphviz/graphs/example5.pdf}}
+    \subfigure[Einige sind fertig]{\includegraphics[scale=0.5]{graphviz/graphs/example6.pdf}}
+    \subfigure[Alle sind fertig]{\includegraphics[scale=0.5]{graphviz/graphs/example7.pdf}}
+  \end{center}
+  \caption{Beispiel zu Chandy-Lamport}
+  \label{fig:example}
+\end{figure}
+
+\section*{Aufgabe 6.2}
+
+\section*{Aufgabe 6.3}
+
 \end{document}
