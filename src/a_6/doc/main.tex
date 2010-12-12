@@ -28,6 +28,65 @@ numbers=left,
 numberstyle=\tiny,
 }
 
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% \usepackage{mathtools} not installed?
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage[ngerman]{babel}
+\usepackage{algpseudocode}
+
+\usepackage{url}
+
+\usepackage{color}
+
+\usepackage{paralist} % inline list
+
+% enhanced enumerate 
+% see http://texblog.wordpress.com/2008/10/16/lists-enumerate-itemize-description-and-how-to-change-them/
+\usepackage{enumerate}
+
+% i hate the fat blob..
+\renewcommand{\labelitemi}{\guilsinglright}
+
+\usepackage[thmmarks,amsmath,amsthm]{ntheorem}
+
+\theorempreskipamount 14pt
+\theorempostskipamount 12pt
+\theoremstyle{break}
+\theoremheaderfont{\scshape \smallskip}
+\theorembodyfont{\normalfont}
+\newtheorem{defi}{Definition}[subsection]
+
+% vektoren durch $\mat{1 \\ 2 \\ 3}$
+\def\mat#1{\left(\begin{array}{cccccc}#1\end{array}\right)}
+
+% framebox
+\def\framebox#1{\fbox{\begin{minipage}{0.8\textwidth}{#1}\end{minipage}}\\}
+
+% questionbox
+\usepackage{fancybox}
+\def\questionbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge ?} \color{red}{#1}}\end{minipage}}\\}
+\def\warningbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge !} \color{blue}{#1}}\end{minipage}}\\}
+
+% condensed lists
+\usepackage{mdwlist}
+
+
+% floor funktion
+\def\floor#1{\left\lfloor #1 \right\rfloor}
+
+\newtheorem{beh}{Behauptung}
+\newtheorem{bew}{Beweis}
+\newtheorem{afg}{Aufgabe}
+\newtheorem{lsg}{Lösung}
+\newtheorem{lem}{Lemma}[subsection]
+\newtheorem{bsp}{Beispiel}[subsection]
+\newtheorem{satz}{Satz}[subsection]
+\newtheorem{define}{Definition}
+\theoremsymbol{$\square$}
+
 \title{APUVS, Blatt 6}
 \author{Jan Fajerski and Kai Warncke and Magnus Müller}
 
@@ -103,6 +162,43 @@ weiterhin nur aus dem Empfang von Markern auf allen eingehenden Kommunikationska
 \section*{Aufgabe 6.2}
 Siehe Anhang auf Seite \pageref{Anhang}
 \section*{Aufgabe 6.3}
+\begin{beh}
+  $e \rightarrow e' \Leftrightarrow V(e) < V(e')$
+\end{beh}
+\begin{bew}
+  "`$\Rightarrow$"'. Voraussetzung: $e \rightarrow e'$. Zu zeigen: $V(e) < V(e')$. \\
+  Wir zeigen dies per Induktion über die Eigenschaften der \emph{Happens-Before
+  Relation}. \\
+\textbf{Induktionsanfang}. \\
+
+Gelte $e \rightarrow e'$ wegen (HB1), also $e \rightarrow_i e'$. Offensichtlich gilt,
+genau wie bei der Lamportuhr, dass $V_i(e) < V_i(e')$ ist. Es gilt also noch zu zeigen,
+dass ebenso $V_j(e) \leq V_j(e'), \forall j \neq i$ zutrifft.  
+\marginpar{\color{red}{Das muss noch getan werden.}} \\
+
+Sei nun $e = send(m), e' = receive(m,t)$, wobei $m$ eine Nachricht und $t$ der Zeitstempel
+bei Versand von $M$ sind. Es gilt also (HB2). Dann folgt offensichtlich $V(e) < V(e')$, da $V(e')$ als
+komponentenweises Maximum von $V(e)$ und dem im Empfängerprozess $j$ aktuellen Vektor $V'$
+gebildet wird. In $V'$ wird vor Empfang der Nachricht $V_j$ inkrementiert, weshalb $V(e)
+\neq V(e')$ sein muss.
+
+\textbf{Induktionsschritt}
+Es gelte $e \rightarrow e' \rightarrow e''$, also (HB2). Nach Induktionsvoraussetzung
+gilt $V(e) < V(e')$ und $V(e') < V(e'')$. Da die Relation $<$ aber transitiv ist folgt
+direkt $V(e) < V(e'')$, was zu zeigen war. \\
+Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
+
+\end{bew}
+\begin{bew}
+  "`$\Leftarrow$"'. Voraussetzung: $V(e) < V(e')$. Zu zeigen: $e \rightarrow e'$. \\
+  Wir zeigen dies durch eine einfache Fallunterscheidung. \\
+  \textbf{1. Fall}. Seien $e,e'$ Ereignisse innerhalb des selben Prozesses. Es gilt
+  $V_i(e) = L_i(e) < L_i(e') = V_i(e')$ und somit trivialerweise $e \rightarrow_i e'$.
+  Damit gilt auch $e \rightarrow e'$.\\
+  \textbf{2. Fall}. Seien $e,e'$ Ereignisse in zwei unterschiedlichen Prozessen $i,j$.
+\marginpar{\color{red}{Das muss noch getan werden.}}
+
+\end{bew}
 
 
 \pagebreak
