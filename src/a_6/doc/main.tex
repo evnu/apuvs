@@ -45,15 +45,44 @@ bisher noch keine Markernachrichten bekommen haben. \\
 Der Chandy-Lamport-Algorithmus funktioniert korrekt, auch wenn er gleichzeitig auf
 mehreren Prozessen gestartet wird. \\
 
+Wir illustrieren das an dem durch Abbildung \ref{fig:example} gegebenen Beispiel. Wir
+beginnen in einem Zustand, der durch Abbildung \ref{fig:subex1} gegeben ist: Der
+Prozessgraph ist zusammenhängend und besteht aus 4 Prozessen und 4 Kommunikationskanälen.
+Nun wird der Chandy-Lamport-Algorithmus zeitgleich (zumindest ohne zu große Verzögerung
+dazwischen) auf den Prozessen 1 und 4 gestartet (vgl. Abbildung \ref{fig:subex2}). Der
+Start des Algorithmus funktioniert auch über Marker, welche diese beiden Prozesse bereits
+erhalten haben (nicht dargestellt). Diese aktivierten Prozesse senden an alle
+Kommunikationskanäle Marker, nachdem sie ihren internen Zustand gesichert haben (Abbildung
+\ref{fig:subex3}). Zudem starten sie danach die Aufzeichnung der eingehenden Nachrichten
+über die angeschlossenen Kommunikationskanäle. Nun folgt die in Abbildung \ref{fig:subex4}
+dargestelle Situation: Die Prozesse 2 und 3 erhalten ihrerseits ihre ersten Marker und
+beginnn somit, den Algorithmus auszuführen. Sie sichern also ihren internen Zustand und
+senden dann, wie in Abbildung \ref{fig:subex5} dargestellt, auch Marker an alle
+angeschlossenen Kommunikationskanäle. Wie an Abbildung \ref{fig:subex5} zu sehen ist,
+wurden aber noch nicht alle im System vorhanden Markernachrichten konsumiert. Dies ist
+eine wichtige Erkenntnis, denn dadurch sind die auf diesem Kanal benötigten
+Markernachrichten bereits vorhanden. Abbildung \ref{fig:subex6} beschreibt einen
+Ausschnitt aus dem System, nachdem die Prozesse 2 und 3 ihre Marker geschickt haben, diese
+aber noch nicht konsumiert wurden. Nun sind die für die Prozesse 1 und 4 nötigen Marker
+unterwegs und können konsumiert werden. Dadurch kommen 1 und 4 in den Endzustand und
+können den Algorithmus beenden. Die Prozesse 2 und 3 warten wiederrum noch auf eingehende
+Nachrichten. Wie an den Kanälen noch zu sehen, befinden sich immer noch Markernachrichten
+in den Puffern. Aufgrund der FIFO-Eigenschaft der Kanäle können diese Nachrichten nicht
+überholt werden. Das bedeutet, dass auch neue Nachrichten von den bereits mit dem
+Algorithmus fertigen Prozessen diese Marker nicht überholen werden. Somit werden die
+Marker später, wie in Abbildung \ref{fig:subex7} dargestellt,
+von den Prozessen 2 und 3 konsumiert und diese können wiederrum in den Endzustand
+übergehen.
+
 \begin{figure}[ht!]
   \begin{center}
-    \subfigure[Ausgangssituation]{\includegraphics[scale=0.5]{graphviz/graphs/example1.pdf}}
-    \subfigure[Algorithmus startet]{\includegraphics[scale=0.5]{graphviz/graphs/example2.pdf}}
-    \subfigure[Marker auf alle Kanäle]{\includegraphics[scale=0.5]{graphviz/graphs/example3.pdf}}
-    \subfigure[Erste Marker konsumiert]{\includegraphics[scale=0.5]{graphviz/graphs/example4.pdf}}
-    \subfigure[Marker auf alle Kanäle]{\includegraphics[scale=0.5]{graphviz/graphs/example5.pdf}}
-    \subfigure[Einige sind fertig]{\includegraphics[scale=0.5]{graphviz/graphs/example6.pdf}}
-    \subfigure[Alle sind fertig]{\includegraphics[scale=0.5]{graphviz/graphs/example7.pdf}}
+    \subfigure[Ausgangssituation]      {\label{fig:subex1} \includegraphics[scale=0.5]{graphviz/graphs/example1.pdf}}
+    \subfigure[Algorithmus startet]    {\label{fig:subex2} \includegraphics[scale=0.5]{graphviz/graphs/example2.pdf}}
+    \subfigure[Marker auf alle Kanäle] {\label{fig:subex3} \includegraphics[scale=0.5]{graphviz/graphs/example3.pdf}}
+    \subfigure[Erste Marker konsumiert]{\label{fig:subex4} \includegraphics[scale=0.5]{graphviz/graphs/example4.pdf}}
+    \subfigure[Marker auf alle Kanäle] {\label{fig:subex5} \includegraphics[scale=0.5]{graphviz/graphs/example5.pdf}}
+    \subfigure[Einige sind fertig]     {\label{fig:subex6} \includegraphics[scale=0.5]{graphviz/graphs/example6.pdf}}
+    \subfigure[Alle sind fertig]       {\label{fig:subex7} \includegraphics[scale=0.5]{graphviz/graphs/example7.pdf}}
   \end{center}
   \caption{Beispiel zu Chandy-Lamport}
   \label{fig:example}
