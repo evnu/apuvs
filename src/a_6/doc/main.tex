@@ -19,7 +19,7 @@ showspaces=false,
 breaklines=true,
 breakindent=0pt,
 frame=single,
-language=C++,
+language=erlang,
 extendedchars=true,
 inputencoding=utf8/latin1,
 identifierstyle=\ttfamily,
@@ -74,7 +74,7 @@ Marker später, wie in Abbildung \ref{fig:subex7} dargestellt,
 von den Prozessen 2 und 3 konsumiert und diese können wiederrum in den Endzustand
 übergehen.
 
-\subsection{Schlussfolgerung}
+\subsection*{Schlussfolgerung}
 Der Algorithmus ist also stabil gegenüber mehrfachem Start auf unterschiedlichen
 Prozessen, da die Marker nicht überholt werden können (FIFO-Eigenschaft). Es besteht also
 nicht die Gefahr, dass Nachrichten mit in den Schnitt aufgenommen werden, die zu spät
@@ -99,7 +99,15 @@ von Prozess 1.
 \end{figure}
 
 \section*{Aufgabe 6.2}
-
+Siehe Anhang auf Seite \pageref{Anhang}
 \section*{Aufgabe 6.3}
+
+
+\pagebreak
+\section*{Anhang}
+\label{Anhang}
+\begin{appendix}
+  \lstinputlisting{../src/lamdy.erl} 
+\end{appendix}
 
 \end{document}
