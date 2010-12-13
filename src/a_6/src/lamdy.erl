@@ -8,9 +8,15 @@
 %
 
 record_state(Processname, Acc, Storage) -> 
-					io:format ("~s <Konto: ~B , Schrauben: ~B>\n", [Processname, Acc, Storage]).
+    io:format ("~s <Konto: ~B , Schrauben: ~B>\n", [Processname, Acc, Storage]).
 send_marker(Receiver) ->
-          Receiver ! {snapshot, self()}.
+    case catch Receiver ! {snapshot, self()} of
+        {'EXIT',_} ->
+            io:format("I lost the connection to the receiver. Aborting.\n"),
+            exit("Lost connection")
+            ;
+        _ -> true
+    end.
 
 
 %%%%%%%%%%%
@@ -28,15 +34,9 @@ distributor(Acc, Storage, false) ->
             %send screws to buyer
             buy ! {Number},
             distributor(Acc + Price, Storage - Number, false);
-				{snapshot, Sender} -> % received marker
+        {snapshot, Sender} -> % received marker
             record_state ("Distributor", Acc, Storage),
-            case catch send_marker (buy) of
-                {'EXIT',_} ->
-                    io:format ("Distributor lost connection to buyer\n"),
-                    exit("Distributor finishes");
-                _ ->
-                    true
-            end,
+            send_marker (buy),
             case Sender of
                 system -> distributor(Acc, Storage, true); % initiate snapshot
                 _ -> distributor(Acc, Storage, false) % received message on all incoming channels
@@ -45,14 +45,14 @@ distributor(Acc, Storage, false) ->
 
 % record incmoing messages
 distributor(Acc, Storage, true) ->
-		receive
-				{Number, Price} when is_integer(Number) and is_integer(Price) ->
-						io:format("Distributor: received ~B screws for ~B money\n", [Number, Price]),
-						buy ! {Number},
-						distributor(Acc + Price, Storage - Number, true);
-				{snapshot, _} -> % finished - we can only be here if the initial message was from the system
-						distributor(Acc, Storage, false)
-			end.
+    receive
+        {Number, Price} when is_integer(Number) and is_integer(Price) ->
+            io:format("Distributor: received ~B screws for ~B money\n", [Number, Price]),
+            buy ! {Number},
+            distributor(Acc + Price, Storage - Number, true);
+        {snapshot, _} -> % finished - we can only be here if the initial message was from the system
+            distributor(Acc, Storage, false)
+    end.
 
 %%%%%%%%%%%
 %
@@ -72,14 +72,7 @@ buyer (Acc, Storage, false) ->
             buyer(Newacc, Storage + Number, false);
         {snapshot, Sender} -> % initiate snapshot 
             record_state ("Buyer", Newacc, Storage),
-            case catch send_marker (distrib) of
-                {'EXIT',_} ->
-                    io:format ("Buyer lost connection to distributor\n"),
-                    exit("Buyer finishes");
-                _ ->
-                    true
-            end,
-
+            send_marker (distrib),
             case Sender of
                 system -> buyer(Newacc, Storage, true);
                 _  -> buyer(Newacc, Storage, false) % received message on all incoming channels
@@ -88,17 +81,17 @@ buyer (Acc, Storage, false) ->
 
 % record incoming messages
 buyer(Acc, Storage, true) ->
-		% keep on sending messages
+    % keep on sending messages
     distrib ! {10, 50},
     Newacc = Acc - 50,
-		receive
-			% record incoming messages
-				{Number} when is_integer (Number) -> 
-					io:format("Buyer - received ~B screws\n", [Number]),
-					buyer(Newacc, Storage + Number, true);
-				{snapshot, _} -> % finished snapshot
-					buyer(Acc, Storage, false)
-		end.
+    receive
+        % record incoming messages
+        {Number} when is_integer (Number) -> 
+            io:format("Buyer - received ~B screws\n", [Number]),
+            buyer(Newacc, Storage + Number, true);
+        {snapshot, _} -> % finished snapshot
+            buyer(Acc, Storage, false)
+    end.
 
 run(Dacc, Dstore, Bacc, Bstore) ->
     Distributor = spawn(lamdy, distributor, [Dacc, Dstore, false]),
@@ -108,4 +101,4 @@ run(Dacc, Dstore, Bacc, Bstore) ->
     link(Distributor),
     link(Buyer),
     % create a snapshot
-		Buyer ! {snapshot, system}.
+    Buyer ! {snapshot, system}.
