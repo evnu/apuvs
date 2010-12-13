@@ -1,4 +1,0 @@
-Open MPI is an Message Passing Interface (MPI) library project combining technologies and
-resources from several other projects (FT-MPI, LA-MPI, LAM/MPI, and PACX-MPI). It is used
-by many TOP500 supercomputers including Roadrunner, which was the world's fastest
-supercomputer from June 2008 to November 2009. 
