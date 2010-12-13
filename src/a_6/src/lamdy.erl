@@ -21,7 +21,7 @@ distributor(Acc, Storage) ->
             io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
             snapshot:snapshot([buy], [buy], Sender),
             distributor(Acc, Storage)
-    end;
+    end.
 
 %%%%%%%%%%%
 %
@@ -38,12 +38,12 @@ buyer (Acc, Storage) ->
     Newacc = Acc - 50,
     receive
         {Number} when is_integer(Number) ->
-            buyer(Newacc, Storage + Number, false);
+            buyer(Newacc, Storage + Number);
         {marker, Sender} ->
             io:format("BUYER: Account: ~B \t\t Storage: ~B\n", [Newacc, Storage]),
             snapshot:snapshot([buy], [buy], Sender),
             buyer(Newacc, Storage)
-    end;
+    end.
 
 run(Dacc, Dstore, Bacc, Bstore) ->
     Distributor = spawn(lamdy, distributor, [Dacc, Dstore]),
@@ -51,5 +51,5 @@ run(Dacc, Dstore, Bacc, Bstore) ->
     Buyer = spawn (lamdy, buyer, [Bacc, Bstore]),
     register(buy, Buyer),
     link(Distributor),
-    link(Buyer),
+    link(Buyer)
     .
