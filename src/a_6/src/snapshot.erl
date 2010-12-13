@@ -18,8 +18,8 @@ snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
 
 % received marker on all incoming channels
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) when length(IncomingChannels) == NumberOfMarkers -> 
-    resend (lists:reverse (ListOfSavedMessages)),
-    io:format("finished my part of the snapshot.\n")
+    io:format("finished my part of the snapshot.\n"),
+    lists:reverse (ListOfSavedMessages)
     ;
 
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
@@ -28,15 +28,9 @@ recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
             recordMessages (IncomingChannels, NumberOfMarkers + 1, ListOfSavedMessages);
         Msg -> 
             % record message
+            io:format ("Recorded ~w\n", [Msg]),
             recordMessages (IncomingChannels, NumberOfMarkers, [Msg | ListOfSavedMessages])
     end .
-
-% we have to resend the saved messages to actually process them 
-resend ([]) -> true;
-resend ([H|T]) ->
-    self () ! H,
-    resend (T).
-
 
 %%%%%%%%
 %
