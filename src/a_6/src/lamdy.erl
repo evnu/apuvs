@@ -1,104 +1,93 @@
 -module(lamdy).
--export([run/4, distributor/3, buyer/3]).
-
+-export([run/0, run/4, distributor/2, buyer/2]).
 
 %%%%%%%%%%%
 %
-% both distributor and buyer can use the following helper functions
+% example
+% - call lamdy:run() to start the example
 %
-
-record_state(Processname, Acc, Storage) -> 
-    io:format ("~s <Konto: ~B , Schrauben: ~B>\n", [Processname, Acc, Storage]).
-send_marker(Receiver) ->
-    case catch Receiver ! {snapshot, self()} of
-        {'EXIT',_} ->
-            io:format("I lost the connection to the receiver. Aborting.\n"),
-            exit("Lost connection")
-            ;
-        _ -> true
-    end.
-
+% Note: the distributor initiates the snapshot if his message box is empty.
+%
 
 %%%%%%%%%%%
 %
 % Distributor
 %
 
-distributor(_, Storage, _) when Storage < 10 ->
+distributor(_, Storage) when Storage < 10 ->
     io:format("DIST: I don't have enough screws....bye bye\n"),
     exit("distributor finishes");
 
-distributor(Acc, Storage, false) ->
+distributor(Acc, Storage) ->
     receive
         {Number, Price} when is_integer(Number) and is_integer(Price) ->
             %send screws to buyer
             buy ! {Number},
-            distributor(Acc + Price, Storage - Number, false);
-        {snapshot, Sender} -> % received marker
-            record_state ("Distributor", Acc, Storage),
-            send_marker (buy),
-            case Sender of
-                system -> distributor(Acc, Storage, true); % initiate snapshot
-                _ -> distributor(Acc, Storage, false) % received message on all incoming channels
-            end
-    end;
-
-% record incmoing messages
-distributor(Acc, Storage, true) ->
-    receive
-        {Number, Price} when is_integer(Number) and is_integer(Price) ->
-            io:format("Distributor: received ~B screws for ~B money\n", [Number, Price]),
-            buy ! {Number},
-            distributor(Acc + Price, Storage - Number, true);
-        {snapshot, _} -> % finished - we can only be here if the initial message was from the system
-            distributor(Acc, Storage, false)
+            distributor(Acc + Price, Storage - Number);
+        {marker} ->
+            io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
+            UnprocessedMessages = snapshot:snapshot([buy], [buy]),
+            distributor(Acc, Storage, UnprocessedMessages)
+    after
+        % if no message is buffered, do a snapshot
+        0 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
+             snapshot:snapshot([buy], [distrib, buy]),
+             io:format("\n"),
+             distributor (Acc, Storage)
     end.
+
+% Handle all messages which where left unprocessed in the snapshort algorithm
+distributor (Acc,Storage,[]) ->
+    distributor (Acc, Storage);
+
+distributor (Acc,Storage, [{Money, Order}|T]) ->
+    distributor (Acc + Money, Storage - Order, T).
 
 %%%%%%%%%%%
 %
 % Buyer
 %
 
-buyer(Acc, _, _) when Acc < 10 ->
+buyer(Acc, _) when Acc < 10 ->
     io:format("BUYER: Darn...i need a dollar..dollar..dollar is what i need\n"),
     exit("Buyer finishes");
 
 % no snapshot
-buyer (Acc, Storage, false) ->
+buyer (Acc, Storage) ->
     distrib ! {10, 50},
     Newacc = Acc - 50,
     receive
         {Number} when is_integer(Number) ->
-            buyer(Newacc, Storage + Number, false);
-        {snapshot, Sender} -> % initiate snapshot 
-            record_state ("Buyer", Newacc, Storage),
-            send_marker (distrib),
-            case Sender of
-                system -> buyer(Newacc, Storage, true);
-                _  -> buyer(Newacc, Storage, false) % received message on all incoming channels
-            end
-    end;
-
-% record incoming messages
-buyer(Acc, Storage, true) ->
-    % keep on sending messages
-    distrib ! {10, 50},
-    Newacc = Acc - 50,
-    receive
-        % record incoming messages
-        {Number} when is_integer (Number) -> 
-            io:format("Buyer - received ~B screws\n", [Number]),
-            buyer(Newacc, Storage + Number, true);
-        {snapshot, _} -> % finished snapshot
-            buyer(Acc, Storage, false)
+            buyer(Newacc, Storage + Number);
+        {marker} ->
+            io:format("BUYER: Account: ~B \t\t Storage: ~B\n", [Newacc, Storage]),
+            UnprocessedMessages = snapshot:snapshot([distrib], [distrib]),
+            buyer(Newacc, Storage, UnprocessedMessages)
     end.
 
+% Handle all messages which where left unprocessed in the snapshort algorithm
+buyer (Acc, Storage, []) ->
+    buyer (Acc, Storage);
+
+buyer (Acc, Storage, [{H}|T]) ->
+    % we know how head looks as we know the structure of the messages
+    buyer (Acc, Storage+H, T).
+
+
+%%%%%%%%%%%
+%
+% Start methods
+% 
+%
+run () ->
+    run (1000,1000,1000,1000).
+
 run(Dacc, Dstore, Bacc, Bstore) ->
-    Distributor = spawn(lamdy, distributor, [Dacc, Dstore, false]),
-    register(distrib, Distributor),
-    Buyer = spawn (lamdy, buyer, [Bacc, Bstore, false]),
-    register(buy, Buyer),
+    Distributor = spawn(lamdy, distributor, [Dacc, Dstore]),
+    Buyer = spawn (lamdy, buyer, [Bacc, Bstore]),
     link(Distributor),
     link(Buyer),
-    % create a snapshot
-    Buyer ! {snapshot, system}.
+    register(distrib, Distributor),
+    register(buy, Buyer)
+    .
+
