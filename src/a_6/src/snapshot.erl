@@ -18,7 +18,6 @@ snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
 
 % received marker on all incoming channels
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) when length(IncomingChannels) == NumberOfMarkers -> 
-    io:format("finished my part of the snapshot.\n"),
     lists:reverse (ListOfSavedMessages)
     ;
 
