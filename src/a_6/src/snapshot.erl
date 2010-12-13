@@ -18,16 +18,15 @@ snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
 
 % received marker on all incoming channels
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) when length(IncomingChannels) == NumberOfMarkers -> 
-    % resend ListOfSavedMessages to yourself
-    %resend (lists:reverse (ListOfSavedMessages))
-    io:format("done recording\n")
+    resend (lists:reverse (ListOfSavedMessages)),
+    io:format("====finished\n")
     ;
 
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
     receive
-        {marker} -> recordMessages (IncomingChannels, NumberOfMarkers + 1,
-                ListOfSavedMessages),
-            io:format("recorded marker\n");
+        {marker} -> 
+            io:format("recorded marker\n"),
+            recordMessages (IncomingChannels, NumberOfMarkers + 1, ListOfSavedMessages);
         Msg -> 
             % record message
             io:format ("Received ~w\n", [Msg]),

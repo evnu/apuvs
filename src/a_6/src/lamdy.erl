@@ -12,6 +12,12 @@ distributor(_, Storage) when Storage < 10 ->
     exit("distributor finishes");
 
 distributor(Acc, Storage) ->
+    case random:uniform(2) of
+        1 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
+            snapshot:snapshot([buy], [distrib, buy]),
+            distributor (Acc, Storage);
+        _ -> true
+    end,
     receive
         {Number, Price} when is_integer(Number) and is_integer(Price) ->
             %send screws to buyer
@@ -31,10 +37,6 @@ distributor(Acc, Storage) ->
 buyer(Acc, _) when Acc < 10 ->
     io:format("BUYER: Darn...i need a dollar..dollar..dollar is what i need\n"),
     exit("Buyer finishes");
-
-buyer(Acc, Storage) when Acc < 400 ->
-    snapshot:snapshot([distrib], [distrib, buy]),
-    buyer(Acc, Storage);
 
 % no snapshot
 buyer (Acc, Storage) ->
