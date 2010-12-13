@@ -25,22 +25,21 @@ distributor(Acc, Storage) ->
             buy ! {Number},
             distributor(Acc + Price, Storage - Number);
         {marker} ->
-            io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
             UnprocessedMessages = snapshot:snapshot([buy], [buy]),
             distributor(Acc, Storage, UnprocessedMessages)
     after
         % if no message is buffered, do a snapshot
         0 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
-             snapshot:snapshot([buy], [distrib, buy]),
+             UnprocessedMessages = snapshot:snapshot([buy], [distrib, buy]),
              io:format("\n"),
-             distributor (Acc, Storage)
+             distributor (Acc, Storage, UnprocessedMessages)
     end.
 
 % Handle all messages which where left unprocessed in the snapshort algorithm
 distributor (Acc,Storage,[]) ->
     distributor (Acc, Storage);
 
-distributor (Acc,Storage, [{Money, Order}|T]) ->
+distributor (Acc,Storage, [{Order, Money}|T]) ->
     distributor (Acc + Money, Storage - Order, T).
 
 %%%%%%%%%%%

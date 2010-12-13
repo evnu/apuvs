@@ -160,7 +160,19 @@ weiterhin nur aus dem Empfang von Markern auf allen eingehenden Kommunikationska
 \end{figure}
 
 \section*{Aufgabe 6.2}
-Siehe Anhang auf Seite \pageref{Anhang}
+Siehe Anhang auf Seite \pageref{Anhang}. \verb|lamdy.erl| enthält das Beispiel aus der
+Vorlesung, \verb|snapshot.erl| die Implementation des Snapshotalgorithmus.
+\paragraph{Anmerkungen}
+\begin{itemize}
+  \item Der Zustand der Prozesse muss vor Betreten der Snapshotfunktion
+    gespeichert werden. Wir haben uns hierfür entschieden, da eine Abstraktion der
+    Zustandsspeicherung nicht sinnvoll ist.
+  \item Die Snapshotfunktion merkt sich alle empfangenen Nachrichten einer Liste. Ein
+    aufrufender Prozess muss diese Liste nach Erstellung des Schnitts selbstständig wieder
+    abarbeiten. 
+  \item Der initiale Marker wird im Beispiel durch den \verb|distributor| versendet, falls
+    dessen Nachrichtenpuffer leer ist.
+\end{itemize}
 \section*{Aufgabe 6.3}
 \begin{beh}
   Für zwei Ereignisse $e,e'$ gilt: \[e \rightarrow e' \Longleftrightarrow V(e) < V(e')\]
@@ -222,7 +234,8 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
 \section*{Anhang}
 \label{Anhang}
 \begin{appendix}
-  \lstinputlisting{../src/lamdy.erl} 
+ \lstinputlisting{../src/lamdy.erl} 
+ \lstinputlisting{../src/snapshot.erl} 
 \end{appendix}
 
 \end{document}
