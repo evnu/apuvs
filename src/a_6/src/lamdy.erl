@@ -26,8 +26,8 @@ distributor(Acc, Storage) ->
             distributor(Acc + Price, Storage - Number);
         {marker} ->
             io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
-            snapshot:snapshot([buy], [buy]),
-            distributor(Acc, Storage)
+            UnprocessedMessages = snapshot:snapshot([buy], [buy]),
+            distributor(Acc, Storage, UnprocessedMessages)
     after
         % if no message is buffered, do a snapshot
         0 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
@@ -35,6 +35,13 @@ distributor(Acc, Storage) ->
              io:format("\n"),
              distributor (Acc, Storage)
     end.
+
+% Handle all messages which where left unprocessed in the snapshort algorithm
+distributor (Acc,Storage,[]) ->
+    distributor (Acc, Storage);
+
+distributor (Acc,Storage, [{Money, Order}|T]) ->
+    distributor (Acc + Money, Storage - Order, T).
 
 %%%%%%%%%%%
 %
@@ -54,9 +61,17 @@ buyer (Acc, Storage) ->
             buyer(Newacc, Storage + Number);
         {marker} ->
             io:format("BUYER: Account: ~B \t\t Storage: ~B\n", [Newacc, Storage]),
-            snapshot:snapshot([distrib], [distrib]),
-            buyer(Newacc, Storage)
+            UnprocessedMessages = snapshot:snapshot([distrib], [distrib]),
+            buyer(Newacc, Storage, UnprocessedMessages)
     end.
+
+% Handle all messages which where left unprocessed in the snapshort algorithm
+buyer (Acc, Storage, []) ->
+    buyer (Acc, Storage);
+
+buyer (Acc, Storage, [{H}|T]) ->
+    % we know how head looks as we know the structure of the messages
+    buyer (Acc, Storage+H, T).
 
 
 %%%%%%%%%%%
