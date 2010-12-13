@@ -173,8 +173,14 @@ Siehe Anhang auf Seite \pageref{Anhang}
 
 Gelte $e \rightarrow e'$ wegen (HB1), also $e \rightarrow_i e'$. Offensichtlich gilt,
 genau wie bei der Lamportuhr, dass $V_i(e) < V_i(e')$ ist. Es gilt also noch zu zeigen,
-dass ebenso $V_j(e) \leq V_j(e'), \forall j \neq i$ zutrifft.  
-\marginpar{\color{red}{Das muss noch getan werden.}} \\
+dass ebenso $V_j(e) \leq V_j(e'), \forall j \neq i$ zutrifft. Nehmen wir an, dies würde
+nicht zutreffen. Dann muss der entsprechende Prozess $j$, der diese Bedingung nicht
+erfüllt, mit Prozess $i$ "`synchronisiert"' worden sein\footnote{Diese zwei Prozesse
+müssen also einmal in der Zwischenzeit ihre Zeitstempel über \emph{send-receive} angepasst
+haben.} Das Ereignis $e$ muss nach Voraussetzung vor Ereignis $e'$ in $i$ passiert sein.
+Wenn nun aber $V_j(e) > V_j(e')$ gilt, dann muss die Synchronisation von $i$ und $j$
+nach $e'$ passiert sein, jedoch vor $e$. $e'$ kann also nicht vor $e$ passiert sein, was
+im Widerspruch zur Voraussetzung steht.\\
 
 Sei nun $e = send(m), e' = receive(m,t)$, wobei $m$ eine Nachricht und $t$ der Zeitstempel
 bei Versand von $M$ sind. Es gilt also (HB2). Dann folgt offensichtlich $V(e) < V(e')$, da $V(e')$ als
@@ -191,16 +197,21 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
 \end{bew}
 \begin{bew}
   "`$\Leftarrow$"'. Voraussetzung: $V(e) < V(e')$. Zu zeigen: $e \rightarrow e'$. \\
-  Wir zeigen dies durch eine einfache Fallunterscheidung. \\
-  \textbf{1. Fall}. Seien $e,e'$ Ereignisse innerhalb des selben Prozesses. Es gilt
-  $V_i(e) = L_i(e) < L_i(e') = V_i(e')$ und somit trivialerweise $e \rightarrow_i e'$.
-  Damit gilt auch $e \rightarrow e'$.\\
-  \textbf{2. Fall}. Seien $e,e'$ Ereignisse in zwei unterschiedlichen Prozessen $i,j$.
-\marginpar{\color{red}{Das muss noch getan werden.}}
-Idee: Male \emph{history} aller Prozesse als gerichteter Graph auf. Suche
-nun den kürzesten Weg von $e$ nach $e'$ (falls es einen Weg gibt). Nun gilt folgende
-Eigenschaft: Für jede Kante gilt die happens before Relation, da immer $V(e_1) \leq
-V(e_2)$ und $V(e_1) \neq V(e_2)$, egal ob $e_1,e_2$ im gleichen Prozess sind oder nicht.
+  Falls $e$ und $e'$ Ereignisse des gleichen Prozesses $i$ sind ist dies offensichtlich.
+  Ebenso gilt dies offensichtlich, falls $e = send m$ und $e' = receive m$ ist. Zudem gilt
+  für $e,e'$, dass $e''$ existiert, so dass $V(e) < V(e'') <= V(e')$. Auf dieser
+  Grundlage kann man nun folgendermaßen einen gerichteten Graph $G$ mit folgenden
+  Eigenschaften erstellen: Zwei beliebige Ereignisse $e_n,e_m$ (oder auch Knoten) werden
+  durch eine Kante $(e_n,e_m)$ verbunden, falls 
+  \begin{enumerate}[(a)]
+    \item Beide Ereignisse des gleichen Prozess $i$ sind und $V_i(e_n) + 1 = V_i(e_m)$
+      (also direkt aufeinander folgende Ereignisse)
+    \item Falls $e_n = send\ message$ und $e_m = receive\ message$ für eine Nachricht.
+  \end{enumerate}
+  Für diesen Graph gilt nun folgende Eigenschaft: Falls für zwei Ereignisse $e$ und $e'$
+  die Voraussetzung $V(e) < V(e')$ gilt, dann existiert ein Weg $w = (e, \dots, e_a, \dots e_b, \dots, e')$ innerhalb des Graphen
+  von $e$ nach $e'$. Für zwei Ereignisse $e_a, e_b$ des Weges $w$ gilt aber $e_a
+  \rightarrow e_b$, weshalb auch $e \rightarrow e'$ folgt.
 
 \end{bew}
 
