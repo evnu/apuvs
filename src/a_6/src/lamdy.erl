@@ -15,7 +15,7 @@ distributor(Acc, Storage) ->
     case random:uniform(2) of
         1 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
             snapshot:snapshot([buy], [distrib, buy]),
-            distributor (Acc, Storage);
+            io:format("\n");
         _ -> true
     end,
     receive
