@@ -17,9 +17,9 @@ distributor(Acc, Storage) ->
             %send screws to buyer
             buy ! {Number},
             distributor(Acc + Price, Storage - Number);
-        {marker, Sender} ->
+        {marker} ->
             io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
-            snapshot:snapshot([buy], [buy], Sender),
+            snapshot:snapshot([buy], [buy]),
             distributor(Acc, Storage)
     end.
 
@@ -32,6 +32,10 @@ buyer(Acc, _) when Acc < 10 ->
     io:format("BUYER: Darn...i need a dollar..dollar..dollar is what i need\n"),
     exit("Buyer finishes");
 
+buyer(Acc, Storage) when Acc < 400 ->
+    snapshot:snapshot([distrib], [distrib, buy]),
+    buyer(Acc, Storage);
+
 % no snapshot
 buyer (Acc, Storage) ->
     distrib ! {10, 50},
@@ -39,9 +43,9 @@ buyer (Acc, Storage) ->
     receive
         {Number} when is_integer(Number) ->
             buyer(Newacc, Storage + Number);
-        {marker, Sender} ->
+        {marker} ->
             io:format("BUYER: Account: ~B \t\t Storage: ~B\n", [Newacc, Storage]),
-            snapshot:snapshot([buy], [buy], Sender),
+            snapshot:snapshot([distrib], [distrib]),
             buyer(Newacc, Storage)
     end.
 
