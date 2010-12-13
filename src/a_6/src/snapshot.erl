@@ -19,17 +19,15 @@ snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
 % received marker on all incoming channels
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) when length(IncomingChannels) == NumberOfMarkers -> 
     resend (lists:reverse (ListOfSavedMessages)),
-    io:format("====finished\n")
+    io:format("finished my part of the snapshot.\n")
     ;
 
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
     receive
         {marker} -> 
-            io:format("recorded marker\n"),
             recordMessages (IncomingChannels, NumberOfMarkers + 1, ListOfSavedMessages);
         Msg -> 
             % record message
-            io:format ("Received ~w\n", [Msg]),
             recordMessages (IncomingChannels, NumberOfMarkers, [Msg | ListOfSavedMessages])
     end .
 
@@ -40,14 +38,16 @@ resend ([H|T]) ->
     resend (T).
 
 
-
 %%%%%%%%
 %
 % Send markers
 %
 sendMarkerToOutgoing ([]) -> true;
 sendMarkerToOutgoing ([H|T]) -> 
-    io:format("Sending marker ~w\n", [H]),
-    H ! {marker},
+    case catch H ! {marker} of
+            {'EXIT',_} ->
+                io:format ("Lost my connection to ~w. Aborting.\n", [H]);
+            _ -> true
+    end,
     sendMarkerToOutgoing(T).
 

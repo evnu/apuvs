@@ -1,6 +1,13 @@
 -module(lamdy).
--export([run/4, distributor/2, buyer/2]).
+-export([run/0, run/4, distributor/2, buyer/2]).
 
+%%%%%%%%%%%
+%
+% example
+% - call lamdy:run() to start the example
+%
+% Note: the distributor initiates the snapshot if his message box is empty.
+%
 
 %%%%%%%%%%%
 %
@@ -12,12 +19,6 @@ distributor(_, Storage) when Storage < 10 ->
     exit("distributor finishes");
 
 distributor(Acc, Storage) ->
-    case random:uniform(2) of
-        1 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
-            snapshot:snapshot([buy], [distrib, buy]),
-            io:format("\n");
-        _ -> true
-    end,
     receive
         {Number, Price} when is_integer(Number) and is_integer(Price) ->
             %send screws to buyer
@@ -27,6 +28,12 @@ distributor(Acc, Storage) ->
             io:format("DIST: Account: ~B \t\t Storage: ~B\n", [Acc, Storage]),
             snapshot:snapshot([buy], [buy]),
             distributor(Acc, Storage)
+    after
+        % if no message is buffered, do a snapshot
+        0 -> io:format ("Distributor: Account: ~B\t\t Storage: ~B\n",[Acc, Storage]),
+             snapshot:snapshot([buy], [distrib, buy]),
+             io:format("\n"),
+             distributor (Acc, Storage)
     end.
 
 %%%%%%%%%%%
@@ -51,11 +58,21 @@ buyer (Acc, Storage) ->
             buyer(Newacc, Storage)
     end.
 
+
+%%%%%%%%%%%
+%
+% Start methods
+% 
+%
+run () ->
+    run (1000,1000,1000,1000).
+
 run(Dacc, Dstore, Bacc, Bstore) ->
     Distributor = spawn(lamdy, distributor, [Dacc, Dstore]),
-    register(distrib, Distributor),
     Buyer = spawn (lamdy, buyer, [Bacc, Bstore]),
-    register(buy, Buyer),
     link(Distributor),
-    link(Buyer)
+    link(Buyer),
+    register(distrib, Distributor),
+    register(buy, Buyer)
     .
+
