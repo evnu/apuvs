@@ -28,14 +28,22 @@ distributor(Acc, Storage, false) ->
             %send screws to buyer
             buy ! {Number},
             distributor(Acc + Price, Storage - Number, false);
-				{snapshot, Sender} -> % if the system wants us to do a snapshot, wait for other snapshot
+				{snapshot, Sender} -> % received marker
             record_state ("Distributor", Acc, Storage),
-            send_marker (buy),
+            case catch send_marker (buy) of
+                {'EXIT',_} ->
+                    io:format ("Distributor lost connection to buyer\n"),
+                    exit("Distributor finishes");
+                _ ->
+                    true
+            end,
             case Sender of
-                system -> distributor(Acc, Storage, true);
-                _ -> distributor(Acc, Storage, false)
+                system -> distributor(Acc, Storage, true); % initiate snapshot
+                _ -> distributor(Acc, Storage, false) % received message on all incoming channels
             end
     end;
+
+% record incmoing messages
 distributor(Acc, Storage, true) ->
 		receive
 				{Number, Price} when is_integer(Number) and is_integer(Price) ->
@@ -62,15 +70,23 @@ buyer (Acc, Storage, false) ->
     receive
         {Number} when is_integer(Number) ->
             buyer(Newacc, Storage + Number, false);
-        {snapshot, Sender} -> % system tells us to do a snapshot
+        {snapshot, Sender} -> % initiate snapshot 
             record_state ("Buyer", Newacc, Storage),
-            send_marker (distrib),
+            case catch send_marker (distrib) of
+                {'EXIT',_} ->
+                    io:format ("Buyer lost connection to distributor\n"),
+                    exit("Buyer finishes");
+                _ ->
+                    true
+            end,
+
             case Sender of
                 system -> buyer(Newacc, Storage, true);
-                _  -> buyer(Newacc, Storage, false)
+                _  -> buyer(Newacc, Storage, false) % received message on all incoming channels
             end
     end;
 
+% record incoming messages
 buyer(Acc, Storage, true) ->
 		% keep on sending messages
     distrib ! {10, 50},
@@ -92,5 +108,4 @@ run(Dacc, Dstore, Bacc, Bstore) ->
     link(Distributor),
     link(Buyer),
     % create a snapshot
-		Buyer ! {snapshot, system}
-		.
+		Buyer ! {snapshot, system}.
