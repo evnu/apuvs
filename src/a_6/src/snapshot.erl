@@ -7,7 +7,7 @@
 %
 %  Channels are lists of processes
 
-snapshot(OutgoingChannels, IncomingChannels, In) ->
+snapshot(OutgoingChannels, IncomingChannels) ->
     snapshot(OutgoingChannels, IncomingChannels, 1).
 
 snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
@@ -19,7 +19,7 @@ snapshot(OutgoingChannels, IncomingChannels, NumberOfMarkers) ->
 % received marker on all incoming channels
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) when length(IncomingChannels) == NumberOfMarkers -> 
     % resend ListOfSavedMessages to yourself
-    resend (reverse (ListOfSavedMessages))
+    resend (lists:reverse (ListOfSavedMessages))
     ;
 
 recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
@@ -33,7 +33,7 @@ recordMessages (IncomingChannels, NumberOfMarkers, ListOfSavedMessages) ->
     end .
 
 % we have to resend the saved messages to actually process them 
-resend ([]) -> ;
+resend ([]) -> true;
 resend ([H|T]) ->
     self () ! H,
     resend (T).
@@ -44,7 +44,7 @@ resend ([H|T]) ->
 %
 % Send markers
 %
-sendMarkerToOutgoing ([]) -> .
+sendMarkerToOutgoing ([]) -> true;
 sendMarkerToOutgoing ([H|T]) -> 
     H ! {marker},
     sendMarkerToOutgoing(T).
