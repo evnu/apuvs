@@ -198,7 +198,7 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
 \begin{bew}
   "`$\Leftarrow$"'. Voraussetzung: $V(e) < V(e')$. Zu zeigen: $e \rightarrow e'$. \\
   Falls $e$ und $e'$ Ereignisse des gleichen Prozesses $i$ sind ist dies offensichtlich.
-  Ebenso gilt dies offensichtlich, falls $e = send m$ und $e' = receive m$ ist. Zudem gilt
+  Ebenso gilt dies offensichtlich, falls $e = send\ m$ und $e' = receive\ m$ ist. Zudem gilt
   für $e,e'$, dass $e''$ existiert, so dass $V(e) < V(e'') <= V(e')$. Auf dieser
   Grundlage kann man nun folgendermaßen einen gerichteten Graph $G$ mit folgenden
   Eigenschaften erstellen: Zwei beliebige Ereignisse $e_n,e_m$ (oder auch Knoten) werden
@@ -208,10 +208,12 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
       (also direkt aufeinander folgende Ereignisse)
     \item Falls $e_n = send\ message$ und $e_m = receive\ message$ für eine Nachricht.
   \end{enumerate}
-  Für diesen Graph gilt nun folgende Eigenschaft: Falls für zwei Ereignisse $e$ und $e'$
+  Der so konstruierte Graph ist also konsistent mit der \emph{happens before} Relation,
+  denn zwei Ereignisse sind nur direkt verbunden, falls das eine Ereignis vor dem anderen
+  passiert. \\
+  Für diesen Graph gilt nun aber folgende Eigenschaft: Falls für zwei Ereignisse $e$ und $e'$
   die Voraussetzung $V(e) < V(e')$ gilt, dann existiert ein Weg $w = (e, \dots, e_a, \dots e_b, \dots, e')$ innerhalb des Graphen
-  von $e$ nach $e'$. Für zwei Ereignisse $e_a, e_b$ des Weges $w$ gilt aber $e_a
-  \rightarrow e_b$, weshalb auch $e \rightarrow e'$ folgt.
+  von $e$ nach $e'$. Für zwei Ereignisse $e_a, e_b$ des Weges $w$ gilt aber $e_a \rightarrow e_b$, weshalb auch $e \rightarrow e'$ folgt.
 
 \end{bew}
 
