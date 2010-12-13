@@ -198,10 +198,9 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
   \textbf{2. Fall}. Seien $e,e'$ Ereignisse in zwei unterschiedlichen Prozessen $i,j$.
 \marginpar{\color{red}{Das muss noch getan werden.}}
 Idee: Male \emph{history} aller Prozesse als gerichteter Graph auf. Suche
-nun den kürzesten Weg von $e$ nach $e'$. Dieser Weg muss existieren, da aus der
-Voraussetzung folgt: $\exists e'': V(e) < V(e'') \leq V(e')$. Nun gilt folgende
-Eigenschaft: Für jede Kante $(e_1, e_2)$ dieses kürzesten Weges gilt die happens before Relation, 
-da immer $V(e_1) \leq V(e_2)$ und $V(e_1) \neq V(e_2)$, usw usw usw
+nun den kürzesten Weg von $e$ nach $e'$ (falls es einen Weg gibt). Nun gilt folgende
+Eigenschaft: Für jede Kante gilt die happens before Relation, da immer $V(e_1) \leq
+V(e_2)$ und $V(e_1) \neq V(e_2)$, egal ob $e_1,e_2$ im gleichen Prozess sind oder nicht.
 
 \end{bew}
 
