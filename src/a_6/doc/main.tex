@@ -163,10 +163,10 @@ weiterhin nur aus dem Empfang von Markern auf allen eingehenden Kommunikationska
 Siehe Anhang auf Seite \pageref{Anhang}
 \section*{Aufgabe 6.3}
 \begin{beh}
-  $e \rightarrow e' \Leftrightarrow V(e) < V(e')$
+  Für zwei Ereignisse $e,e'$ gilt: \[e \rightarrow e' \Longleftrightarrow V(e) < V(e')\]
 \end{beh}
 \begin{bew}
-  "`$\Rightarrow$"'. Voraussetzung: $e \rightarrow e'$. Zu zeigen: $V(e) < V(e')$. \\
+  "`$\Longrightarrow$"'. Voraussetzung: $e \rightarrow e'$. Zu zeigen: $V(e) < V(e')$. \\
   Wir zeigen dies per Induktion über die Eigenschaften der \emph{Happens-Before
   Relation}. \\
 \textbf{Induktionsanfang}. \\
@@ -196,7 +196,7 @@ Somit ist die Vorwärtsrichtung erfolgreich bewiesen.
 
 \end{bew}
 \begin{bew}
-  "`$\Leftarrow$"'. Voraussetzung: $V(e) < V(e')$. Zu zeigen: $e \rightarrow e'$. \\
+  "`$\Longleftarrow$"'. Voraussetzung: $V(e) < V(e')$. Zu zeigen: $e \rightarrow e'$. \\
   Falls $e$ und $e'$ Ereignisse des gleichen Prozesses $i$ sind ist dies offensichtlich.
   Ebenso gilt dies offensichtlich, falls $e = send\ m$ und $e' = receive\ m$ ist. Zudem gilt
   für $e,e'$, dass $e''$ existiert, so dass $V(e) < V(e'') <= V(e')$. Auf dieser
