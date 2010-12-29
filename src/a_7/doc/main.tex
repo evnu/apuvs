@@ -96,7 +96,16 @@ numberstyle=\tiny,
 \maketitle 
 
 \section*{Aufgabe 7.1}
-{\color{red}{Muss noch erledigt werden.}}
+Bei der Implementierung eines elektronischen Aktienhandels bietet sich
+\emph{Entry-Konsisten} an. Da im Aktienhandel sehr viele Aktien zu jedem Zeitpunkt
+gehandelt werden, ist Effizienz der verwendeten Algorithmen sehr wichtig. Entry-Konsistenz
+bietet gegenüber \emph{Release-Konsistenz} den Vorteil, dass nur die Daten synchronisiert
+werden müssen, die wirklich verwendet werden. \emph{Schwache Konsistenz} ist hingegen
+nicht ausreichend, um eine erfolgreiche Synchronisierung durchzuführen. Da eine Aktie in
+einer $1:1$-Beziehung mit einem Besitzer steht, dürfen sich Zugriffe nicht überlappen.
+Damit dürfen auch Schreibzugriffe nicht beliebig gemischt werden, sondern müssen
+synchronisiert werden.\footnote{\emph{Lokale} Aktien, die dann synchronisiert werden,
+würden Rollbackstrategien erfordern, falls es zu Konflikten kommt.}
 \section*{Aufgabe 7.2}
 \subsection*{a)}
 \begin{table}
