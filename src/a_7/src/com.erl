@@ -22,6 +22,7 @@ init () ->
 life (Vg, HoldbackQueue) ->
     % check holdbackqueue if something must be delivered
     NewHoldbackqueue = dict:map (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
+    % for all elements in the NewHoldBackQueue - deliver!
     receive
         {com_multicast, Group, Message} ->
             % fetch(Key, Dict) -> Value
@@ -34,7 +35,7 @@ life (Vg, HoldbackQueue) ->
             life (Vg, [{VgTemp, Message}|NewHoldbackqueue])
     end.
 
-% returns empty list if delivered. List element otherwise.
+% check wether a certain message must be delivered or not
 check_deliver (Vg, {VgSender, Sender, _}) ->
         dict:fetch(Sender, VgSender) == dict:fetch(Sender, Vg) + 1
         and compareDicts (Vg, VgSender, Sender) 
@@ -43,16 +44,23 @@ check_deliver (Vg, {VgSender, Sender, _}) ->
 compareDicts (Vlocal, Vremote, J) ->
     compareDicts (dict:fetch_keys(Vlocal), Vlocal, Vremote, J).
 
-compareDicts ([], _,_,_) -> true;
+compareDicts (Keys, Vlocal, Vremote, J) ->
+    % for all keys: if key != J => Vlocal >= Vremote
+    % note: http://marcuswelz.com/2009/03/04/less-or-equal-in-erlang/
+    TempKeys = lists:delete (J, Keys),
+    lists:all (fun (Key) -> dict:fetch(Key, Vremote) =< dict:fetch(Key, Vlocal) end,
+        TempKeys).
 
-compareDicts ([Key|T], Vlocal, Vremote, J) ->
-    if Key /= J ->
-            if  (dict:fetch(Key, Vremote) > dict:fetch(Key, Vlocal)) -> false;
-                true -> compareDicts (T, Vlocal, Vremote, J)
-            end
-            ;
-        true -> compareDicts (T, Vlocal, Vremote, J)
-    end.
+% compareDicts ([], _,_,_) -> true;
+% 
+% compareDicts ([Key|T], Vlocal, Vremote, J) ->
+%     if Key /= J ->
+%             if  (dict:fetch(Key, Vremote) > dict:fetch(Key, Vlocal)) -> false;
+%                 true -> compareDicts (T, Vlocal, Vremote, J)
+%             end
+%             ;
+%         true -> compareDicts (T, Vlocal, Vremote, J)
+%     end.
 
 
 
