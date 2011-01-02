@@ -35,20 +35,27 @@ life (Vg, HoldbackQueue) ->
     receive
         % com_multicast indicates that this process is supposed to multicast a message
         {com_multicast, Group, Message} ->
-            io:format("~w needs to multicast ~w\n", [self(), Message]),
             VgTemp = dict:update_counter(self (), 1, VgUpdated),
             bem:multicast(Group, {bem_multicast, VgTemp, self(), Message}),
             life(VgTemp, NewHoldbackQueue);
         % receive a multicast
         {bem_multicast, VgTemp, Sender, Message} ->
             % store it for later
-            life (VgUpdated, [FilteredHoldbackqueue|{VgTemp, Sender, Message}])
+            life (VgUpdated, lists:append([{VgTemp, Sender,
+                            Message}],FilteredHoldbackqueue));
+        kill ->
+            true
     end.
 
 % check wether a certain message must be delivered or not
 check_deliver (Vg, {VgSender, Sender, _}) ->
-        dict:fetch(Sender, VgSender) == dict:fetch(Sender, Vg) + 1
-        and compareDicts (Vg, VgSender, Sender).
+    check_condition (dict:fetch(Sender, VgSender) == dict:fetch(Sender, Vg) + 1) and compareDicts (Vg, VgSender, Sender).
+
+% does this already exist in erlang..? Why do those guys hate types :-/
+check_condition (Condition) ->
+    if Condition -> true;
+        true -> false
+    end.
 
 compareDicts (Vlocal, Vremote, J) ->
     compareDicts (dict:fetch_keys(Vlocal), Vlocal, Vremote, J).
@@ -74,7 +81,7 @@ deliver(Vg, [{_, Sender, Message}|Tail]) ->
 
 
 deliver (Sender, Message) ->
-    io:format("Received ~w from ~w\n", [Message, Sender]).
+    io:format("~w received ~w from ~w\n", [self (), Message, Sender]).
 
 %%%%%%%%%%%%%%%%
 %
@@ -85,11 +92,11 @@ deliver (Sender, Message) ->
 test () ->
     % spawn 5 processes
     % TODO shorten with erlang syntactic sugar
-    Pid1 = spawn_link (com, init, []),
-    Pid2 = spawn_link (com, init, []),
-    Pid3 = spawn_link (com, init, []),
-    Pid4 = spawn_link (com, init, []),
-    Pid5 = spawn_link (com, init, []),
+    Pid1 = spawn (com, init, []),
+    Pid2 = spawn (com, init, []),
+    Pid3 = spawn (com, init, []),
+    Pid4 = spawn (com, init, []),
+    Pid5 = spawn (com, init, []),
     Group = [Pid1, Pid2, Pid3, Pid4, Pid5],
     % initialize each process - tell it about it's group
     Pid1 ! {group, Group}, 
@@ -98,7 +105,22 @@ test () ->
     Pid4 ! {group, Group}, 
     Pid5 ! {group, Group},
 
-    % tell Pid1 to multicast hello_world
-    Pid1 ! {com_multicast, Group, hello_world}
+    % tell Pid1 to multicast hello_world and show that delivering is causaly ordered
+    Pid1 ! {com_multicast, Group, hello_world},
+
+    Pid1 ! {com_multicast, Group, 1},
+    Pid2 ! {com_multicast, Group, 1},
+    Pid1 ! {com_multicast, Group, 2},
+    Pid2 ! {com_multicast, Group, 2},
+    Pid1 ! {com_multicast, Group, 3},
+    Pid2 ! {com_multicast, Group, 3},
+    Pid1 ! {com_multicast, Group, 4},
+    Pid2 ! {com_multicast, Group, 4},
+    Pid1 ! {com_multicast, Group, 5},
+    Pid2 ! {com_multicast, Group, 5},
+
+    timer:sleep (10),
+    % kill group
+    lists:foreach(fun(Pid) -> Pid ! kill end, Group)
     .
 
