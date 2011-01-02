@@ -1,6 +1,6 @@
 %causal ordered multicast
 -module(com).
--export([spawnCom/0]).
+-export([test/0,init/0]).
 
 %  the vector clock will be represented as a erlang dictionary, which maps a Pid to a
 %  Clock
@@ -8,32 +8,34 @@
 
 % after spawn, a com object will wait for a message which indicates it's group.
 % the group list _MUST INCLUDE THE PID OF THIS PROCESS!_
-spawnCom () ->
-    init ().
-
 init () ->
     receive
+        % TODO check if Group is a list
         {group, Group} ->
-            TempDictionary = dict:from_list(Group),
+            % for each Pid from the Group -> create {Pid, 0}
+            % we need to do this to create a list from which we can build a dictionary/map
+            TempGroup = lists:map(fun(Pid) -> {Pid,0} end, Group),
+            TempDictionary = dict:from_list(TempGroup),
             Dictionary = dict:map(fun(_,_) -> 0 end, TempDictionary),
             life (Dictionary, [])
     end.
 
 life (Vg, HoldbackQueue) ->
-    % check holdbackqueue if something must be delivered
+    % check HoldbackQueue if something must be delivered
     NewHoldbackQueue = lists:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
     % we have to remeber those messages, which can't be delivered now
     FilteredHoldbackqueue = lists:filter (fun(Holded) -> not (check_deliver (Vg, Holded)) end, HoldbackQueue),
-
-    % for all elements in the NewHoldBackQueue - deliver!
+    % for all elements in the NewHoldBackQueue - deliver! Delivering messages updates the
+    % internal vector clock.
     VgUpdated = deliver (Vg, NewHoldbackQueue),
 
     % at this point: if a message in the HoldbackQueue is not already delivered, then this
     % process must first receive a new message to fullfill the causal ordering
     % requirement.
     receive
+        % com_multicast indicates that this process is supposed to multicast a message
         {com_multicast, Group, Message} ->
-            % fetch(Key, Dict) -> Value
+            io:format("~w needs to multicast ~w\n", [self(), Message]),
             VgTemp = dict:update_counter(self (), 1, VgUpdated),
             bem:multicast(Group, {bem_multicast, VgTemp, self(), Message}),
             life(VgTemp, NewHoldbackQueue);
@@ -73,4 +75,30 @@ deliver(Vg, [{_, Sender, Message}|Tail]) ->
 
 deliver (Sender, Message) ->
     io:format("Received ~w from ~w\n", [Message, Sender]).
+
+%%%%%%%%%%%%%%%%
+%
+% test run
+%
+%%%%%%%%%%%%%%%%
+
+test () ->
+    % spawn 5 processes
+    % TODO shorten with erlang syntactic sugar
+    Pid1 = spawn_link (com, init, []),
+    Pid2 = spawn_link (com, init, []),
+    Pid3 = spawn_link (com, init, []),
+    Pid4 = spawn_link (com, init, []),
+    Pid5 = spawn_link (com, init, []),
+    Group = [Pid1, Pid2, Pid3, Pid4, Pid5],
+    % initialize each process - tell it about it's group
+    Pid1 ! {group, Group}, 
+    Pid2 ! {group, Group}, 
+    Pid3 ! {group, Group}, 
+    Pid4 ! {group, Group}, 
+    Pid5 ! {group, Group},
+
+    % tell Pid1 to multicast hello_world
+    Pid1 ! {com_multicast, Group, hello_world}
+    .
 
