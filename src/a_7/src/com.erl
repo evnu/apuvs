@@ -21,8 +21,12 @@ init () ->
 
 life (Vg, HoldbackQueue) ->
     % check holdbackqueue if something must be delivered
-    NewHoldbackqueue = dict:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
+    NewHoldbackQueue = lists:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
+    % we have to remeber those messages, which can't be delivered now
+    FilteredHoldbackqueue = lists:filter (fun(Holded) -> not (check_deliver (Vg, Holded)) end, HoldbackQueue),
+
     % for all elements in the NewHoldBackQueue - deliver!
+    VgUpdated = deliver (Vg, NewHoldbackQueue),
 
     % at this point: if a message in the HoldbackQueue is not already delivered, then this
     % process must first receive a new message to fullfill the causal ordering
@@ -30,13 +34,13 @@ life (Vg, HoldbackQueue) ->
     receive
         {com_multicast, Group, Message} ->
             % fetch(Key, Dict) -> Value
-            VgTemp = dict:update_counter(self (), 1, Vg),
-            bem:multicast(Group, {VgTemp, self(), Message}),
-            life(VgTemp, NewHoldbackqueue);
+            VgTemp = dict:update_counter(self (), 1, VgUpdated),
+            bem:multicast(Group, {bem_multicast, VgTemp, self(), Message}),
+            life(VgTemp, NewHoldbackQueue);
         % receive a multicast
-        {VgTemp, Message} ->
+        {bem_multicast, VgTemp, Sender, Message} ->
             % store it for later
-            life (Vg, [{VgTemp, Message}|NewHoldbackqueue])
+            life (VgUpdated, [FilteredHoldbackqueue|{VgTemp, Sender, Message}])
     end.
 
 % check wether a certain message must be delivered or not
@@ -54,5 +58,19 @@ compareDicts (Keys, Vlocal, Vremote, J) ->
     lists:all (fun (Key) -> dict:fetch(Key, Vremote) =< dict:fetch(Key, Vlocal) end,
         TempKeys).
 
+% if no more messages to be send - return the new vector clock
+deliver (Vg, []) -> 
+    Vg;
 
+% we don't need the VgSender in {VgSender, Sender, Message} anymore, as we already checked
+% the clock in compareDicts
+deliver(Vg, [{_, Sender, Message}|Tail]) ->
+    % deliver it
+    deliver (Sender, Message),
+    VgUpdated = dict:update_counter (Sender, 1, Vg), % update local clock for sender
+    deliver (VgUpdated, Tail);
+
+
+deliver (Sender, Message) ->
+    io:format("Received ~w from ~w\n", [Message, Sender]).
 
