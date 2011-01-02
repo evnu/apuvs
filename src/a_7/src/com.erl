@@ -11,6 +11,9 @@
 init () ->
     receive
         % TODO check if Group is a list
+        % TODO do we need to link to the group? maybe trap on exit - deliver remaining
+        % messages or throw them away? I think premature exit is undefined behaviour and
+        % we should ignore that.
         {group, Group} ->
             % for each Pid from the Group -> create {Pid, 0}
             % we need to do this to create a list from which we can build a dictionary/map
