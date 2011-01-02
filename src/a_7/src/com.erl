@@ -21,6 +21,7 @@ init () ->
     end.
 
 life (Vg, HoldbackQueue) ->
+    % TODO what happens if sender is self() ?
     % check HoldbackQueue if something must be delivered
     NewHoldbackQueue = lists:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
     % we have to remeber those messages, which can't be delivered now
@@ -75,12 +76,11 @@ deliver (Vg, []) ->
 % the clock in compareDicts
 deliver(Vg, [{_, Sender, Message}|Tail]) ->
     % deliver it
-    deliver (Sender, Message),
+    deliver_message (Sender, Message),
     VgUpdated = dict:update_counter (Sender, 1, Vg), % update local clock for sender
     deliver (VgUpdated, Tail);
 
-
-deliver (Sender, Message) ->
+deliver_message (Sender, Message) ->
     io:format("~w received ~w from ~w\n", [self (), Message, Sender]).
 
 %%%%%%%%%%%%%%%%
