@@ -81,7 +81,7 @@ deliver(Vg, [{_, Sender, Message}|Tail]) ->
     % deliver it
     deliver_message (Sender, Message),
     VgUpdated = dict:update_counter (Sender, 1, Vg), % update local clock for sender
-    deliver (VgUpdated, Tail);
+    deliver (VgUpdated, Tail).
 
 deliver_message (Sender, Message) ->
     io:format("~w received ~w from ~w\n", [self (), Message, Sender]).
@@ -121,6 +121,11 @@ test () ->
     Pid2 ! {com_multicast, Group, 4},
     Pid1 ! {com_multicast, Group, 5},
     Pid2 ! {com_multicast, Group, 5},
+
+    % not all processes in the defined Group must receive the message. 
+    % this case also shows the causal ordering, as Pid2 and Pid3 are only allowed to
+    % deliver this message as soon as they delivered all other messages of Pid1
+    Pid1 ! {com_multicast, [Pid2, Pid3], subgrouping},
 
     timer:sleep (10),
     % kill group
