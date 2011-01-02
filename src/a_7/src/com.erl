@@ -21,8 +21,12 @@ init () ->
 
 life (Vg, HoldbackQueue) ->
     % check holdbackqueue if something must be delivered
-    NewHoldbackqueue = dict:map (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
+    NewHoldbackqueue = dict:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
     % for all elements in the NewHoldBackQueue - deliver!
+
+    % at this point: if a message in the HoldbackQueue is not already delivered, then this
+    % process must first receive a new message to fullfill the causal ordering
+    % requirement.
     receive
         {com_multicast, Group, Message} ->
             % fetch(Key, Dict) -> Value
@@ -38,29 +42,17 @@ life (Vg, HoldbackQueue) ->
 % check wether a certain message must be delivered or not
 check_deliver (Vg, {VgSender, Sender, _}) ->
         dict:fetch(Sender, VgSender) == dict:fetch(Sender, Vg) + 1
-        and compareDicts (Vg, VgSender, Sender) 
-    .
+        and compareDicts (Vg, VgSender, Sender).
 
 compareDicts (Vlocal, Vremote, J) ->
     compareDicts (dict:fetch_keys(Vlocal), Vlocal, Vremote, J).
 
+% for all key \in keys: if key != J => Vlocal[key] >= Vremote[key]
 compareDicts (Keys, Vlocal, Vremote, J) ->
-    % for all keys: if key != J => Vlocal >= Vremote
-    % note: http://marcuswelz.com/2009/03/04/less-or-equal-in-erlang/
+    % NOTE: http://marcuswelz.com/2009/03/04/less-or-equal-in-erlang/
     TempKeys = lists:delete (J, Keys),
     lists:all (fun (Key) -> dict:fetch(Key, Vremote) =< dict:fetch(Key, Vlocal) end,
         TempKeys).
-
-% compareDicts ([], _,_,_) -> true;
-% 
-% compareDicts ([Key|T], Vlocal, Vremote, J) ->
-%     if Key /= J ->
-%             if  (dict:fetch(Key, Vremote) > dict:fetch(Key, Vlocal)) -> false;
-%                 true -> compareDicts (T, Vlocal, Vremote, J)
-%             end
-%             ;
-%         true -> compareDicts (T, Vlocal, Vremote, J)
-%     end.
 
 
 
