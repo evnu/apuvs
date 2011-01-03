@@ -59,9 +59,9 @@ life (Vg, HoldbackQueue) ->
             % report error if message wasn't delivered
             case FilteredHoldbackqueue of
                 [] -> 
-                    io:format("~w will kill itself. It hasn't any undelivered messages.\n", [self()]);
+                    io:format("~w kill itself. Empty Queue.\n", [self()]);
                 _ ->
-                    io:format("~w will kill itself. It hasn undelivered messages.\n", [self()])
+                    io:format("~w kill itself. Queue not empty.\n", [self()])
             end
     end.
 
@@ -104,7 +104,7 @@ deliver(Vg, [{_, Sender, Message}|Tail]) ->
     deliver (VgUpdated, Tail).
 
 deliver_message (Sender, Message) ->
-    io:format("~w received ~w from ~w\n", [self (), Message, Sender]).
+    io:format("~w rec ~w by ~w\n", [self (), Message, Sender]).
 
 %%%%%%%%
 % Helper function - Introduce booleans.
