@@ -2,12 +2,17 @@
 -module(com).
 -export([test/0,init/0]).
 
-%  the vector clock will be represented as a erlang dictionary, which maps a Pid to a
-%  Clock
+%%%%%%%%
+% NOTE:
+%  The vector clock will be represented as an erlang dictionary, which maps a Pid to a
+%  Clockcounter
 
 
-% after spawn, a com object will wait for a message which indicates it's group.
-% the group list _MUST INCLUDE THE PID OF THIS PROCESS!_
+%%%%%%%
+% Initialization.
+% after spawn, a com object will wait for a message which tells it about its group.
+% NOTE: 
+%   The group list _MUST INCLUDE THE PID OF THIS PROCESS!_
 init () ->
     receive
         {group, Group} ->
