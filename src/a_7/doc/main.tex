@@ -12,7 +12,8 @@ BCOR12mm,
 \usepackage{grffile}
 \usepackage{epstopdf}
 \usepackage{subfigure}
-\usepackage[a4paper,left=23mm,right=23mm, top=33mm, bottom=66mm]{geometry}
+\usepackage{multicol}
+\usepackage{fullpage}
 % lstlisting settings
 \lstset{
 showspaces=false,
@@ -122,7 +123,7 @@ würden Rollbackstrategien erfordern, falls es zu Konflikten kommt.}
   \caption{Mögliche Ausführungsreihenfolge}
   \label{tab:72a}
 \end{table}
-Wir gehen davon aus, dass die Variablen mit 0 initialisiert werden.\footnote{Wenn die
+Wir gehen davon aus, dass die Variablen mit 0 initialisiert werden.\footnote{\color{red}{sicher?}Wenn die
 Initialbelegung beliebig gewählt werden kann, dann kann auch eine kausal konsistente
 Reihenfolge gebildet werden.} Dann ergibt sich zum
 Beispiel die Ausführungsreihenfolge in Abbildung \ref{tab:72a}, wobei die Pfeile $\rightarrow$ die kausalen
@@ -147,6 +148,83 @@ in P1 durchgeführt werden.
 {\color{red}{Muss noch erledigt werden.}}
 
 \section*{Aufgabe 7.3}
+\subsection*{com Module}
+Das Modul \verb|com| stellt die Implementation des kausal geordneten Multicast dar. Ein
+Aufruf von \verb|com:test()| demonstriert die Ausführung:
+{
+\setlength{\columnseprule}{1pt}
+
+\begin{multicols}{2}
+\begin{verbatim}
+1> c(com).
+{ok,com}
+2> com:test(). 
+<0.41.0> rec hello_world by <0.39.0>
+<0.40.0> rec hello_world by <0.39.0>
+<0.42.0> rec hello_world by <0.39.0>
+<0.43.0> rec hello_world by <0.39.0>
+<0.39.0> rec 1 by <0.40.0>
+<0.41.0> rec 1 by <0.40.0>
+<0.40.0> rec 1 by <0.39.0>
+<0.42.0> rec 1 by <0.40.0>
+<0.39.0> rec 2 by <0.40.0>
+<0.43.0> rec 1 by <0.40.0>
+<0.41.0> rec 2 by <0.40.0>
+<0.42.0> rec 2 by <0.40.0>
+<0.39.0> rec 3 by <0.40.0>
+<0.40.0> rec 2 by <0.39.0>
+<0.42.0> rec 1 by <0.39.0>
+<0.41.0> rec 1 by <0.39.0>
+<0.43.0> rec 2 by <0.40.0>
+<0.39.0> rec 4 by <0.40.0>
+<0.42.0> rec 3 by <0.40.0>
+<0.41.0> rec 3 by <0.40.0>
+<0.42.0> rec 2 by <0.39.0>
+<0.40.0> rec 3 by <0.39.0>
+<0.43.0> rec 1 by <0.39.0>
+<0.39.0> rec 5 by <0.40.0>
+<0.42.0> rec 4 by <0.40.0>
+<0.41.0> rec 2 by <0.39.0>
+<0.42.0> rec 3 by <0.39.0>
+<0.40.0> rec 4 by <0.39.0>
+<0.42.0> rec 4 by <0.39.0>
+<0.41.0> rec 4 by <0.40.0>
+<0.43.0> rec 3 by <0.40.0>
+<0.42.0> rec 5 by <0.40.0>
+<0.40.0> rec 5 by <0.39.0>
+<0.41.0> rec 3 by <0.39.0>
+<0.43.0> rec 2 by <0.39.0>
+<0.42.0> rec 5 by <0.39.0>
+<0.40.0> rec the_end by <0.39.0>
+<0.41.0> rec 4 by <0.39.0>
+<0.43.0> rec 4 by <0.40.0>
+<0.42.0> rec the_end by <0.39.0>
+<0.41.0> rec 5 by <0.40.0>
+<0.43.0> rec 3 by <0.39.0>
+<0.41.0> rec 5 by <0.39.0>
+<0.43.0> rec 4 by <0.39.0>
+<0.41.0> rec the_end by <0.39.0>
+<0.43.0> rec 5 by <0.40.0>
+<0.43.0> rec 5 by <0.39.0>
+<0.43.0> rec the_end by <0.39.0>
+<0.40.0> kill itself. Empty Queue.
+<0.41.0> kill itself. Empty Queue.
+<0.39.0> kill itself. Empty Queue.
+<0.43.0> kill itself. Empty Queue.
+<0.42.0> kill itself. Empty Queue.
+ok
+\end{verbatim}
+  \end{multicols}
+}
+
+Der Beispielablauf zeigt die kausale Ordnung des Multicasts. So erhält zum Beispiel der
+Prozess \verb|<0.41.0>| die Nachricht \verb|1| von \verb|<0.39.0>| erst nachdem er von
+eben diesem \verb|hello_world| empfangen hat.
+
  \lstinputlisting{../src/com.erl} 
+\subsection*{bem Module}
+Unser Modul \verb|bem| führt nur das Versenden der Multicasts durch. \verb|bem_receive|
+und \verb|bem_deliver| erfolgen im Modul \verb|com|, um die Implementation möglichst
+kompakt zu erhalten.
  \lstinputlisting{../src/bem.erl} 
 \end{document}
