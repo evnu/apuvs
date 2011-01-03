@@ -109,7 +109,7 @@ synchronisiert werden.\footnote{\emph{Lokale} Aktien, die dann synchronisiert we
 würden Rollbackstrategien erfordern, falls es zu Konflikten kommt.}
 \section*{Aufgabe 7.2}
 \subsection*{a)}
-\begin{table}
+\begin{table}[ht!]
   \centering
   \begin{tabular}{|cccccccc}
       \hline
@@ -145,7 +145,11 @@ mit 0 initialisiert ist, muss P1 erst $W(y)1$ durchführen. Dies widerspricht ab
 Reihenfolge der Ausführung innerhalb des Prozesses, denn damit müsste $W(y)1$ vor $R(x)2$
 in P1 durchgeführt werden.
 \subsection*{c)}
-{\color{red}{Muss noch erledigt werden.}}
+Die gegebene Ausführung ist \emph{FIFO-konsistent}. Bei FIFO-Konsistenz ist nur die
+Konsistente Sicht auf die Reihenfolge der Schreibzugriffe innerhalb eines einzelnen
+Prozesses wichtig. Da nur $P_2$ mehr als einen Schreibzugriff durchführt, muss nur
+gewährleistet sein, dass in einem anderen Prozess ein $R(x)2$ nicht vor einem $R(x)1$
+auftreten darf. Da dies der Fall ist wird die FIFO-Konsistenz nicht verletzt.
 
 \section*{Aufgabe 7.3}
 \subsection*{com Module}
