@@ -10,10 +10,6 @@
 % the group list _MUST INCLUDE THE PID OF THIS PROCESS!_
 init () ->
     receive
-        % TODO check if Group is a list
-        % TODO do we need to link to the group? maybe trap on exit - deliver remaining
-        % messages or throw them away? I think premature exit is undefined behaviour and
-        % we should ignore that.
         {group, Group} ->
             % for each Pid from the Group -> create {Pid, 0}
             % we need to do this to create a list from which we can build a dictionary/map
@@ -23,15 +19,19 @@ init () ->
             life (Dictionary, [])
     end.
 
+%%%%%%%
+%
+% This is the main method of a process. It checks which messages should be delivered and
+% receives all incoming messages.
+%
 life (Vg, HoldbackQueue) ->
-    % TODO what happens if sender is self() ?
     % check HoldbackQueue if something must be delivered
-    NewHoldbackQueue = lists:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
+    DeliverFromHoldbackQueue = lists:filter (fun(Holded) -> check_deliver (Vg, Holded) end, HoldbackQueue),
     % we have to remeber those messages, which can't be delivered now
-    FilteredHoldbackqueue = lists:filter (fun(Holded) -> not (check_deliver (Vg, Holded)) end, HoldbackQueue),
-    % for all elements in the NewHoldBackQueue - deliver! Delivering messages updates the
+    FilteredHoldbackqueue = lists:filter (fun({_,Sender,_} = Holded) -> not (check_deliver (Vg, Holded)) and (not check_condition(Sender == self())) end, HoldbackQueue),
+    % for all elements in the DeliverFromHoldbackQueue - deliver! Delivering messages updates the
     % internal vector clock.
-    VgUpdated = deliver (Vg, NewHoldbackQueue),
+    VgUpdated = deliver (Vg, DeliverFromHoldbackQueue), % this is the actual co_deliver
 
     % at this point: if a message in the HoldbackQueue is not already delivered, then this
     % process must first receive a new message to fullfill the causal ordering
@@ -40,26 +40,37 @@ life (Vg, HoldbackQueue) ->
         % com_multicast indicates that this process is supposed to multicast a message
         {com_multicast, Group, Message} ->
             VgTemp = dict:update_counter(self (), 1, VgUpdated),
-            bem:multicast(Group, {bem_multicast, VgTemp, self(), Message}),
-            life(VgTemp, NewHoldbackQueue);
-        % receive a multicast
-        {bem_multicast, VgTemp, Sender, Message} ->
+            % we can send a bem_deliver immediately, as we know that we use a perfect
+            % link..
+            bem:multicast(Group, {bem_deliver, VgTemp, self(), Message}),
+            life(VgTemp, FilteredHoldbackqueue);
+        % received a bem_deliver, now procede and try to co_deliver it later
+        {bem_deliver, VgTemp, Sender, Message} ->
             % store it for later
             life (VgUpdated, lists:append([{VgTemp, Sender,
                             Message}],FilteredHoldbackqueue));
+        % shut down this process cleanly
         kill ->
-            true
+            % report error if message wasn't delivered
+            case FilteredHoldbackqueue of
+                [] -> 
+                    io:format("~w will kill itself. It hasn't any undelivered messages.\n", [self()]);
+                _ ->
+                    io:format("~w will kill itself. It hasn undelivered messages.\n", [self()])
+            end
     end.
+
+%%%%%%%%
+%
+% Check conditions
+% The following functions are used to check wether a certain message should be delivered
+% or hold back.
+%
 
 % check wether a certain message must be delivered or not
 check_deliver (Vg, {VgSender, Sender, _}) ->
     check_condition (dict:fetch(Sender, VgSender) == dict:fetch(Sender, Vg) + 1) and compareDicts (Vg, VgSender, Sender).
 
-% does this already exist in erlang..? Why do those guys hate types :-/
-check_condition (Condition) ->
-    if Condition -> true;
-        true -> false
-    end.
 
 compareDicts (Vlocal, Vremote, J) ->
     compareDicts (dict:fetch_keys(Vlocal), Vlocal, Vremote, J).
@@ -70,6 +81,10 @@ compareDicts (Keys, Vlocal, Vremote, J) ->
     TempKeys = lists:delete (J, Keys),
     lists:all (fun (Key) -> dict:fetch(Key, Vremote) =< dict:fetch(Key, Vlocal) end,
         TempKeys).
+
+%%%%%%%%%%%%%%
+% co_deliver
+%
 
 % if no more messages to be send - return the new vector clock
 deliver (Vg, []) -> 
@@ -86,6 +101,14 @@ deliver(Vg, [{_, Sender, Message}|Tail]) ->
 deliver_message (Sender, Message) ->
     io:format("~w received ~w from ~w\n", [self (), Message, Sender]).
 
+%%%%%%%%
+% Helper function - Introduce booleans.
+% does this already exist in erlang..? Why do those guys hate types :-/
+check_condition (Condition) ->
+    if Condition -> true;
+        true -> false
+    end.
+
 %%%%%%%%%%%%%%%%
 %
 % test run
@@ -94,38 +117,20 @@ deliver_message (Sender, Message) ->
 
 test () ->
     % spawn 5 processes
-    % TODO shorten with erlang syntactic sugar
-    Pid1 = spawn (com, init, []),
-    Pid2 = spawn (com, init, []),
-    Pid3 = spawn (com, init, []),
-    Pid4 = spawn (com, init, []),
-    Pid5 = spawn (com, init, []),
-    Group = [Pid1, Pid2, Pid3, Pid4, Pid5],
+    Group = [Pid1, Pid2 | _] = lists:map(fun(_) -> spawn (com, init, []) end, lists:seq(1,5)),
+
     % initialize each process - tell it about it's group
-    Pid1 ! {group, Group}, 
-    Pid2 ! {group, Group}, 
-    Pid3 ! {group, Group}, 
-    Pid4 ! {group, Group}, 
-    Pid5 ! {group, Group},
+    lists:foreach(fun(Pid) -> Pid ! {group, Group} end, Group),
 
     % tell Pid1 to multicast hello_world and show that delivering is causaly ordered
     Pid1 ! {com_multicast, Group, hello_world},
 
-    Pid1 ! {com_multicast, Group, 1},
-    Pid2 ! {com_multicast, Group, 1},
-    Pid1 ! {com_multicast, Group, 2},
-    Pid2 ! {com_multicast, Group, 2},
-    Pid1 ! {com_multicast, Group, 3},
-    Pid2 ! {com_multicast, Group, 3},
-    Pid1 ! {com_multicast, Group, 4},
-    Pid2 ! {com_multicast, Group, 4},
-    Pid1 ! {com_multicast, Group, 5},
-    Pid2 ! {com_multicast, Group, 5},
+    % send the same message from alternating senders
+    lists:foreach (fun(Num) -> Pid1 ! {com_multicast, Group, Num}, Pid2 ! {com_multicast, Group, Num} end, lists:seq (1,5)),
 
-    % not all processes in the defined Group must receive the message. 
-    % this case also shows the causal ordering, as Pid2 and Pid3 are only allowed to
-    % deliver this message as soon as they delivered all other messages of Pid1
-    Pid1 ! {com_multicast, [Pid2, Pid3], subgrouping},
+    % a final message
+    Pid1 ! {com_multicast, Group, the_end},
+
 
     timer:sleep (10),
     % kill group
