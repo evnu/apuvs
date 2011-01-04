@@ -112,7 +112,7 @@ void mapFile (char* fileName, map<string,int> &outputMap)
  * =====================================================================================
  */
 map<string, int> reduce ( string &toReduce )
-{
+{   std::cout << MPI::COMM_WORLD.Get_rank()<< ":" << toReduce << endl;
     map<string,int> bufMap;
     string delimiter = "\n";
     string::size_type tokenBegin = toReduce.find_first_not_of(delimiter, 0);
@@ -126,13 +126,17 @@ map<string, int> reduce ( string &toReduce )
         char* key = strtok(const_cast<char*>(keyValuePair), ":");
         int value = atoi(strtok(NULL, ":"));
         pair<map<string, int>::iterator, bool> ret = bufMap.insert(pair<string, int>(key, value));
-        if (!ret.second) 
-            (*(ret.first)).second += ret.second;
-				/* and find new token */
+        if (!ret.second){
+		std::cout << "in if" << endl;    	
+            (*(ret.first)).second += value;
+	}	/* and find new token */
         tokenBegin = toReduce.find_first_not_of(delimiter, tokenEnd);
         tokenEnd = toReduce.find_first_of(delimiter, tokenBegin);
     }
-
+    MPI_Barrier(MPI_COMM_WORLD);
+    std::cout << "ended reduce" << std::endl;
+	for(map<string,int>::iterator it = bufMap.begin(); it != bufMap.end (); it++)
+		std::cout << MPI::COMM_WORLD.Get_rank()<< " " << (*it).first << ": " << (*it).second << std::endl;
     return bufMap;
 }		/* -----  end of function reduce  ----- */
 

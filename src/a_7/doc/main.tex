@@ -123,9 +123,7 @@ würden Rollbackstrategien erfordern, falls es zu Konflikten kommt.}
   \caption{Mögliche Ausführungsreihenfolge}
   \label{tab:72a}
 \end{table}
-Wir gehen davon aus, dass die Variablen mit 0 initialisiert werden.\footnote{\color{red}{sicher?}Wenn die
-Initialbelegung beliebig gewählt werden kann, dann kann auch eine kausal konsistente
-Reihenfolge gebildet werden.} Dann ergibt sich zum
+Es ergibt sich zum
 Beispiel die Ausführungsreihenfolge in Abbildung \ref{tab:72a}, wobei die Pfeile $\rightarrow$ die kausalen
 Zusammenhänge darstellen. Diese ergeben sich durch folgende Betrachtung: Innerhalb eines
 Prozesses gilt sowieso die Ausführungsreihenfolge. Nun gilt, dass P2 aus \verb|a| eine
