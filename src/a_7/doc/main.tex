@@ -1,0 +1,234 @@
+\documentclass[a4paper,
+12pt,
+BCOR12mm,
+]{scrartcl}
+%scrreport
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{url}
+\usepackage[pdftex]{graphicx}
+\usepackage{listingsutf8}
+\usepackage{grffile}
+\usepackage{epstopdf}
+\usepackage{subfigure}
+\usepackage{multicol}
+\usepackage{fullpage}
+% lstlisting settings
+\lstset{
+showspaces=false,
+breaklines=true,
+breakindent=0pt,
+frame=single,
+language=erlang,
+extendedchars=true,
+inputencoding=utf8/latin1,
+identifierstyle=\ttfamily,
+basicstyle=\tiny,
+numbers=left,
+numberstyle=\tiny,
+}
+
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+% \usepackage{mathtools} not installed?
+\usepackage{stmaryrd}
+\usepackage{graphicx}
+\usepackage[ngerman]{babel}
+\usepackage{algpseudocode}
+
+\usepackage{url}
+
+\usepackage{color}
+
+\usepackage{paralist} % inline list
+
+% enhanced enumerate 
+% see http://texblog.wordpress.com/2008/10/16/lists-enumerate-itemize-description-and-how-to-change-them/
+\usepackage{enumerate}
+
+% i hate the fat blob..
+\renewcommand{\labelitemi}{\guilsinglright}
+
+\usepackage[thmmarks,amsmath,amsthm]{ntheorem}
+
+\theorempreskipamount 14pt
+\theorempostskipamount 12pt
+\theoremstyle{break}
+\theoremheaderfont{\scshape \smallskip}
+\theorembodyfont{\normalfont}
+\newtheorem{defi}{Definition}[subsection]
+
+% vektoren durch $\mat{1 \\ 2 \\ 3}$
+\def\mat#1{\left(\begin{array}{cccccc}#1\end{array}\right)}
+
+% framebox
+\def\framebox#1{\fbox{\begin{minipage}{0.8\textwidth}{#1}\end{minipage}}\\}
+
+% questionbox
+\usepackage{fancybox}
+\def\questionbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge ?} \color{red}{#1}}\end{minipage}}\\}
+\def\warningbox#1{\shadowbox{\begin{minipage}{0.8\textwidth}{ {\Huge !} \color{blue}{#1}}\end{minipage}}\\}
+
+% condensed lists
+\usepackage{mdwlist}
+
+
+% floor funktion
+\def\floor#1{\left\lfloor #1 \right\rfloor}
+
+\newtheorem{beh}{Behauptung}
+\newtheorem{bew}{Beweis}
+\newtheorem{afg}{Aufgabe}
+\newtheorem{lsg}{Lösung}
+\newtheorem{lem}{Lemma}[subsection]
+\newtheorem{bsp}{Beispiel}[subsection]
+\newtheorem{satz}{Satz}[subsection]
+\newtheorem{define}{Definition}
+\theoremsymbol{$\square$}
+
+\title{APUVS, Blatt 7}
+\author{Jan Fajerski and Kai Warncke and Magnus Müller}
+
+\begin{document}
+% NOTE: compile with pdflatex --shell-escape main.tex
+
+\maketitle 
+
+\section*{Aufgabe 7.1}
+Bei der Implementierung eines elektronischen Aktienhandels bietet sich
+\emph{Entry-Konsisten} an. Da im Aktienhandel sehr viele Aktien zu jedem Zeitpunkt
+gehandelt werden, ist Effizienz der verwendeten Algorithmen sehr wichtig. Entry-Konsistenz
+bietet gegenüber \emph{Release-Konsistenz} den Vorteil, dass nur die Daten synchronisiert
+werden müssen, die wirklich verwendet werden. \emph{Schwache Konsistenz} ist hingegen
+nicht ausreichend, um eine erfolgreiche Synchronisierung durchzuführen. Da eine Aktie in
+einer $1:1$-Beziehung mit einem Besitzer steht, dürfen sich Zugriffe nicht überlappen.
+Damit dürfen auch Schreibzugriffe nicht beliebig gemischt werden, sondern müssen
+synchronisiert werden.\footnote{\emph{Lokale} Aktien, die dann synchronisiert werden,
+würden Rollbackstrategien erfordern, falls es zu Konflikten kommt.}
+\section*{Aufgabe 7.2}
+\subsection*{a)}
+\begin{table}[ht!]
+  \centering
+  \begin{tabular}{|cccccccc}
+      \hline
+      P1: & W(a)0 & $\rightarrow$ & W(a)1 && && \\
+      \hline
+      P2: & && R(a)1 & $\rightarrow$ & W(b)2 && \\
+      \hline
+      P3: & && && R(b)2 & & R(a)0 \\
+      \hline
+  \end{tabular}
+  \caption{Mögliche Ausführungsreihenfolge}
+  \label{tab:72a}
+\end{table}
+Wir gehen davon aus, dass die Variablen mit 0 initialisiert werden.\footnote{\color{red}{sicher?}Wenn die
+Initialbelegung beliebig gewählt werden kann, dann kann auch eine kausal konsistente
+Reihenfolge gebildet werden.} Dann ergibt sich zum
+Beispiel die Ausführungsreihenfolge in Abbildung \ref{tab:72a}, wobei die Pfeile $\rightarrow$ die kausalen
+Zusammenhänge darstellen. Diese ergeben sich durch folgende Betrachtung: Innerhalb eines
+Prozesses gilt sowieso die Ausführungsreihenfolge. Nun gilt, dass P2 aus \verb|a| eine
+\verb|1| liest. Damit muss dieser Lesevorgang aber nach dem Schreibvorgang $W(a)1$ durch
+P1 erfolgt sein. $W(b)2$ in P2 muss wegen Ausführungsreihenfolge innerhalb eines Prozesses
+nach dem Schreibvorgang erfolgen. Da $b$ zu Anfang mit $0$ initialisiert wird und erst
+durch den Schreibvorgang $W(b)2$ auf 2 gesetzt wird, muss der Lesevorgang $R(b)2$ von P3
+nach dem Schreibvorgang $W(b)2$ von P2 erfolgen. Nun gilt aber immernoch, dass die
+Variable \verb|a| mit \verb|1| belegt ist. Somit kann P3 nicht $R(a)0$ lesen.
+\subsection*{b)}
+Die gegebene Ausführung ist nicht sequentiell konsistent. Nehmen wir an, dass die
+Variablen mit 0 initialisiert sind. Dann folgt, dass P1 erst dann $R(x)1$ lesen kann, wenn
+P2 die Schreiboperation $W(x)1$ durchgeführt hat. Damit nun aber P1 $R(x)2$ lesen kann,
+muss zuerst die Schreiboperation $W(x)2$ durch P2 durchgeführt werden. Bevor dies
+passiert, muss P2 zuerst die Leseoperation $R(y)1$ durchführen. Da \verb|y| zu Beginn noch
+mit 0 initialisiert ist, muss P1 erst $W(y)1$ durchführen. Dies widerspricht aber der
+Reihenfolge der Ausführung innerhalb des Prozesses, denn damit müsste $W(y)1$ vor $R(x)2$
+in P1 durchgeführt werden.
+\subsection*{c)}
+Die gegebene Ausführung ist \emph{FIFO-konsistent}. Bei FIFO-Konsistenz ist nur die
+Konsistente Sicht auf die Reihenfolge der Schreibzugriffe innerhalb eines einzelnen
+Prozesses wichtig. Da nur $P_2$ mehr als einen Schreibzugriff durchführt, muss nur
+gewährleistet sein, dass in einem anderen Prozess ein $R(x)2$ nicht vor einem $R(x)1$
+auftreten darf. Da dies der Fall ist wird die FIFO-Konsistenz nicht verletzt.
+
+\section*{Aufgabe 7.3}
+\subsection*{com Module}
+Das Modul \verb|com| stellt die Implementation des kausal geordneten Multicast dar. Ein
+Aufruf von \verb|com:test()| demonstriert die Ausführung:
+{
+\setlength{\columnseprule}{1pt}
+
+\begin{multicols}{2}
+\begin{verbatim}
+1> c(com).
+{ok,com}
+2> com:test(). 
+<0.41.0> rec hello_world by <0.39.0>
+<0.40.0> rec hello_world by <0.39.0>
+<0.42.0> rec hello_world by <0.39.0>
+<0.43.0> rec hello_world by <0.39.0>
+<0.39.0> rec 1 by <0.40.0>
+<0.41.0> rec 1 by <0.40.0>
+<0.40.0> rec 1 by <0.39.0>
+<0.42.0> rec 1 by <0.40.0>
+<0.39.0> rec 2 by <0.40.0>
+<0.43.0> rec 1 by <0.40.0>
+<0.41.0> rec 2 by <0.40.0>
+<0.42.0> rec 2 by <0.40.0>
+<0.39.0> rec 3 by <0.40.0>
+<0.40.0> rec 2 by <0.39.0>
+<0.42.0> rec 1 by <0.39.0>
+<0.41.0> rec 1 by <0.39.0>
+<0.43.0> rec 2 by <0.40.0>
+<0.39.0> rec 4 by <0.40.0>
+<0.42.0> rec 3 by <0.40.0>
+<0.41.0> rec 3 by <0.40.0>
+<0.42.0> rec 2 by <0.39.0>
+<0.40.0> rec 3 by <0.39.0>
+<0.43.0> rec 1 by <0.39.0>
+<0.39.0> rec 5 by <0.40.0>
+<0.42.0> rec 4 by <0.40.0>
+<0.41.0> rec 2 by <0.39.0>
+<0.42.0> rec 3 by <0.39.0>
+<0.40.0> rec 4 by <0.39.0>
+<0.42.0> rec 4 by <0.39.0>
+<0.41.0> rec 4 by <0.40.0>
+<0.43.0> rec 3 by <0.40.0>
+<0.42.0> rec 5 by <0.40.0>
+<0.40.0> rec 5 by <0.39.0>
+<0.41.0> rec 3 by <0.39.0>
+<0.43.0> rec 2 by <0.39.0>
+<0.42.0> rec 5 by <0.39.0>
+<0.40.0> rec the_end by <0.39.0>
+<0.41.0> rec 4 by <0.39.0>
+<0.43.0> rec 4 by <0.40.0>
+<0.42.0> rec the_end by <0.39.0>
+<0.41.0> rec 5 by <0.40.0>
+<0.43.0> rec 3 by <0.39.0>
+<0.41.0> rec 5 by <0.39.0>
+<0.43.0> rec 4 by <0.39.0>
+<0.41.0> rec the_end by <0.39.0>
+<0.43.0> rec 5 by <0.40.0>
+<0.43.0> rec 5 by <0.39.0>
+<0.43.0> rec the_end by <0.39.0>
+<0.40.0> kill itself. Empty Queue.
+<0.41.0> kill itself. Empty Queue.
+<0.39.0> kill itself. Empty Queue.
+<0.43.0> kill itself. Empty Queue.
+<0.42.0> kill itself. Empty Queue.
+ok
+\end{verbatim}
+  \end{multicols}
+}
+
+Der Beispielablauf zeigt die kausale Ordnung des Multicasts. So erhält zum Beispiel der
+Prozess \verb|<0.41.0>| die Nachricht \verb|1| von \verb|<0.39.0>| erst nachdem er von
+eben diesem \verb|hello_world| empfangen hat.
+
+ \lstinputlisting{../src/com.erl} 
+\subsection*{bem Module}
+Unser Modul \verb|bem| führt nur das Versenden der Multicasts durch. \verb|bem_receive|
+und \verb|bem_deliver| erfolgen im Modul \verb|com|, um die Implementation möglichst
+kompakt zu erhalten.
+ \lstinputlisting{../src/bem.erl} 
+\end{document}
