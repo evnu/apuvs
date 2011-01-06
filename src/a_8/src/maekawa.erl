@@ -19,6 +19,7 @@ initialization (ApplicationLayerPid) ->
 
 life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
     receive
+        % we only accept the following two messages from our known upper layer
         {m_enter_cs, ApplicationLayerPid} ->
             _NewState = wanted,
             multicast (Group, {m_request, self()}),
