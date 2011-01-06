@@ -34,9 +34,9 @@ creator(Anzahl) ->
 % TODO do we need this case?
 partition ([], Accum, _) -> Accum;
 % TODO comment me
-partition (PidList, [H|T], Ideal) when length(PidList) < Ideal ->
-    % awesome hackery! 
-    % XXX the following is obvious.
+% awesome hackery! 
+% XXX the following is obvious.
+partition ([_|PidList], [H|T], Ideal) when length(PidList) < Ideal ->
     [lists:append(H, PidList) | T];
 partition (PidList, Accum, Ideal) -> 
     {NewGroup, Tail} = lists:split(Ideal, PidList),
