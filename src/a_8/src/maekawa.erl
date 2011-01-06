@@ -33,17 +33,14 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             ;
         {m_request, Sender} ->
             % TODO prettify
-            case {State, Voted} of
+            {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
-                    NewReplyQueue = lists:append(ReplyQueue, {m_ok, Sender}),
-                    NewVoteState = false;
+                    {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 {_,true} ->
-                    NewReplyQueue = lists:append(ReplyQueue, {m_ok, Sender}),
-                    NewVoteState = false;
+                    {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 _ ->
                     send_ok (Sender),
-                    NewVoteState = true,
-                    NewReplyQueue = ReplyQueue
+                    {true, ReplyQueue}
             end,
             life(Config, State, NewVoteState, NewReplyQueue)
             ;
