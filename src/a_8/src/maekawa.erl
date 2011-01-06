@@ -14,6 +14,7 @@ initialization (ApplicationLayerPid) ->
     receive 
         {m_group, Group} -> ok
     end,
+    io:format("hier\n"),
     Config = {ApplicationLayerPid, Group},
     life(Config, released, false, []).
 
