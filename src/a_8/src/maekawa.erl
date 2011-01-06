@@ -22,13 +22,13 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
         % we only accept the following two messages from our known upper layer
         {m_enter_cs, ApplicationLayerPid} ->
             _NewState = wanted,
-            multicast (Group, {m_request, self()}),
+            multicast:multicast (Group, {m_request, self()}),
             wait_for_request_replies(length(Group)),
             ApplicationLayerPid ! {a_ok, self()}, % tell application layer about enter cs
             life (Config, held, Voted, ReplyQueue)
             ;
         {m_exit_cs, ApplicationLayerPid} ->
-            multicast (Group, {m_release, self()}),
+            multicast:multicast (Group, {m_release, self()}),
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
@@ -69,5 +69,3 @@ wait_for_request_replies (Remaining) ->
             wait_for_request_replies (Remaining - 1)
     end.
 
-multicast (Group, Message) ->
-    [Pid ! Message || Pid <- Group].
