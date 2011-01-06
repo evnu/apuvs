@@ -11,17 +11,19 @@
 % TODO describe initialization of group
 
 initialization (ApplicationLayerPid) ->
-    receive 
-        {m_group, Group} -> ok
+    Group = receive 
+        {m_group, TupleGroup} -> 
+            lists:map(fun({Pid,_}) -> Pid end, TupleGroup)
     end,
-    io:format("hier\n"),
     Config = {ApplicationLayerPid, Group},
+    io:format("~w\n",[Group]),
     life(Config, released, false, []).
 
 life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
     receive
         % we only accept the following two messages from our known upper layer
         {m_enter_cs, ApplicationLayerPid} ->
+            io:format("{m_enter_cs, ..}\n"),
             _NewState = wanted,
             multicast:multicast (Group, {m_request, self()}),
             wait_for_request_replies(length(Group)),
@@ -29,10 +31,12 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             life (Config, held, Voted, ReplyQueue)
             ;
         {m_exit_cs, ApplicationLayerPid} ->
+            io:format("{m_exit_cs, ..}\n"),
             multicast:multicast (Group, {m_release, self()}),
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
+            io:format("{m_request, ~w}\n", [Sender]),
             % TODO prettify
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->

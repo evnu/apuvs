@@ -7,14 +7,22 @@ initialization(Parent) ->
     raten (MaekawaPid).
 
 raten(MaekawaPid) ->
-    Geraten = random:uniform(2),
-    case Geraten rem 2 of
+    % TODO erlang random numbers aren't worth shit.
+    % random isn't random.
+    timer:sleep(random:uniform(1000)),
+    {A1,A2,A3} = now(),
+    random:seed(A1,A2,A3),
+    case random:uniform(2) of
         2 -> 
-            timers:sleep(100);
+            timer:sleep(100);
         1 ->
             MaekawaPid ! {m_enter_cs, self()},
+            receive
+                {a_ok, _} -> ok
+            end,
             io:format ("~B is in critical section nowi\n", self()),
-            MaekawaPid ! {m_exit_cs, self()}
+            MaekawaPid ! {m_exit_cs, self()},
+            io:format ("~B left critical section nowi\n", self())
     end,
     raten(MaekawaPid).
 
@@ -26,10 +34,10 @@ creator(Anzahl) ->
 % TODO do we need this case?
 partition ([], Accum, _) -> Accum;
 % TODO comment me
-partition (PidList, Accum, Ideal) when length(PidList) < Ideal ->
+partition (PidList, [H|T], Ideal) when length(PidList) < Ideal ->
     % awesome hackery! 
     % XXX the following is obvious.
-    [[0|PidList] | Accum];
+    [lists:append(H, PidList) | T];
 partition (PidList, Accum, Ideal) -> 
     {NewGroup, Tail} = lists:split(Ideal, PidList),
     % guarantee overlap
@@ -40,7 +48,7 @@ partition (PidList, Accum, Ideal) ->
 makeGroups(PidList, 0) when length(PidList) > 0 ->
     Ideal = loor(math:sqrt(length(PidList))),
     GroupList = partition (PidList, [], Ideal),
-    [[Pid ! {m_group, Group} || {Pid,_} <- Group]|| [_Head|Group] <- GroupList]
+    [[Pid ! {m_group, Group}|| {Pid,_} <- Group]|| Group <- GroupList]
     ;
 
 makeGroups(PidList, Anzahl) ->
