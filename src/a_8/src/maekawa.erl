@@ -23,7 +23,7 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
     receive
         % we only accept the following two messages from our known upper layer
         {m_enter_cs, ApplicationLayerPid} ->
-            io:format("{m_enter_cs, ..}\n"),
+            io:format("~w {m_enter_cs, ~w}\n", [self(), ApplicationLayerPid]),
             _NewState = wanted,
             multicast:multicast (Group, {m_request, self()}),
             wait_for_request_replies(length(Group)),
@@ -36,7 +36,7 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
-            io:format("{m_request, ~w}\n", [Sender]),
+            io:format("~w {m_request, ~w}\n", [self(), Sender]),
             % TODO prettify
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
@@ -44,6 +44,7 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
                 {_,true} ->
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 _ ->
+                    io:format("~w send_ok to ~w\n", [self(), Sender]),
                     send_ok (Sender),
                     {true, ReplyQueue}
             end,
@@ -62,12 +63,15 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
     end.
 
 send_ok (Sender) ->
-    Sender ! {ok, self()}.
+    Sender ! {m_ok, self()}.
 
 wait_for_request_replies (0) -> ok;
 wait_for_request_replies (Remaining) ->
+    io:format("~w entering with ~B\n",[self(), Remaining]),
+    SELF = self(),
     receive 
-        {m_ok, _} ->
-            wait_for_request_replies (Remaining - 1)
-    end.
+        {m_ok, _Sender} -> true;
+        {m_request, SELF} -> true % m_request from self() == m_ok
+    end,
+    wait_for_request_replies (Remaining - 1).
 
