@@ -21,9 +21,14 @@ raten(MaekawaPid) ->
     raten(MaekawaPid).
 
 creator(Anzahl) ->
-    [Initiator|_]= [spawn (ratemal, initialization, [self()]) || _ <- lists:seq(1, Anzahl)],
+    [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [self()]) || _ <- lists:seq(1, Anzahl)],
     makeGroups([], Anzahl), 
-    Initiator ! get_se_resource_biatch,
+    Initiator1 ! get_se_resource_biatch,
+    timer:sleep(random:uniform(10000)),
+    Initiator2 ! get_se_resource_biatch,
+    timer:sleep(random:uniform(10000)),
+    Initiator1 ! get_se_resource_biatch,
+    Initiator2 ! get_se_resource_biatch,
     started.
 
 % TODO do we need this case?
