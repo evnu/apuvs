@@ -15,14 +15,16 @@ raten(MaekawaPid) ->
                 {a_ok, MaekawaPid} -> ok
             end,
             io:format ("~w is in critical section nowi\n", [self()]),
-            MaekawaPid ! {m_exit_cs, self()},
+            MaekawaPid ! {m_exit_cs, self()}
             io:format ("~w left critical section nowi\n", [self()])
     end,
     raten(MaekawaPid).
 
 creator(Anzahl) ->
     [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [self()]) || _ <- lists:seq(1, Anzahl)],
-    makeGroups([], Anzahl), 
+    % create a collector to build msc trace
+    C = collector:start_collector (),
+    makeGroups([], Anzahl, C), 
 
     % test the functionality
     Initiator1 ! access_critical_section,
@@ -31,7 +33,9 @@ creator(Anzahl) ->
     timer:sleep(random:uniform(10000)),
     Initiator1 ! access_critical_section,
     Initiator2 ! access_critical_section,
-    started.
+    % tell collector to print msc
+    C ! {c_print_to_file, "../msc.msc"},
+    C ! {c_stop}.
 
 partition ([], Accum, _) -> Accum;
 % XXX the following is obvious.
@@ -44,16 +48,17 @@ partition (PidList, Accum, Ideal) ->
     CombinedGroup = [HeadOfTail | NewGroup],
     partition (Tail, [CombinedGroup | Accum], Ideal).
 
-makeGroups(PidList, 0) when length(PidList) > 0 ->
+makeGroups(PidList, 0, C) when length(PidList) > 0 ->
     Ideal = loor(math:sqrt(length(PidList))),
     GroupList = partition (PidList, [], Ideal),
-    [[Pid ! {m_group, Group}|| {Pid,_} <- Group]|| Group <- GroupList]
+    [[Pid ! {m_group, Group}|| {Pid,_} <- Group]|| Group <- GroupList],
+    [[Pid ! {m_collector, C}|| {Pid,_} <- Group]|| Group <- GroupList]
     ;
 
-makeGroups(PidList, Anzahl) ->
+makeGroups(PidList, Anzahl, C) ->
     receive
         MaekawaPid ->
-            makeGroups([MaekawaPid | PidList], Anzahl - 1)
+            makeGroups([MaekawaPid | PidList], Anzahl - 1, C)
     end.
 
 % WHY OH WHY...
