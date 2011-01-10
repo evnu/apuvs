@@ -1,5 +1,5 @@
 -module(collector).
--export([test/0, collector/0, ping/1, start_collector/0]).
+-export([test/0, collector/0, ping/1, start_collector/0, convert_process_id/1]).
 
 
 start_collector () ->
@@ -13,6 +13,10 @@ collector (C) ->
     DONE = receive
         {c_collect, {Sender, Receiver, Message}} when is_atom(Message) ->
             et_collector:report_event(C, 1, Sender, Receiver, Message, []);
+        {c_state_change, {Sender, State}} ->
+            et_collector:report_event(C,1,Sender,Sender,state_change,[State]);
+        {c_name_process, {Sender, Name}}  ->
+            et_collector:report_event(C,1,Sender,Sender,name_process,[Name]);
         {c_print} ->
             io:format ("~s", [string_representation(C)]);
         {c_print_to_file, Filename} ->
@@ -46,15 +50,30 @@ string_representation (C) ->
     ++
     ";\n"
     ++
-    iterate (C,
-        fun({event, _Priority, _Time1, _Time2, Sender, Receiver, Message, _More},
-                Acc) -> 
-                Acc 
-                ++ 
-                io_lib:format("\"~s\" => \"~s\" [label=\"~w\"];\n", [convert_process_id(Sender), convert_process_id(Receiver), Message]) end,
-        "")
+    iterate (C, fun(Event, Acc) -> collector_string_representation (Event, Acc) end, "")
     ++
     "}\n"
+    .
+
+%%%%
+% String representation of the collector's content
+
+%% show state change
+collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Sender,
+        state_change,[State]}, Acc) ->
+    Acc ++ io_lib:format("\"~s\" rbox \"~s\" [label=\"~s\"];\n",
+        [convert_process_id (Sender),convert_process_id(Sender), State]);
+
+%% name process
+collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Sender,
+        name_process,[Name]}, Acc) ->
+    Acc ++ io_lib:format("\"~s\" box \"~s\" [label=\"~s\"];\n",
+        [convert_process_id (Sender),convert_process_id(Sender), Name]);
+
+%% call -> arrows
+collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Receiver,
+        Message, _More}, Acc) -> Acc ++ 
+    io_lib:format("\"~s\" => \"~s\" [label=\"~w\"];\n", [convert_process_id(Sender), convert_process_id(Receiver), Message])
     .
 
 %%%%
