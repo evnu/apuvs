@@ -28,7 +28,11 @@ initialization (ApplicationLayerPid) ->
         {m_group, TupleGroup} -> 
             lists:map(fun({Pid,_}) -> Pid end, TupleGroup)
     end,
-    Config = {ApplicationLayerPid, Group},
+    Collector = receive
+        {m_collector, Pid} ->
+            Pid
+    end,
+    Config = {ApplicationLayerPid, Group, Collector},
     io:format("~w\n",[Group]),
     life(Config, released, false, []).
 
@@ -45,10 +49,12 @@ initialization (ApplicationLayerPid) ->
 %  {m_request, Sender} - Either this or another process wants to access a critical section
 %  {m_release, Sender} - Either this or another process wants to release a critical
 %    section
-life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
+life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue) ->
     receive
         % we only accept the following two messages from our known upper layer
         {m_enter_cs, ApplicationLayerPid} ->
+            % tell collector that the application layer send us a request
+            Collector ! {c_collect, {ApplicationLayerPid, self(), m_enter_cs}},
             io:format("~w {m_enter_cs, ~w}\n", [self(), ApplicationLayerPid]),
             _NewState = wanted,
             multicast:multicast (Group, {m_request, self()}),
@@ -57,11 +63,13 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             life (Config, held, Voted, ReplyQueue)
             ;
         {m_exit_cs, ApplicationLayerPid} ->
+            Collector ! {c_collect, {ApplicationLayerPid, self(), m_exit_cs}},
             io:format("{m_exit_cs, ..}\n"),
             multicast:multicast (Group, {m_release, self()}),
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
+            Collector ! {c_collect, {Sender, self(), m_request}},
             io:format("~w {m_request, ~w}\n", [self(), Sender]),
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
@@ -75,7 +83,8 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             end,
             life(Config, State, NewVoteState, NewReplyQueue)
             ;
-        {m_release, _Sender} ->
+        {m_release, Sender} ->
+            Collector ! {c_collect, {Sender, self(), m_release}},
             case ReplyQueue of
                 [] -> 
                     life (Config, State, false, []);
