@@ -1,0 +1,51 @@
+msc {
+ hscale=2;
+"0.279.0", "0.269.0", "0.270.0", "0.271.0", "0.272.0", "0.273.0", "0.275.0", "0.276.0", "0.277.0", "0.278.0";
+"0.269.0" box "0.269.0" [label="Application Layer above 0.275.0"],
+"0.270.0" box "0.270.0" [label="Application Layer above 0.276.0"],
+"0.271.0" box "0.271.0" [label="Application Layer above 0.277.0"],
+"0.272.0" box "0.272.0" [label="Application Layer above 0.278.0"],
+"0.273.0" box "0.273.0" [label="Application Layer above 0.279.0"],
+"0.275.0" box "0.275.0" [label="Maekawa Layer below 0.269.0"],
+"0.275.0" rbox "0.275.0" [label="{state=released, voted=false}"],
+"0.276.0" box "0.276.0" [label="Maekawa Layer below 0.270.0"],
+"0.276.0" rbox "0.276.0" [label="{state=released, voted=false}"],
+"0.277.0" box "0.277.0" [label="Maekawa Layer below 0.271.0"],
+"0.277.0" rbox "0.277.0" [label="{state=released, voted=false}"],
+"0.278.0" box "0.278.0" [label="Maekawa Layer below 0.272.0"],
+"0.278.0" rbox "0.278.0" [label="{state=released, voted=false}"],
+"0.279.0" box "0.279.0" [label="Maekawa Layer below 0.273.0"],
+"0.279.0" rbox "0.279.0" [label="{state=released, voted=false}"];
+"0.269.0" => "0.275.0" [label="m_enter_cs"];
+"0.275.0" rbox "0.275.0" [label="{state=wanted, voted=false}"];
+"0.275.0" => "0.277.0" [label="m_request"];
+"0.275.0" => "0.276.0" [label="m_request"];
+"0.275.0" => "0.275.0" [label="m_request"];
+"0.277.0" rbox "0.277.0" [label="{state=released, voted=true}"];
+"0.277.0" => "0.275.0" [label="m_ok"];
+"0.276.0" rbox "0.276.0" [label="{state=released, voted=true}"];
+"0.276.0" => "0.275.0" [label="m_ok"];
+"0.275.0" rbox "0.275.0" [label="{state=held, voted=false}"];
+"0.275.0" => "0.269.0" [label="a_ok"];
+"0.269.0" => "0.275.0" [label="m_exit_cs"];
+"0.275.0" => "0.277.0" [label="m_release"];
+"0.275.0" => "0.276.0" [label="m_release"];
+"0.275.0" rbox "0.275.0" [label="{state=released, voted=false}"];
+"0.275.0" => "0.275.0" [label="m_release"];
+"0.270.0" => "0.276.0" [label="m_enter_cs"];
+"0.276.0" rbox "0.276.0" [label="{state=wanted, voted=false}"];
+"0.276.0" => "0.275.0" [label="m_request"];
+"0.276.0" => "0.277.0" [label="m_request"];
+"0.276.0" => "0.276.0" [label="m_request"];
+"0.277.0" rbox "0.277.0" [label="{state=released, voted=true}"];
+"0.277.0" => "0.276.0" [label="m_ok"];
+"0.275.0" rbox "0.275.0" [label="{state=released, voted=true}"];
+"0.275.0" => "0.276.0" [label="m_ok"];
+"0.276.0" rbox "0.276.0" [label="{state=held, voted=false}"];
+"0.276.0" => "0.270.0" [label="a_ok"];
+"0.270.0" => "0.276.0" [label="m_exit_cs"];
+"0.276.0" rbox "0.276.0" [label="{state=released, voted=false}"];
+"0.276.0" => "0.275.0" [label="m_release"];
+"0.276.0" => "0.276.0" [label="m_release"];
+"0.276.0" => "0.277.0" [label="m_release"];
+}
