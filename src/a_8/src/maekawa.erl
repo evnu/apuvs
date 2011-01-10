@@ -1,9 +1,9 @@
 -module(maekawa).
--export([initialization/1]).
+-export([initialization/2]).
 
 %%%%%%%%
 % API to maekawa process
-%  initialization (ApplicationLayerPid) - initialize a maekawa process. See below
+%  initialization (Collector, ApplicationLayerPid) - initialize a maekawa process. See below
 % For all other incoming messages: see comment above life (...)
 
 % NOTE
@@ -22,14 +22,11 @@
 % each process in the consent group.
 % NOTE: The list ListOfPids _must_ contain the Pid of the receiving process!
 %
-initialization (ApplicationLayerPid) ->
+initialization (Collector, ApplicationLayerPid) ->
+    Collector ! {c_name_process, {self(), io_lib:format("Maekawa Layer below ~s",[collector:convert_process_id(ApplicationLayerPid)])}},
     Group = receive 
         {m_group, TupleGroup} -> 
             lists:map(fun({Pid,_}) -> Pid end, TupleGroup)
-    end,
-    Collector = receive
-        {m_collector, Pid} ->
-            Pid
     end,
     Config = {ApplicationLayerPid, Group, Collector},
     io:format("~w\n",[Group]),
