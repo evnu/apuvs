@@ -48,7 +48,7 @@ string_representation (C) ->
     ++
     [io_lib:format(", \"~s\"",[convert_process_id(LPP)]) || LPP <- LT] 
     ++
-    ";\n"
+    ";|||;\n"
     ++
     iterate (C, fun(Event, Acc) -> collector_string_representation (Event, Acc) end, "")
     ++

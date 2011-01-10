@@ -25,7 +25,7 @@
 initialization (Collector, ApplicationLayerPid) ->
     Collector ! {c_name_process, {self(), io_lib:format("Maekawa Layer below ~s",[collector:convert_process_id(ApplicationLayerPid)])}},
     % initial state
-    Collector ! {c_state_change, {self(), "state = released"}},
+    Collector ! {c_state_change, {self(), state_string(released, false)}},
     Group = receive 
         {m_group, TupleGroup} -> 
             lists:map(fun({Pid,_}) -> Pid end, TupleGroup)
@@ -55,10 +55,10 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_enter_cs}},
             io:format("~w {m_enter_cs, ~w}\n", [self(), ApplicationLayerPid]),
             _NewState = wanted,
-            Collector ! {c_state_change, {self(), "state = wanted"}},
+            Collector ! {c_state_change, {self(), state_string (wanted, Voted)}},
             multicast:multicast (Group, {m_request, self()}),
             wait_for_request_replies(Collector, length(Group)),
-            Collector ! {c_state_change, {self(), "state = held"}},
+            Collector ! {c_state_change, {self(), state_string (held, Voted)}},
             ApplicationLayerPid ! {a_ok, self()}, % tell application layer about enter cs
             life (Config, held, Voted, ReplyQueue)
             ;
@@ -66,7 +66,7 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_exit_cs}},
             io:format("{m_exit_cs, ..}\n"),
             multicast:multicast (Group, {m_release, self()}),
-            Collector ! {c_state_change, {self(), "state = released"}},
+            Collector ! {c_state_change, {self(), state_string (released, Voted)}},
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
@@ -74,12 +74,15 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             io:format("~w {m_request, ~w}\n", [self(), Sender]),
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
+                    Collector ! {c_state_change, {self(), state_string (State, false)}},
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 {_,true} ->
+                    Collector ! {c_state_change, {self(), state_string (State, false)}},
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 _ ->
                     io:format("~w send_ok to ~w\n", [self(), Sender]),
                     send_ok (Sender),
+                    Collector ! {c_state_change, {self(), state_string (State, true)}},
                     {true, ReplyQueue}
             end,
             life(Config, State, NewVoteState, NewReplyQueue)
@@ -115,4 +118,12 @@ wait_for_request_replies (Collector, Remaining) ->
             Collector ! {c_collect, {self(), self(), m_request}}
     end,
     wait_for_request_replies (Collector, Remaining - 1).
+
+
+%%%%%%%%%
+% Represent the current state as a string
+% 
+state_string (State, Voted) ->
+    io_lib:format("{state=~w, voted=~w}",[State, Voted]).
+
 
