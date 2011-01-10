@@ -8,8 +8,7 @@
 
 % NOTE
 % The maekawa module assumes that the Application Layer above can make use of the
-% following message:
-%   + {a_ok, self()}, % tell application layer that it is allowed to enter critical section
+% following message: %   + {a_ok, self()}, % tell application layer that it is allowed to enter critical section
 % There is now message to indicate to the application layer that it released the critical
 % section correctly. This is consistent with the given maekawa algorithm.
 
@@ -57,8 +56,9 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_enter_cs}},
             io:format("~w {m_enter_cs, ~w}\n", [self(), ApplicationLayerPid]),
             _NewState = wanted,
+            %TODO add box to indicate change of state
             multicast:multicast (Group, {m_request, self()}),
-            wait_for_request_replies(length(Group)),
+            wait_for_request_replies(Collector, length(Group)),
             ApplicationLayerPid ! {a_ok, self()}, % tell application layer about enter cs
             life (Config, held, Voted, ReplyQueue)
             ;
@@ -66,6 +66,7 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_exit_cs}},
             io:format("{m_exit_cs, ..}\n"),
             multicast:multicast (Group, {m_release, self()}),
+            %TODO add box to indicate change of state
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
@@ -103,13 +104,15 @@ send_ok (Sender) ->
 % As soon as a maekawa process tries to access a critical section, it has to wait for
 % incoming messages from all other processes (including itself)
 %
-wait_for_request_replies (0) -> ok;
-wait_for_request_replies (Remaining) ->
-    io:format("~w entering with ~B\n",[self(), Remaining]),
+wait_for_request_replies (_, 0) -> ok;
+wait_for_request_replies (Collector, Remaining) ->
+    io:format("~w entering wait with ~B\n",[self(), Remaining]),
     SELF = self(), % why is this necessary :( useless useless useless useless
     receive 
-        {m_ok, _Sender} -> true;
-        {m_request, SELF} -> true % m_request from self() == m_ok
+        {m_ok, Sender} -> 
+            Collector ! {c_collect, {Sender, self(), m_ok}};
+        {m_request, SELF} -> 
+            Collector ! {c_collect, {self(), self(), m_request}}
     end,
-    wait_for_request_replies (Remaining - 1).
+    wait_for_request_replies (Collector, Remaining - 1).
 

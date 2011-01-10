@@ -1,29 +1,32 @@
 -module(ratemal).
--export([creator/1, initialization/1]).
+-export([creator/1, initialization/2]).
 
-initialization(Parent) ->
+initialization(Collector, Parent) ->
     MaekawaPid = spawn (maekawa, initialization, [self()]),
     Parent ! {MaekawaPid, self()},
-    raten (MaekawaPid).
+    raten (Collector, MaekawaPid).
 
-raten(MaekawaPid) ->
+raten(Collector, MaekawaPid) ->
     receive
         access_critical_section ->
             io:format("~w is asking for resources\n",[self()]),
             MaekawaPid ! {m_enter_cs, self()},
             receive
-                {a_ok, MaekawaPid} -> ok
+                {a_ok, MaekawaPid} -> 
+                    Collector ! {c_collect, {MaekawaPid, self(),a_ok}}
             end,
             io:format ("~w is in critical section nowi\n", [self()]),
-            MaekawaPid ! {m_exit_cs, self()}
+            MaekawaPid ! {m_exit_cs, self()},
             io:format ("~w left critical section nowi\n", [self()])
     end,
-    raten(MaekawaPid).
+    raten(Collector, MaekawaPid).
 
 creator(Anzahl) ->
-    [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [self()]) || _ <- lists:seq(1, Anzahl)],
     % create a collector to build msc trace
     C = collector:start_collector (),
+    % create application layers
+    [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [C, self()]) || _ <- lists:seq(1, Anzahl)],
+    % initialize maekawa processes and groups
     makeGroups([], Anzahl, C), 
 
     % test the functionality
@@ -34,7 +37,7 @@ creator(Anzahl) ->
     Initiator1 ! access_critical_section,
     Initiator2 ! access_critical_section,
     % tell collector to print msc
-    C ! {c_print_to_file, "../msc.msc"},
+    C ! {c_print_to_file, "../msc/msc.msc"},
     C ! {c_stop}.
 
 partition ([], Accum, _) -> Accum;

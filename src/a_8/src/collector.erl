@@ -15,7 +15,8 @@ collector (C) ->
             et_collector:report_event(C, 1, Sender, Receiver, Message, []);
         {c_print} ->
             io:format ("~s", [string_representation(C)]);
-        {c_print_to_file, Filename} -> ok;
+        {c_print_to_file, Filename} ->
+            file:write_file(Filename, string_representation(C));
         {c_stop} ->
             true
     end,
