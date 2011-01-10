@@ -1,0 +1,49 @@
+ratemal:creator(5).
+[<0.275.0>,<0.277.0>,<0.276.0>]
+[<0.275.0>,<0.277.0>,<0.276.0>]
+[<0.277.0>,<0.279.0>,<0.278.0>]
+[<0.277.0>,<0.279.0>,<0.278.0>]
+[<0.275.0>,<0.277.0>,<0.276.0>]
+<0.269.0> is asking for resources
+<0.275.0> {m_enter_cs, <0.269.0>}
+<0.275.0> entering wait with 3
+<0.277.0> {m_request, <0.275.0>}
+<0.276.0> {m_request, <0.275.0>}
+<0.277.0> send_ok to <0.275.0>
+<0.275.0> entering wait with 2
+<0.276.0> send_ok to <0.275.0>
+<0.275.0> entering wait with 1
+<0.269.0> is in critical section nowi
+<0.269.0> left critical section nowi
+{m_exit_cs, ..}
+<0.270.0> is asking for resources
+<0.276.0> {m_enter_cs, <0.270.0>}
+<0.276.0> entering wait with 3
+<0.275.0> {m_request, <0.276.0>}
+<0.277.0> {m_request, <0.276.0>}
+<0.275.0> send_ok to <0.276.0>
+<0.277.0> send_ok to <0.276.0>
+<0.276.0> entering wait with 2
+<0.276.0> entering wait with 1
+<0.270.0> is in critical section nowi
+<0.270.0> left critical section nowi
+{m_exit_cs, ..}
+<0.269.0> is asking for resources
+<0.270.0> is asking for resources
+{c_stop}
+<0.275.0> {m_enter_cs, <0.269.0>}
+<0.275.0> entering wait with 3
+<0.277.0> {m_request, <0.275.0>}
+<0.276.0> {m_request, <0.275.0>}
+<0.275.0> entering wait with 2
+<0.277.0> send_ok to <0.275.0>
+<0.276.0> send_ok to <0.275.0>
+<0.276.0> {m_enter_cs, <0.270.0>}
+<0.275.0> entering wait with 1
+<0.276.0> entering wait with 3
+<0.275.0> {m_request, <0.276.0>}
+<0.277.0> {m_request, <0.276.0>}
+<0.269.0> is in critical section nowi
+<0.276.0> entering wait with 2
+<0.269.0> left critical section nowi
+{m_exit_cs, ..}
