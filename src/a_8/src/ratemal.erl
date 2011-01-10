@@ -8,7 +8,7 @@ initialization(Parent) ->
 
 raten(MaekawaPid) ->
     receive
-        get_se_resource_biatch ->
+        access_critical_section ->
             io:format("~w is asking for resources\n",[self()]),
             MaekawaPid ! {m_enter_cs, self()},
             receive
@@ -23,18 +23,17 @@ raten(MaekawaPid) ->
 creator(Anzahl) ->
     [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [self()]) || _ <- lists:seq(1, Anzahl)],
     makeGroups([], Anzahl), 
-    Initiator1 ! get_se_resource_biatch,
+
+    % test the functionality
+    Initiator1 ! access_critical_section,
     timer:sleep(random:uniform(10000)),
-    Initiator2 ! get_se_resource_biatch,
+    Initiator2 ! access_critical_section,
     timer:sleep(random:uniform(10000)),
-    Initiator1 ! get_se_resource_biatch,
-    Initiator2 ! get_se_resource_biatch,
+    Initiator1 ! access_critical_section,
+    Initiator2 ! access_critical_section,
     started.
 
-% TODO do we need this case?
 partition ([], Accum, _) -> Accum;
-% TODO comment me
-% awesome hackery! 
 % XXX the following is obvious.
 partition ([_|PidList], [H|T], Ideal) when length(PidList) < Ideal ->
     [lists:append(H, PidList) | T];

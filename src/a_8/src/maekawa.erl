@@ -3,13 +3,26 @@
 
 %%%%%%%%
 % API to maekawa process
-% ApplicationLayer sends this process m_enter_cs to enter critical section and m_exit_cs
-%   to release critical section
-% The multicast layer sends this process m_request to indicate a critical section request
-%   and m_release to indicate the release of a critical section
-%
-% TODO describe initialization of group
+%  initialization (ApplicationLayerPid) - initialize a maekawa process. See below
+% For all other incoming messages: see comment above life (...)
 
+% NOTE
+% The maekawa module assumes that the Application Layer above can make use of the
+% following message:
+%   + {a_ok, self()}, % tell application layer that it is allowed to enter critical section
+% There is now message to indicate to the application layer that it released the critical
+% section correctly. This is consistent with the given maekawa algorithm.
+
+
+%%%%%%%%%
+% Initialization
+% The maekawa process must know it's overlaying Application Layer as well as it's consent
+% group. The ID of the Application Layer is passed as the first argument to the following
+% function. The list of processes in the process group must be sent afterwards by a
+% message {m_group, ListOfPids}, where each element of ListOfPids is the list of pids of
+% each process in the consent group.
+% NOTE: The list ListOfPids _must_ contain the Pid of the receiving process!
+%
 initialization (ApplicationLayerPid) ->
     Group = receive 
         {m_group, TupleGroup} -> 
@@ -19,6 +32,19 @@ initialization (ApplicationLayerPid) ->
     io:format("~w\n",[Group]),
     life(Config, released, false, []).
 
+%%%%%%%%%
+% Main method of a maekawa process
+% A maekawa process is basically a finite state machine. Therefore, it only reacts to
+% incoming messages. The life function receives the following messages:
+%  {m_enter_cs, ApplicationLayerPid} - the application layer wants to access a critical
+%    section
+%  {m_exit_cs, ApplicationLayerPid} - the application layer wants to leave a critical
+%    section
+%       NOTE: We don't do any error checking here! If the process isn't in a critical
+%       section, undefined behaviour may occur.
+%  {m_request, Sender} - Either this or another process wants to access a critical section
+%  {m_release, Sender} - Either this or another process wants to release a critical
+%    section
 life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
     receive
         % we only accept the following two messages from our known upper layer
@@ -37,7 +63,6 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
             ;
         {m_request, Sender} ->
             io:format("~w {m_request, ~w}\n", [self(), Sender]),
-            % TODO prettify
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
@@ -65,10 +90,14 @@ life(Config = {ApplicationLayerPid, Group}, State, Voted, ReplyQueue) ->
 send_ok (Sender) ->
     Sender ! {m_ok, self()}.
 
+%%%%%%%%%
+% As soon as a maekawa process tries to access a critical section, it has to wait for
+% incoming messages from all other processes (including itself)
+%
 wait_for_request_replies (0) -> ok;
 wait_for_request_replies (Remaining) ->
     io:format("~w entering with ~B\n",[self(), Remaining]),
-    SELF = self(),
+    SELF = self(), % why is this necessary :( useless useless useless useless
     receive 
         {m_ok, _Sender} -> true;
         {m_request, SELF} -> true % m_request from self() == m_ok
