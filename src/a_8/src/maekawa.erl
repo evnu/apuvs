@@ -24,6 +24,8 @@
 %
 initialization (Collector, ApplicationLayerPid) ->
     Collector ! {c_name_process, {self(), io_lib:format("Maekawa Layer below ~s",[collector:convert_process_id(ApplicationLayerPid)])}},
+    % initial state
+    Collector ! {c_state_change, {self(), "state = released"}},
     Group = receive 
         {m_group, TupleGroup} -> 
             lists:map(fun({Pid,_}) -> Pid end, TupleGroup)
@@ -53,9 +55,10 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_enter_cs}},
             io:format("~w {m_enter_cs, ~w}\n", [self(), ApplicationLayerPid]),
             _NewState = wanted,
-            %TODO add box to indicate change of state
+            Collector ! {c_state_change, {self(), "state = wanted"}},
             multicast:multicast (Group, {m_request, self()}),
             wait_for_request_replies(Collector, length(Group)),
+            Collector ! {c_state_change, {self(), "state = held"}},
             ApplicationLayerPid ! {a_ok, self()}, % tell application layer about enter cs
             life (Config, held, Voted, ReplyQueue)
             ;
@@ -63,7 +66,7 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_exit_cs}},
             io:format("{m_exit_cs, ..}\n"),
             multicast:multicast (Group, {m_release, self()}),
-            %TODO add box to indicate change of state
+            Collector ! {c_state_change, {self(), "state = released"}},
             life(Config, released, Voted, ReplyQueue)
             ;
         {m_request, Sender} ->
