@@ -64,7 +64,7 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             ;
         {m_exit_cs, ApplicationLayerPid} ->
             Collector ! {c_collect, {ApplicationLayerPid, self(), m_exit_cs}},
-            io:format("{m_exit_cs, ..}\n"),
+            io:format("~w received {m_exit_cs, ~w}\n", [self(), ApplicationLayerPid]),
             multicast:multicast (Group, {m_release, self()}),
             Collector ! {c_state_change, {self(), state_string (released, Voted)}},
             life(Config, released, Voted, ReplyQueue)
@@ -74,11 +74,13 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             io:format("~w {m_request, ~w}\n", [self(), Sender]),
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
+                    io:format("~w has got ~w m_request pending..\n",[self(), Sender]),
                     Collector ! {c_state_change, {self(), state_string (State, Voted)}},
-                    {false, lists:append(ReplyQueue, {m_ok, Sender})};
+                    {false, lists:append(ReplyQueue, [{{m_ok, self()}, Sender}])};
                 {_,true} ->
+                    io:format("~w has got ~w m_request pending..\n",[self(), Sender]),
                     Collector ! {c_state_change, {self(), state_string (State, Voted)}},
-                    {false, lists:append(ReplyQueue, {m_ok, Sender})};
+                    {false, lists:append(ReplyQueue, [{{m_ok, self()}, Sender}])};
                 _ ->
                     io:format("~w send_ok to ~w\n", [self(), Sender]),
                     send_ok (Sender),
@@ -88,15 +90,18 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             life(Config, State, NewVoteState, NewReplyQueue)
             ;
         {m_release, Sender} ->
+            io:format("~w {m_release, ~w} ~w\n", [self(), Sender, ReplyQueue]),
             Collector ! {c_collect, {Sender, self(), m_release}},
             case ReplyQueue of
                 [] -> 
                     life (Config, State, false, []);
                 [{Message, Receiver} | ReplyTail] ->
                     % send delayed reply
+                    io:format("~w with pending messages\n",[self()]),
                     Receiver ! Message,
                     life (Config, State, true, ReplyTail);
-                _ ->
+                M ->
+                    io:format(">>>> ~w\n",[M]),
                     exit({bad_arg})
             end
     end.
