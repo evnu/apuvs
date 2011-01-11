@@ -26,31 +26,39 @@ creator(Anzahl) ->
     % create a collector to build msc trace
     C = collector:start_collector (),
     % create application layers
-    [Initiator1, Initiator2|_]= [spawn (ratemal, initialization, [C, self()]) || _ <- lists:seq(1, Anzahl)],
+    [Initiator1, Initiator2, Initiator3|_]= [spawn (ratemal, initialization, [C, self()]) || _ <- lists:seq(1, Anzahl)],
     % initialize maekawa processes and groups
     makeGroups([], Anzahl), 
 
     % test the functionality
-    Initiator1 ! access_critical_section,
-    timer:sleep(random:uniform(10000)),
+    Initiator3 ! access_critical_section,
     Initiator2 ! access_critical_section,
-    timer:sleep(random:uniform(10000)),
+    timer:sleep(random:uniform(1000)),
     Initiator1 ! access_critical_section,
+    timer:sleep(random:uniform(1000)),
     Initiator2 ! access_critical_section,
+    timer:sleep(random:uniform(1000)),
     % tell collector to print msc
-    C ! {c_print_to_file, "../msc/msc.msc"},
+    C ! {c_print_to_file, "../doc/msc.msc"},
     C ! {c_stop}.
 
-partition ([], Accum, _) -> Accum;
-% XXX the following is obvious.
+overlap ([], _, Acc) ->
+    Acc;
+overlap ([H|T], E, Acc) ->
+    overlap (T, E, [[E|H]|Acc]).
+
+overlap ([H|T]) ->
+    [E |_] = H,
+    overlap (T, E, [H]).
+
+partition ([], Accum, _) -> 
+    %% overlap 
+    overlap (Accum);
 partition ([_|PidList], [H|T], Ideal) when length(PidList) < Ideal ->
-    [lists:append(H, PidList) | T];
+    partition ([], [lists:append(H, PidList) | T], Ideal);
 partition (PidList, Accum, Ideal) -> 
     {NewGroup, Tail} = lists:split(Ideal, PidList),
-    % guarantee overlap
-    [HeadOfTail | _ ] = Tail,
-    CombinedGroup = [HeadOfTail | NewGroup],
-    partition (Tail, [CombinedGroup | Accum], Ideal).
+    partition (Tail, [NewGroup | Accum], Ideal).
 
 makeGroups(PidList, 0) when length(PidList) > 0 ->
     Ideal = loor(math:sqrt(length(PidList))),
