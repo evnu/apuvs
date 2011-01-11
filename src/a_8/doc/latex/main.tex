@@ -104,8 +104,19 @@ numberstyle=\tiny,
 
 \section*{Beispiellauf}
 \includegraphics[scale=0.4]{../msc.png}
+\begin{verbatim}
+ \include{../protokoll}
+\end{verbatim}
 
 \section*{Erläuterungen}
+ Das Programm wird mit dem Aufruf
+ \begin{verbatim}
+  ratemal:creator(Anzahl)
+ \end{verbatim}
+ gestartet.
+
+ Das Programm ist in zwei Schichten implementiert, eine Anwendungdsschicht und
+ eine darunter liegende Maekawaschicht.
  Die Einigung der Prozesse findet in der Maekawa-Schicht statt, die jeder
  Prozess für sich startet. An diese wird die Nachricht geschickt, dass der
  Prozess in die kritische Sektion eintretten will. Die Maekawa-Sschicht
