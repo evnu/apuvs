@@ -1,49 +1,43 @@
-ratemal:creator(5).
-[<0.275.0>,<0.277.0>,<0.276.0>]
-[<0.275.0>,<0.277.0>,<0.276.0>]
-[<0.277.0>,<0.279.0>,<0.278.0>]
-[<0.277.0>,<0.279.0>,<0.278.0>]
-[<0.275.0>,<0.277.0>,<0.276.0>]
-<0.269.0> is asking for resources
-<0.275.0> {m_enter_cs, <0.269.0>}
-<0.275.0> entering wait with 3
-<0.277.0> {m_request, <0.275.0>}
-<0.276.0> {m_request, <0.275.0>}
-<0.277.0> send_ok to <0.275.0>
-<0.275.0> entering wait with 2
-<0.276.0> send_ok to <0.275.0>
-<0.275.0> entering wait with 1
-<0.269.0> is in critical section nowi
-<0.269.0> left critical section nowi
-{m_exit_cs, ..}
-<0.270.0> is asking for resources
-<0.276.0> {m_enter_cs, <0.270.0>}
-<0.276.0> entering wait with 3
-<0.275.0> {m_request, <0.276.0>}
-<0.277.0> {m_request, <0.276.0>}
-<0.275.0> send_ok to <0.276.0>
-<0.277.0> send_ok to <0.276.0>
-<0.276.0> entering wait with 2
-<0.276.0> entering wait with 1
-<0.270.0> is in critical section nowi
-<0.270.0> left critical section nowi
-{m_exit_cs, ..}
-<0.269.0> is asking for resources
-<0.270.0> is asking for resources
+3> ratemal:creator(5).
+grouplist = [[{<0.52.0>,<0.46.0>},{<0.54.0>,<0.49.0>},{<0.53.0>,<0.47.0>}],[{<0.52.0>,<0.46.0>},{<0.50.0>,<0.48.0>},{<0.51.0>,<0.45.0>}]]
+[<0.52.0>,<0.54.0>,<0.53.0>]
+[<0.52.0>,<0.54.0>,<0.53.0>]
+[<0.52.0>,<0.50.0>,<0.51.0>]
+[<0.52.0>,<0.54.0>,<0.53.0>]
+<0.47.0> is asking for resources at <0.53.0>
+[<0.52.0>,<0.50.0>,<0.51.0>]
+<0.45.0> is asking for resources at <0.51.0>
+<0.53.0> {m_enter_cs, <0.47.0>}
+<0.51.0> {m_enter_cs, <0.45.0>}
+<0.53.0> entering wait with 3
+<0.51.0> entering wait with 3
+<0.52.0> {m_request, <0.53.0>}
+<0.54.0> {m_request, <0.53.0>}
+<0.50.0> {m_request, <0.51.0>}
+<0.51.0> entering wait with 2
+<0.52.0> send_ok to <0.53.0>
+<0.54.0> send_ok to <0.53.0>
+<0.53.0> entering wait with 2
+<0.50.0> send_ok to <0.51.0>
+<0.52.0> {m_request, <0.51.0>}
+<0.53.0> entering wait with 1
+<0.52.0> has got <0.51.0> m_request pending..
+<0.51.0> entering wait with 1
+<0.47.0> got a_ok from <0.53.0>
+<0.47.0> is in critical section nowi
+<0.47.0> left critical section nowi
+<0.53.0> received {m_exit_cs, <0.47.0>}
+<0.54.0> {m_release, <0.53.0>} []
+<0.53.0> {m_release, <0.53.0>} []
+<0.52.0> {m_release, <0.53.0>} [{{m_ok,<0.52.0>},<0.51.0>}]
+<0.52.0> with pending messages
+<0.45.0> got a_ok from <0.51.0>
+<0.45.0> is in critical section nowi
+<0.45.0> left critical section nowi
+<0.51.0> received {m_exit_cs, <0.45.0>}
+<0.50.0> {m_release, <0.51.0>} []
+<0.51.0> {m_release, <0.51.0>} []
+<0.52.0> {m_release, <0.51.0>} []
+<0.45.0> is done
+<0.47.0> is done
 {c_stop}
-<0.275.0> {m_enter_cs, <0.269.0>}
-<0.275.0> entering wait with 3
-<0.277.0> {m_request, <0.275.0>}
-<0.276.0> {m_request, <0.275.0>}
-<0.275.0> entering wait with 2
-<0.277.0> send_ok to <0.275.0>
-<0.276.0> send_ok to <0.275.0>
-<0.276.0> {m_enter_cs, <0.270.0>}
-<0.275.0> entering wait with 1
-<0.276.0> entering wait with 3
-<0.275.0> {m_request, <0.276.0>}
-<0.277.0> {m_request, <0.276.0>}
-<0.269.0> is in critical section nowi
-<0.276.0> entering wait with 2
-<0.269.0> left critical section nowi
-{m_exit_cs, ..}
