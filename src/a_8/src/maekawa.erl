@@ -74,10 +74,10 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
             io:format("~w {m_request, ~w}\n", [self(), Sender]),
             {NewVoteState, NewReplyQueue} = case {State, Voted} of
                 {held,_} ->
-                    Collector ! {c_state_change, {self(), state_string (State, false)}},
+                    Collector ! {c_state_change, {self(), state_string (State, Voted)}},
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 {_,true} ->
-                    Collector ! {c_state_change, {self(), state_string (State, false)}},
+                    Collector ! {c_state_change, {self(), state_string (State, Voted)}},
                     {false, lists:append(ReplyQueue, {m_ok, Sender})};
                 _ ->
                     io:format("~w send_ok to ~w\n", [self(), Sender]),
@@ -93,6 +93,7 @@ life(Config = {ApplicationLayerPid, Group, Collector}, State, Voted, ReplyQueue)
                 [] -> 
                     life (Config, State, false, []);
                 [{Message, Receiver} | ReplyTail] ->
+                    % send delayed reply
                     Receiver ! Message,
                     life (Config, State, true, ReplyTail);
                 _ ->
