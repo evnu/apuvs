@@ -26,18 +26,14 @@ creator(Anzahl) ->
     % create a collector to build msc trace
     C = collector:start_collector (),
     % create application layers
-    [Initiator1, Initiator2, Initiator3|_]= [spawn (ratemal, initialization, [C, self()]) || _ <- lists:seq(1, Anzahl)],
+    [Initiator1, _Initiator2, Initiator3|_]= [spawn (ratemal, initialization, [C, self()]) || _ <- lists:seq(1, Anzahl)],
     % initialize maekawa processes and groups
     makeGroups([], Anzahl), 
 
     % test the functionality
     Initiator3 ! access_critical_section,
-    Initiator2 ! access_critical_section,
-    timer:sleep(random:uniform(1000)),
     Initiator1 ! access_critical_section,
-    timer:sleep(random:uniform(1000)),
-    Initiator2 ! access_critical_section,
-    timer:sleep(random:uniform(1000)),
+    timer:sleep(1000),
     % tell collector to print msc
     C ! {c_print_to_file, "../doc/msc.msc"},
     C ! {c_stop}.
