@@ -1,20 +1,20 @@
 msc {
  hscale=2;
 "0.48.0", "0.49.0", "0.40.0", "0.41.0", "0.42.0", "0.43.0", "0.44.0", "0.45.0", "0.46.0", "0.47.0";
-"0.40.0" box "0.40.0" [label="Application Layer above 0.45.0"];
-"0.41.0" box "0.41.0" [label="Application Layer above 0.46.0"];
-"0.42.0" box "0.42.0" [label="Application Layer above 0.47.0"];
-"0.43.0" box "0.43.0" [label="Application Layer above 0.48.0"];
-"0.44.0" box "0.44.0" [label="Application Layer above 0.49.0"];
-"0.45.0" box "0.45.0" [label="Maekawa Layer below 0.40.0"];
-"0.45.0" rbox "0.45.0" [label="{state=released, voted=false}"];
-"0.46.0" box "0.46.0" [label="Maekawa Layer below 0.41.0"];
-"0.48.0" box "0.48.0" [label="Maekawa Layer below 0.43.0"];
-"0.49.0" box "0.49.0" [label="Maekawa Layer below 0.44.0"];
-"0.46.0" rbox "0.46.0" [label="{state=released, voted=false}"];
-"0.47.0" box "0.47.0" [label="Maekawa Layer below 0.42.0"];
-"0.48.0" rbox "0.48.0" [label="{state=released, voted=false}"];
-"0.49.0" rbox "0.49.0" [label="{state=released, voted=false}"];
+"0.40.0" box "0.40.0" [label="Application Layer above 0.45.0"],
+"0.41.0" box "0.41.0" [label="Application Layer above 0.46.0"],
+"0.42.0" box "0.42.0" [label="Application Layer above 0.47.0"],
+"0.43.0" box "0.43.0" [label="Application Layer above 0.48.0"],
+"0.44.0" box "0.44.0" [label="Application Layer above 0.49.0"],
+    "0.45.0" box "0.45.0" [label="Maekawa Layer below 0.40.0"],
+    "0.46.0" box "0.46.0" [label="Maekawa Layer below 0.41.0"],
+    "0.48.0" box "0.48.0" [label="Maekawa Layer below 0.43.0"],
+    "0.49.0" box "0.49.0" [label="Maekawa Layer below 0.44.0"],
+    "0.47.0" box "0.47.0" [label="Maekawa Layer below 0.42.0"];
+"0.45.0" rbox "0.45.0" [label="{state=released, voted=false}"],
+"0.46.0" rbox "0.46.0" [label="{state=released, voted=false}"],
+"0.48.0" rbox "0.48.0" [label="{state=released, voted=false}"],
+"0.49.0" rbox "0.49.0" [label="{state=released, voted=false}"],
 "0.47.0" rbox "0.47.0" [label="{state=released, voted=false}"];
 "0.42.0" => "0.47.0" [label="m_enter_cs"];
 "0.47.0" rbox "0.47.0" [label="{state=wanted, voted=false}"];
