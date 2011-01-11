@@ -1,51 +1,40 @@
 msc {
  hscale=2;
-"0.279.0", "0.269.0", "0.270.0", "0.271.0", "0.272.0", "0.273.0", "0.275.0", "0.276.0", "0.277.0", "0.278.0";
-"0.269.0" box "0.269.0" [label="Application Layer above 0.275.0"],
-"0.270.0" box "0.270.0" [label="Application Layer above 0.276.0"],
-"0.271.0" box "0.271.0" [label="Application Layer above 0.277.0"],
-"0.272.0" box "0.272.0" [label="Application Layer above 0.278.0"],
-"0.273.0" box "0.273.0" [label="Application Layer above 0.279.0"],
-"0.275.0" box "0.275.0" [label="Maekawa Layer below 0.269.0"],
-"0.275.0" rbox "0.275.0" [label="{state=released, voted=false}"],
-"0.276.0" box "0.276.0" [label="Maekawa Layer below 0.270.0"],
-"0.276.0" rbox "0.276.0" [label="{state=released, voted=false}"],
-"0.277.0" box "0.277.0" [label="Maekawa Layer below 0.271.0"],
-"0.277.0" rbox "0.277.0" [label="{state=released, voted=false}"],
-"0.278.0" box "0.278.0" [label="Maekawa Layer below 0.272.0"],
-"0.278.0" rbox "0.278.0" [label="{state=released, voted=false}"],
-"0.279.0" box "0.279.0" [label="Maekawa Layer below 0.273.0"],
-"0.279.0" rbox "0.279.0" [label="{state=released, voted=false}"];
-"0.269.0" => "0.275.0" [label="m_enter_cs"];
-"0.275.0" rbox "0.275.0" [label="{state=wanted, voted=false}"];
-"0.275.0" => "0.277.0" [label="m_request"];
-"0.275.0" => "0.276.0" [label="m_request"];
-"0.275.0" => "0.275.0" [label="m_request"];
-"0.277.0" rbox "0.277.0" [label="{state=released, voted=true}"];
-"0.277.0" => "0.275.0" [label="m_ok"];
-"0.276.0" rbox "0.276.0" [label="{state=released, voted=true}"];
-"0.276.0" => "0.275.0" [label="m_ok"];
-"0.275.0" rbox "0.275.0" [label="{state=held, voted=false}"];
-"0.275.0" => "0.269.0" [label="a_ok"];
-"0.269.0" => "0.275.0" [label="m_exit_cs"];
-"0.275.0" => "0.277.0" [label="m_release"];
-"0.275.0" => "0.276.0" [label="m_release"];
-"0.275.0" rbox "0.275.0" [label="{state=released, voted=false}"];
-"0.275.0" => "0.275.0" [label="m_release"];
-"0.270.0" => "0.276.0" [label="m_enter_cs"];
-"0.276.0" rbox "0.276.0" [label="{state=wanted, voted=false}"];
-"0.276.0" => "0.275.0" [label="m_request"];
-"0.276.0" => "0.277.0" [label="m_request"];
-"0.276.0" => "0.276.0" [label="m_request"];
-"0.277.0" rbox "0.277.0" [label="{state=released, voted=true}"];
-"0.277.0" => "0.276.0" [label="m_ok"];
-"0.275.0" rbox "0.275.0" [label="{state=released, voted=true}"];
-"0.275.0" => "0.276.0" [label="m_ok"];
-"0.276.0" rbox "0.276.0" [label="{state=held, voted=false}"];
-"0.276.0" => "0.270.0" [label="a_ok"];
-"0.270.0" => "0.276.0" [label="m_exit_cs"];
-"0.276.0" rbox "0.276.0" [label="{state=released, voted=false}"];
-"0.276.0" => "0.275.0" [label="m_release"];
-"0.276.0" => "0.276.0" [label="m_release"];
-"0.276.0" => "0.277.0" [label="m_release"];
+"0.84.0", "0.85.0", "0.86.0", "0.87.0", "0.88.0", "0.90.0", "0.91.0", "0.92.0", "0.93.0", "0.94.0";
+"0.84.0" box "0.84.0" [label="Application Layer above 0.90.0"];
+"0.85.0" box "0.85.0" [label="Application Layer above 0.91.0"];
+"0.86.0" box "0.86.0" [label="Application Layer above 0.92.0"];
+"0.87.0" box "0.87.0" [label="Application Layer above 0.93.0"];
+"0.88.0" box "0.88.0" [label="Application Layer above 0.94.0"];
+"0.90.0" box "0.90.0" [label="Maekawa Layer below 0.84.0"];
+"0.90.0" rbox "0.90.0" [label="{state=released, voted=false}"];
+"0.91.0" box "0.91.0" [label="Maekawa Layer below 0.85.0"];
+"0.91.0" rbox "0.91.0" [label="{state=released, voted=false}"];
+"0.92.0" box "0.92.0" [label="Maekawa Layer below 0.86.0"];
+"0.92.0" rbox "0.92.0" [label="{state=released, voted=false}"];
+"0.93.0" box "0.93.0" [label="Maekawa Layer below 0.87.0"];
+"0.93.0" rbox "0.93.0" [label="{state=released, voted=false}"];
+"0.94.0" box "0.94.0" [label="Maekawa Layer below 0.88.0"];
+"0.94.0" rbox "0.94.0" [label="{state=released, voted=false}"];
+"0.86.0" => "0.92.0" [label="m_enter_cs"];
+"0.85.0" => "0.91.0" [label="m_enter_cs"];
+"0.92.0" rbox "0.92.0" [label="{state=wanted, voted=false}"];
+"0.91.0" rbox "0.91.0" [label="{state=wanted, voted=false}"];
+"0.92.0" => "0.93.0" [label="m_request"];
+"0.92.0" => "0.94.0" [label="m_request"];
+"0.92.0" => "0.92.0" [label="m_request"];
+"0.91.0" => "0.91.0" [label="m_request"];
+"0.93.0" rbox "0.93.0" [label="{state=released, voted=true}"];
+"0.93.0" => "0.92.0" [label="m_ok"];
+"0.94.0" rbox "0.94.0" [label="{state=released, voted=true}"];
+"0.94.0" => "0.92.0" [label="m_ok"];
+"0.92.0" rbox "0.92.0" [label="{state=held, voted=false}"];
+"0.91.0" => "0.92.0" [label="m_request"];
+"0.92.0" => "0.86.0" [label="a_ok"];
+"0.92.0" rbox "0.92.0" [label="{state=held, voted=false}"];
+"0.86.0" => "0.92.0" [label="m_exit_cs"];
+"0.92.0" => "0.94.0" [label="m_release"];
+"0.92.0" => "0.93.0" [label="m_release"];
+"0.92.0" rbox "0.92.0" [label="{state=released, voted=false}"];
+"0.92.0" => "0.92.0" [label="m_release"];
 }
