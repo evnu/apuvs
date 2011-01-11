@@ -96,9 +96,19 @@ numberstyle=\tiny,
 
 \maketitle 
 
-\section*{Aufgabe 8.1}
+\section*{Quelltexte}
  \lstinputlisting{../../src/multicast.erl} 
  \lstinputlisting{../../src/collector.erl} 
  \lstinputlisting{../../src/maekawa.erl} 
  \lstinputlisting{../../src/ratemal.erl} 
-\end{document}
+
+\section*{Beispiellauf}
+ %noch bild einfügen
+
+\section*{Erläterungen}
+ Die Einigung der Prozesse findet in der Maekawa-Schicht statt, die jeder
+ Prozess für sich startet. An diese wird die Nachricht geschickt, dass der
+ Prozess in die kritische Sektion eintretten will. Die Maekawa-Sschicht
+ übernimmt das Aushandeln der Lockvergabe und das eventuelle Blockieren des
+ entsprechenden Prozesses.
+ \end{document}
