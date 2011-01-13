@@ -1,1 +1,5 @@
-keiner darf ausfallen?
+Jeder Knoten (ausser der \verb+Initiator+) darf ausfallen nachdem er ein Token
+an seinen Vaterknoten geschickt hat. Fällt einer dieser Knoten vorher aus,
+terminiert der Algorithmus nicht, da jeder Knoten von jedem Nachbarn ein
+\verb+Token+ erwartet. Fällt der \verb+Initiator+ aus wird nie ein \verb+Leader+
+gewählt. Dieser darf also nicht ausfallen.

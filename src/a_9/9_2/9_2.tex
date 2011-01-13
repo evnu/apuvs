@@ -1,0 +1,12 @@
+Die miniale Zeit T' ist in Abhängigkeit von i bei N Prozessen wie folgt definiert:
+\begin{eqnarray*}
+  T'(N) & = & T \\
+  T'(i) & = & T'(i+1) + T_{PROCESS} + T_{TRANS}
+\end{eqnarray*}
+Der höchste Prozess (also derjenige mit der höchsten Prozessnummer) wird nie die
+den Ausführungszweig in dem die Zeit T' gewartet wird abarbeiten, da er nie eine
+Antwort auf seine e-Nachricht bekommt. Darum kann man T' des höchsten Prozesses
+einfach auf T setzen. \\
+Der darunterliegende Prozess muss mindestens diese Zeit, plus die Zeit die
+Nächsthöhere zum Versenden der eigenen e-Nachricht benötigt ($T_{PROCESS}$) und
+der Nachrichtenlaufzeit der c-Nachricht benötigt, warten.
