@@ -1,11 +1,8 @@
-Ja, die Farben sind in diesem Algorithmus nötig. Würde man auf die Farben
-verzichten, würde der \verb+Initiator+ auf \verb+<explore>+ Nachrichten
-reagieren, seinen \verb+Anzahl+ Zähler hochzählen und so unter Umständen den
-Algorithmus zu früh terminieren. \\
-TODO: vergleich \\
-sollen wir da laufzeit usw vergleichen? oder nur die algos an sich?
-\begin{itemize}
-  \item VL algos brauchen nur einen Nachrichtentyp
-  \item VL sind intuitiver verständlich
-  \item VL erkunden die gesamte netztopologie
-\end{itemize}
+Der unter
+\url{http://de.wikipedia.org/w/index.php?title=Echo-Algorithmus&oldid=50781161}
+beschriebene Algorithmus implementiert nicht den \verb+echo+-Algorithmus.
+Beispielsweise zählen die Knoten, dir rot sind nicht die eingehenden
+\verb+explore+-Nachrichten mit und der \verb+Initiator+ beendet sich sobald er
+\emph{einen} \verb+echo+ Marker erhalten hat.
+Da wir die Funktion des Algorithmus nicht ergründen können, können wir nur davon
+ausgehen, dass die Farben nötig sind, da sie den Programmablauf beeinflussen.
