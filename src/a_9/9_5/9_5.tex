@@ -1,14 +1,14 @@
 \begin{verbatim}
   received = 0;
   father = null;
-  children = [];
+  children = []; // liste der kinder
 
 Initiator:
   forall (q in neighbours) do
     send <token> to q;
   while (received < #neighbours) {
     receive msg from q;
-    if (msg == <child>){
+    if (msg == <child>) {
       children = [q | children];
     }
     received = received + 1;
