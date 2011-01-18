@@ -1,8 +1,11 @@
 Der unter
-\url{http://de.wikipedia.org/w/index.php?title=Echo-Algorithmus&oldid=50781161}
+\url{http://de.wikipedia.org/w/index.php?title=Echo-Algorithmus&oldid=50781161} im
+Pseudocode 
 beschriebene Algorithmus implementiert nicht den \verb+echo+-Algorithmus.
-Beispielsweise zählen die Knoten, dir rot sind nicht die eingehenden
-\verb+explore+-Nachrichten mit und der \verb+Initiator+ beendet sich sobald er
-\emph{einen} \verb+echo+ Marker erhalten hat.
+Beispielsweise zählen die rot gefärbten Knoten nicht die eingehenden
+\verb+explore+-Nachrichten mit
+\footnote{Diese können also nicht die letzte Bedingung \emph{``wenn $Anzahl == AnzahlNachbarn$ oder $Nachricht == <echo>$''} erfüllen und verbleiben
+damit rot markiert.}
+und der \verb+Initiator+ beendet sich sobald er \emph{einen} \verb+echo+ Marker erhalten hat.
 Da wir die Funktion des Algorithmus nicht ergründen können, können wir nur davon
 ausgehen, dass die Farben nötig sind, da sie den Programmablauf beeinflussen.
