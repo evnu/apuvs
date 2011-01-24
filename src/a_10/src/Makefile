@@ -1,4 +1,5 @@
 FILES=changrob.beam collector.beam test.beam
+MSCGEN?=/home/evnu/tmp/msc/mscgen-0.19/src/mscgen
 
 all: $(FILES) .check
 
@@ -15,6 +16,14 @@ run: all
 
 %.beam: %.erl
 	erlc +debug_info $< 
+
+# this assumes that the msc parser is given via $(MSCGEN)
+create_graphs: 
+	@for i in msc/*; \
+			do \
+					echo "creating graph for $$i"; \
+					$(MSCGEN) -i $$i -Tpng; \
+			done
 
 clean:
 	-rm *.beam
