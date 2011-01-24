@@ -20,7 +20,7 @@ run: all
 	erlc +debug_info $< 
 
 # this assumes that the msc parser is given via $(MSCGEN)
-create_graphs: run
+create_graphs: 
 	@for i in msc/*.msc; \
 			do \
 					echo "creating graph for $$i"; \

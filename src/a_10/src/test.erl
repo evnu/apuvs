@@ -22,12 +22,8 @@ testcr(N) when is_integer (N) ->
     [start_single_election (lists:nth(I, Pids), C) || I <- lists:seq(1,N)],
 
     % start two concurrent elections
-    [_,_,H2|_] = T,
-    H ! {start_election, self()},
-    H2 ! {start_election, self()},
-    timer:sleep (1000),
-    C ! {c_print_to_file, "msc/double.msc"},
-    C ! {c_clear_cache},
+    [_,H2|_] = T,
+    start_concurrent_elections([H, H2], C),
     ok.
 
 start_single_election(Pid, C) ->
@@ -35,4 +31,14 @@ start_single_election(Pid, C) ->
     timer:sleep (1000),
     C ! {c_print_to_file, io_lib:format("msc/single_election_at_~s.msc",[collector:convert_process_id(Pid)])},
     C ! {c_clear_cache}.
+
+start_concurrent_elections(Pids, C) ->
+    [ P ! {start_election, self()} || P <- Pids],
+    timer:sleep(1000),
+    C ! {c_print_to_file, 
+        io_lib:format("msc/concurrent_with_~s.msc",
+            [lists:map(fun(P) -> collector:convert_process_id(P) end, Pids)])
+        },
+    C ! {c_clear_cache}.
+
 
