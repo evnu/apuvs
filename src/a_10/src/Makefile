@@ -11,3 +11,6 @@ check: $(FILES)
 
 %.beam: %.erl
 	erlc +debug_info $< 
+
+clean:
+	-rm *.beam

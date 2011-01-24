@@ -8,7 +8,7 @@
 %
 initcr(Collector) ->
     receive
-        {cr_collector, Next} ->
+        {cr_next_pid, Next} ->
             cr(Next, false, Collector)
     end.
 
