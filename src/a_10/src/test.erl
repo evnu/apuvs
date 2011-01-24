@@ -18,11 +18,8 @@ testcr(N) when is_integer (N) ->
     SendTupels = lists:zip(Pids, lists:append(T, [H])),
     lists:map(fun ({Pred, Next}) -> Pred ! {cr_next_pid, Next} end, SendTupels),
 
-    % start a first election
-    H ! {start_election, self()},
-    timer:sleep (1000),
-    C ! {c_print_to_file, "msc/single.msc"},
-    C ! {c_clear_cache},
+    % start an election at each process
+    [start_single_election (lists:nth(I, Pids), C) || I <- lists:seq(1,N)],
 
     % start two concurrent elections
     [_,_,H2|_] = T,
@@ -32,3 +29,10 @@ testcr(N) when is_integer (N) ->
     C ! {c_print_to_file, "msc/double.msc"},
     C ! {c_clear_cache},
     ok.
+
+start_single_election(Pid, C) ->
+    Pid ! {start_election, self()},
+    timer:sleep (1000),
+    C ! {c_print_to_file, io_lib:format("msc/single_election_at_~s.msc",[collector:convert_process_id(Pid)])},
+    C ! {c_clear_cache}.
+

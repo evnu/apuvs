@@ -19,6 +19,8 @@ collector (C) ->
             exit(bad_arg);
         {c_state_change, {Sender, State}} ->
             et_collector:report_event(C,1,Sender,Sender,state_change,[State]);
+        {c_label, {Sender, Label}} ->
+            et_collector:report_event(C,1,Sender,Sender,label,[Label]);
         {c_name_process, {Sender, Name}}  ->
             et_collector:report_event(C,1,Sender,Sender,name_process,[Name]);
         {c_print} ->
@@ -69,6 +71,12 @@ collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Send
         state_change,[State]}, Acc) ->
     Acc ++ io_lib:format("\"~s\" rbox \"~s\" [label=\"~s\"];\n",
         [convert_process_id (Sender),convert_process_id(Sender), State]);
+
+%% print label
+collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Sender,
+        label,[Label]}, Acc) ->
+    Acc ++ io_lib:format("\"~s\" note \"~s\" [label=\"~s\"];\n",
+        [convert_process_id (Sender),convert_process_id(Sender), Label]);
 
 %% name process
 collector_string_representation ({event, _Priority, _Time1, _Time2, Sender, Sender,

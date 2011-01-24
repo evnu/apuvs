@@ -47,6 +47,7 @@ cr(Next, Participant, Collector) ->
                     if
                         % if we already participated, we discard the message
                         Participant ->
+                            Collector ! {c_label, {self(), discards_message}},
                             discardMsg;
                         % if we didn't participate, we vote for ourselve
                         not Participant ->
