@@ -1,0 +1,13 @@
+FILES=changrob.beam collector.beam test.beam
+
+all: $(FILES) check
+
+check: $(FILES)
+	@for i in $?; \
+	do \
+		echo "Checking $$i"; \
+		dialyzer $$i;\
+	done 
+
+%.beam: %.erl
+	erlc +debug_info $< 

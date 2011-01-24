@@ -14,9 +14,8 @@ collector (C) ->
         {c_collect, {Sender, Receiver, Message}} when is_atom(Message) ->
             et_collector:report_event(C, 1, Sender, Receiver, Message, []);
         {c_collect, {Sender, Receiver, Message}} when is_list(Message) ->
-            TmpMessage = lists:flatten(Message),
-            et_collector:report_event(C, 1, Sender, Receiver, list_to_atom(TmpMessage), []);
-        {c_collect, {Sender, Receiver, Message}} ->
+            et_collector:report_event(C, 1, Sender, Receiver, list_to_atom(lists:flatten(Message)), []);
+        {c_collect, _} ->
             exit(bad_arg);
         {c_state_change, {Sender, State}} ->
             et_collector:report_event(C,1,Sender,Sender,state_change,[State]);
