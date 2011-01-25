@@ -22,9 +22,14 @@ testcr(N) when is_integer (N) ->
     [start_single_election (lists:nth(I, Pids), C) || I <- lists:seq(1,N)],
 
     % start two concurrent elections
-    [_,H2|_] = T,
-    start_concurrent_elections([H, H2], C),
+    start_concurrent_elections([s(1,Pids), s(2,Pids)], C),
+    start_concurrent_elections([s(1,Pids), s(3, Pids), s(5, Pids)], C),
+    start_concurrent_elections([s(2,Pids), s(3, Pids), s(5, Pids)], C),
+    start_concurrent_elections([s(3,Pids), s(4, Pids), s(5, Pids)], C),
     ok.
+
+%%%%% shorter wrapper for lists:nth (..)
+s(N,L) -> lists:nth(N,L).
 
 start_single_election(Pid, C) ->
     Pid ! {start_election, self()},
