@@ -110,4 +110,86 @@ numberstyle=\tiny,
     überlappt. T könnte also einen inkonsistenen Wert gelesen haben und wird
     aufgefordert sich abzubrechen. i=55; j=66
 \end{itemize}
+
+\section*{Aufgabe 10.2}
+ Zum Start des Programms die Funktion \verb+testcr(N)+ aufrufen, wobei N die Anzahl der
+ gewünschten Prozesse ist. 
+ \lstinputlisting{../src/changrob.erl}
+ \lstinputlisting{../src/collector.erl}
+ \lstinputlisting{../src/test.erl}
+
+ \pagebreak
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/single_election_at_0.30.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.30.0; Anzahl der Nachrichten: 14}
+   \label{fig:s_30}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/single_election_at_0.31.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.31.0; Anzahl der Nachrichten: 13}
+   \label{fig:s_31}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/single_election_at_0.32.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.32.0; Anzahl der Nachrichten: 12}
+   \label{fig:s_32}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/single_election_at_0.33.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.33.0; Anzahl der Nachrichten: 11}
+   \label{fig:s_33}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/single_election_at_0.34.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.34.0; Anzahl der Nachrichten: 10}
+   \label{fig:s_34}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/concurrent_with_0.30.00.31.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.30.0 und 0.31.0; Anzahl der Nachrichten: 14}
+   \label{fig:s_3031}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/concurrent_with_0.30.00.31.00.32.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.30.0, 0.31.0 und 0.32.0; Anzahl der Nachrichten: 14}
+   \label{fig:s_303132}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/concurrent_with_0.30.00.32.00.34.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.30.0, 0.32.0 und 0.34.0; Anzahl der Nachrichten: 14}
+   \label{fig:s_303234}
+ \end{figure}
+
+ \begin{figure}
+   \begin{center}
+     \includegraphics[scale=0.4]{../src/msc/concurrent_with_0.31.00.32.00.34.0.png}
+   \end{center}
+   \caption{Wahlstart bei 0.31.0, 0.32.0 und 0.34.0; Anzahl der Nachrichten: 13}
+   \label{fig:s_313234}
+ \end{figure}
+
 \end{document}
