@@ -16,7 +16,7 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
     % Initialize a collector to build the msc
     C = collector:start_collector(),
     % Calculate majority
-    Majority = N / 2 + 1, % TODO muessen wir hier abrunden..?
+    Majority = floor(N / 2) + 1,
     % create N proposers
     Proposers = [spawn (proposer, initialize, [C]) || _ <- lists:seq(1,N)],
     % create F acceptors
@@ -26,7 +26,9 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
 
     [Acc ! {Learners, self()} || Acc <- Acceptors],
     [Prop ! {Acceptors, self()} || Prop <- Proposers],
-    
+
+    % output the pids
+    io:format("Proposers: ~w\nAcceptors: ~w\nLearners: ~w\n",[Proposers, Acceptors, Learners]), 
     testsuite (C, Proposers, Acceptors, Learners),
     ok
     . %%%%% END OF FUNCTION
@@ -37,7 +39,6 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
 %  run some tests on the implementation and log the output.
 %
 testsuite (Collector, Proposers, _Acceptors, Learners) ->
-    io:format("~w\n", [Proposers]),
     simple_run (Collector, lists:nth(1,Proposers), Learners)
     . %%%%% END OF FUNCTION
 
@@ -50,5 +51,22 @@ simple_run (Collector, InitialProposer, Learners) ->
     InitialProposer ! {{propose, 10}, self()},
     %% wait for all learners
     [receive {learned_about_decision, Learner} -> true end || Learner <- Learners],
-    Collector ! {c_print_to_file, "msc/simple_run.msc"}
+    Collector ! {c_print_to_file, "msc/simple_run.msc"},
+    io:format("simple run finished\n")
     . %% END OF FUNCTION
+
+
+%%%%%%
+% Floor
+%  We need the floor function.
+%
+floor(X) when X < 0 ->
+    T = trunc(X),
+    case X - T == 0 of
+        true -> T;
+        false -> T - 1
+    end;
+floor(X) -> 
+    trunc(X).
+
+

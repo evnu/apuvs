@@ -49,14 +49,15 @@ life (Configuration) ->
     NewConf = receive
         {{propose, Value}, Sender} ->
             proplists:get_value(collector, Configuration) ! {c_collect, {Sender, self(), io_lib:format("<propose, ~w>", [Value])}},
-            io:format("~w received propose from ~w\n", [self(), Sender]),
+            io:format("~w received <propose, Value=~w> from ~w\n", [self(), Value, Sender]),
             send_new_proposal (Configuration, Value);
 
         {{ack, R_ack, V_i, R_i}, Sender} ->
-            io:format("~w received ack from ~w\n", [self(), Sender]),
+            io:format("~w received <ack, R_ack = ~w, V_i = ~w, R_i = ~w> from ~w\n",
+                [self(), R_ack, V_i, R_i, Sender]),
             proplists:get_value(collector, Configuration) ! 
                 {c_collect, {Sender, self(), io_lib:format("<ack, R_ack = ~w, V_i = ~w, R_i = ~w>", [R_ack, V_i, R_i])}},
-            io:format("~w received propose from ~w\n", [self(), Sender]),
+
             R = proplists:get_value (r, Configuration),
             if R_ack == R ->
                     % R_ack == r
@@ -74,19 +75,21 @@ life (Configuration) ->
                         true -> Configuration
                     end,
                     if NewAckNum >= Majority ->
-                            % If the proposer received more ACKs than needed for the
+                            % If the proposer received enough ACKs needed for the
                             % majority, we'll declare that we accepted a value.
+                            io:format("~w majority reached.\n",[self()]),
                             V_latest = proplists:get_value (latest_v, TempConf),
                             Value = 
                             if V_latest == null -> proplists:get_value(myvalue, TempConf,
                                     error_there_are_cases_where_we_didnt_decide_on_a_value);
                                 true -> V_latest
                             end,
-                            [Acceptor ! {accepted, proplists:get_value(r, TempConf), Value} || Acceptor <-
+                            [Acceptor ! {{accepted, proplists:get_value(r, TempConf), Value}, self()} || Acceptor <-
                                 proplists:get_value(acceptors, TempConf)];
                         true -> true
                     end,
-                    TempConf %% simply return the new configuration
+                    change_value({acknum, NewAckNum}, TempConf) %% return the new configuration after changing
+                                                                %% the number of acks
                     ;
                 true ->
                     % false
@@ -129,6 +132,7 @@ send_new_proposal (Configuration, Value) ->
     LatestR = proplists:get_value(r_latest, Configuration),
     NewConf = change_values ([{acknum, 0}, {myvalue, Value}, {r, max(OldR, LatestR) + 1}], Configuration),
     % send prepare(r) to each acceptor
+    io:format("Propose\n"),
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
         NewConf.
 
