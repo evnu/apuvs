@@ -17,6 +17,7 @@ learner(Creator, Collector, Maj, OldR , OldNum) ->
         {{accepted, Round, Value}, Sender} ->
             io:format("learner ~w <accepted, Round = ~w, Value = ~w> from ~w\n", [self(), Round,
                     Value, Sender]),
+            Collector ! {c_collect, {Sender, self(), io_lib:format("<accepted, ~w,~w>", [Round, Value])}},
             % track the message
             Collector ! {c_collect, {Sender, self(), io_lib:format("<accepted, ~w, ~w>", [Round, Value])}},
             {TempRound, TmpAccepted} =

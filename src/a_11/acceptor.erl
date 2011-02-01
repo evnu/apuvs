@@ -27,6 +27,7 @@ life (C, OldR_ack, OldR_acc, OldV, LearnerList) ->
     {NR_ack, NR_acc, NV} =
     receive 
         {{prepare,R_rcv},Sender}  -> 
+            C ! {c_collect, {Sender, self (), io_lib:format("<prepare,~w>",[R_rcv])}},
             io:format("~w received <prepare,~w> from ~w\n", [self(), R_rcv, Sender]),
             % R_rcv == the round of the proposer
             if ((R_rcv > OldR_ack) and (R_rcv > OldR_acc)) -> 
@@ -40,6 +41,7 @@ life (C, OldR_ack, OldR_acc, OldV, LearnerList) ->
             end;
 
         {{accepted, R, W}, Sender} ->
+            C ! {c_collect, {Sender, self(), io_lib:format("<accepted, ~w,~w>",[R,W])}},
             io:format("~w received <accepted, R=~w, W≃~w from ~w \n", [self(), R, W, Sender]),
             if ((R >= OldR_ack) and (R > OldR_acc)) -> 
                     % a proposer accepted by majority. Lets tell the learners and finish this.
