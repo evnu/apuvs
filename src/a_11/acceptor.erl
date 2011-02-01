@@ -6,8 +6,7 @@
 % Initialize an acceptor
 %
 
-initialize(C) -> 
-	MyPid = Pid,
+initialize(C) ->
 	R_ack = 0,
 	R_acc = 0,
 	V = null.
@@ -16,7 +15,7 @@ receive
 	{{prep,R_rcv},Sender}  -> 
 		if R_rcv > R_ack, R_rcv > R_acc -> 
 			R_ack = R_rcv,
-			Sender ! {{Sender,{ack,R_ack,V,R_acc}},self()},
+			Sender ! {{ack,R_ack,V,R_acc},self()},
 		end. 
 			
 	{{acced,R,W}, Sender} ->
