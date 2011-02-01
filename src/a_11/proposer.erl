@@ -1,13 +1,12 @@
 -module(proposer).
--export([initialize/0]).
+-export([initialize/1]).
 
 %%%%%%%
 %
 % Initialize a proposer
-% TODO comment DispatcherId
 %
 
-initialize () ->
+initialize (Collector) ->
     %% Get the list of acceptors
     receive
         Acceptors when is_list(Acceptors) ->
@@ -20,12 +19,13 @@ initialize () ->
 
     %% create a proplist to contain the configuration
     Configuration = [
-         {r,1}          % local round number
+         {r,0}           % local round number: begin with 0 because we add 1 anyways.
         ,{r_latest,0}    % number of the highest acknowledged round
         ,{latest_v,null} % value of the highest acknowledged round
         ,{acceptors, Acceptors}
         ,{majority, Majority}
         ,{acknum, 0}
+        ,{collector, Collector}
     ],
 
     life (Configuration).
@@ -50,7 +50,7 @@ life (Configuration) ->
 
                     TempConf = 
                     if (R_i > R_latest) ->
-                            % if the last received round is older than the last round
+                            % if the latest received round is older than the newly received round
                             % which was acknowledged by this acceptor, we know that we
                             % have to invalidate our round and reset latest_v (latest
                             % value) and r_latest (latest accepted round)
@@ -66,11 +66,11 @@ life (Configuration) ->
                                     error_there_are_cases_where_we_didnt_decide_on_a_value);
                                 true -> V_latest
                             end,
-                            [Acceptor ! {accept, proplists:get_value(r, TempConf), Value} || Acceptor <-
+                            [Acceptor ! {accepted, proplists:get_value(r, TempConf), Value} || Acceptor <-
                                 proplists:get_value(acceptors, TempConf)];
                         true -> true
                     end,
-                    TempConf %% return new configuration
+                    TempConf %% simply return the new configuration
                     ;
                 true ->
                     % false
@@ -81,9 +81,18 @@ life (Configuration) ->
     life (NewConf) 
     . %% END OF FUNCTION
 
+%%%%%%%
+% Send a new proposal
+%  Send a new proposal sends prepare to all reachable acceptors. This function is also
+%  responsible to choose a new round number for the proposer. We use a simple case here
+%  and simply add 1 to the maximum of the last used round number and the last received
+%  acknowledged round number.
+%
 send_new_proposal (Configuration, Value) ->
     % Note: proplist:delete doesn't fail, if the key to be deleted isn't found
-    NewConf = change_values ([{acknum, 0}, {myvalue, Value}], Configuration),
+    OldR = proplists:get_value (r, Configuration),
+    LatestR = proplists:get_value(r_latest, Configuration),
+    NewConf = change_values ([{acknum, 0}, {myvalue, Value}, {r, max(OldR, LatestR) + 1}], Configuration),
     % send prepare(r) to each acceptor
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
         NewConf.
