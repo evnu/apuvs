@@ -1,6 +1,5 @@
-FILES=changrob.beam collector.beam test.beam
+FILES=collector.beam paxos.beam
 MSCGEN?=/home/evnu/tmp/msc/mscgen-0.19/src/mscgen
-NUMBER_OF_PROCESSES=5
 
 all: $(FILES) .check
 
