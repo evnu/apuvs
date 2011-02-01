@@ -9,10 +9,11 @@
 initialize (Collector) ->
     %% Get the list of acceptors
     receive
-        Acceptors when is_list(Acceptors) ->
+        {Acceptors, _Sender} when is_list(Acceptors) ->
             Acceptors;
         _ ->
             Acceptors = unsafe,
+            io:format("Unexpected message."),
             exit('Unknown value')
     end,
     Majority = length (Acceptors)/2 + 1,
@@ -27,7 +28,15 @@ initialize (Collector) ->
         ,{acknum, 0}
         ,{collector, Collector}
     ],
-
+    
+    Collector ! {c_name_process, self(), "Proposer"},
+    % tell collector about our state
+    Collector ! {c_state_change, {self(), io_lib:format("r = ~w, r_latest = ~w,
+                latest_v = ~w", [
+                    proplists:get_value (r, Configuration),
+                    proplists:get_value(r_latest, Configuration),
+                    proplists:get_value(latest_v, Configuration)
+                ])}},
     life (Configuration).
 
 
@@ -38,9 +47,16 @@ initialize (Collector) ->
 
 life (Configuration) ->
     NewConf = receive
-        {{propose, Value}, _Sender} ->
+        {{propose, Value}, Sender} ->
+            proplists:get_value(collector, Configuration) ! {c_collect, {Sender, self(), io_lib:format("<propose, ~w>", [Value])}},
+            io:format("~w received propose from ~w\n", [self(), Sender]),
             send_new_proposal (Configuration, Value);
-        {{ack, R_ack, V_i, R_i}, _Sender} ->
+
+        {{ack, R_ack, V_i, R_i}, Sender} ->
+            io:format("~w received ack from ~w\n", [self(), Sender]),
+            proplists:get_value(collector, Configuration) ! 
+                {c_collect, {Sender, self(), io_lib:format("<ack, R_ack = ~w, V_i = ~w, R_i = ~w>", [R_ack, V_i, R_i])}},
+            io:format("~w received propose from ~w\n", [self(), Sender]),
             R = proplists:get_value (r, Configuration),
             if R_ack == R ->
                     % R_ack == r
@@ -75,9 +91,28 @@ life (Configuration) ->
                 true ->
                     % false
                     Configuration
-            end
-
+            end;
+        M -> exit (io_lib:format("Didn't expect this kind of message: ~w",[M]))
     end,
+
+    if (NewConf =/= Configuration) ->
+            % tell collector about our new state
+            proplists:get_value(collector, NewConf) ! 
+                {c_state_change, 
+                    {self(), 
+                        io_lib:format("r = ~w, r_latest = ~w, latest_v = ~w", 
+                            [
+                                proplists:get_value (r, NewConf),
+                                proplists:get_value(r_latest, NewConf),
+                                proplists:get_value(latest_v, NewConf)
+                            ]
+                        )
+                    }
+                }
+            ;
+        true -> ok
+    end,
+
     life (NewConf) 
     . %% END OF FUNCTION
 

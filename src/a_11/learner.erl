@@ -1,19 +1,22 @@
 -module(learner).
--export([initialize/2]).
+-export([initialize/3]).
 
 %%%%%%%
 %
 % Initialize a learner
 %
 
-initialize (Collector, Maj) ->
-    learner(Collector, Maj, 1, 0)
+initialize (Creator, Collector, Maj) ->
+    Collector ! {c_name_process, {self(), "Learner"}},
+    learner(Creator, Collector, Maj, 1, 0)
     . %% END OF FUNCTION
 
-learner(Collector, Maj, OldR , OldNum) ->
+learner(Creator, Collector, Maj, OldR , OldNum) ->
     {FinalNewRound,FinalNewNum} = 
     receive
-        {{accepted, Round, _Value}, _Sender} ->
+        {{accepted, Round, Value}, Sender} ->
+            % track the message
+            Collector ! {c_collect, {Sender, self(), io_lib:format("<accepted, ~w, ~w>", [Round, Value])}},
             {TempRound, TmpAccepted} =
             if (Round > OldR) -> 
                     {Round, 0};
@@ -22,11 +25,12 @@ learner(Collector, Maj, OldR , OldNum) ->
             end,
             NumAccepted = TmpAccepted + 1,
             if (NumAccepted == Maj) ->
-                    %%% TODO we decided. let's change the state
-                    true;
+                    Collector ! {c_state_change, {self(), io_lib:format("decided on ~w", [Value])}},
+                    % tell creator that we are finished to enable building the msc
+                    Creator ! {learned_about_decision, self()};
                 true -> false
             end,
             {TempRound, NumAccepted} % return the local variables
     end,
-    learner (Collector, Maj, FinalNewRound, FinalNewNum)
+    learner (Creator, Collector, Maj, FinalNewRound, FinalNewNum)
     . %% END OF FUNCTION

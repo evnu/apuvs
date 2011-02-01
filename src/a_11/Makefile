@@ -1,5 +1,6 @@
 FILES=collector.beam paxos.beam proposer.beam acceptor.beam kreator.beam learner.beam
 MSCGEN?=/home/evnu/tmp/msc/mscgen-0.19/src/mscgen
+NUMBER_OF_PROCESSES?=10
 
 all: $(FILES) .check
 
@@ -12,7 +13,7 @@ all: $(FILES) .check
 	touch .check
 
 run: all
-	erl -noinput -noshell -run test testcr $(NUMBER_OF_PROCESSES) -run init stop
+	erl -noinput -noshell -run kreator start $(NUMBER_OF_PROCESSES) -run init stop
 	touch run
 
 %.beam: %.erl
