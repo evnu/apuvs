@@ -1,4 +1,4 @@
-FILES=collector.beam paxos.beam
+FILES=collector.beam paxos.beam proposer.beam
 MSCGEN?=/home/evnu/tmp/msc/mscgen-0.19/src/mscgen
 
 all: $(FILES) .check
