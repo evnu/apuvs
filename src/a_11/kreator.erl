@@ -1,5 +1,5 @@
 -module(kreator).
--export(start/1).
+-export([start/1]).
 
 start(N) ->
     create(round(N/2), N, round(N/4)).
