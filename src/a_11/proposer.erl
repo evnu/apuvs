@@ -47,71 +47,18 @@ initialize (Collector) ->
 %  This is the main function of a proposer.
 
 life (Configuration) ->
-    NewConf = receive
-        {{propose, Value}, Sender} ->
-            proplists:get_value(collector, Configuration) ! {c_collect, {Sender, self(), io_lib:format("<propose, ~w>", [Value])}},
-            io:format("~w received <propose, Value=~w> from ~w\n", [self(), Value, Sender]),
-            send_new_proposal (Configuration, Value);
-
-        M -> exit (io_lib:format("Didn't expect this kind of message: ~w",[M]))
-    end,
-
-    check_configs(NewConf, Configuration),
-
-    life (NewConf) 
-    . %% END OF FUNCTION
-
-proposed(Configuration) ->
-    NewConf =
     receive
-        {{ack, R_ack, V_i, R_i}, Sender} ->
-            io:format("~w received <ack, R_ack = ~w, V_i = ~w, R_i = ~w> from ~w\n",
-                [self(), R_ack, V_i, R_i, Sender]),
-            proplists:get_value(collector, Configuration) ! 
-                {c_collect, {Sender, self(), io_lib:format("<ack, R_ack = ~w, V_i = ~w, R_i = ~w>", [R_ack, V_i, R_i])}},
-
-            R = proplists:get_value (r, Configuration),
-            if R_ack == R ->
-                    % R_ack == r
-                    NewAckNum = proplists:get_value(acknum, Configuration) + 1,
-                    R_latest  = proplists:get_value (r_latest, Configuration),
-                    Majority  = proplists:get_value (majority, Configuration),
-
-                    TempConf = 
-                    if (R_i > R_latest) ->
-                            % if the latest received round is older than the newly received round
-                            % which was acknowledged by this acceptor, we know that we
-                            % have to invalidate our round and reset latest_v (latest
-                            % value) and r_latest (latest accepted round)
-                            change_values([{r_latest, R_i}, {latest_v, V_i}], Configuration);
-                        true -> Configuration
-                    end,
-                    if NewAckNum >= Majority ->
-                            % If the proposer received enough ACKs needed for the
-                            % majority, we'll declare that we accepted a value.
-                            io:format("~w majority reached.\n",[self()]),
-                            V_latest = proplists:get_value (latest_v, TempConf),
-                            Value = 
-                            if V_latest == null -> proplists:get_value(myvalue, TempConf,
-                                    error_there_are_cases_where_we_didnt_decide_on_a_value);
-                                true -> V_latest
-                            end,
-                            [Acceptor ! {{accepted, proplists:get_value(r, TempConf), Value}, self()} || Acceptor <-
-                                proplists:get_value(acceptors, TempConf)];
-                        true -> true
-                    end,
-                    change_value({acknum, NewAckNum}, TempConf) %% return the new configuration after changing
-                                                                %% the number of acks
-                    ;
-                true ->
-                    % false
-                    Configuration
-            end,
-            check_configs(NewConf, Configuration)
-    after proplists:get_value(timeout, Configuration) ->
-            life(Configuration)
+        {{propose, V}, _sender} ->
+            NewConf = change_value({acknum, 0}, Configuration),
+            send_new_proposal(NewConf, V)
     end
     .
+
+proposed(Configuration) ->
+    R = proplists:get_value(r, Configuration),
+    receive
+        {{ack, R, Old_v, Old_r_ack}, _} ->
+            NewConf = change_mind(Configuration, Old_r_ack, Old_v),
 
 %%%%%%%
 % Send a new proposal
@@ -129,6 +76,16 @@ send_new_proposal (Configuration, Value) ->
     io:format("Propose\n"),
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
         NewConf.
+
+change_mind(Conf, R, V) ->
+    R_latest = proplists:get_value(r_latest, Conf),
+    if
+        R > R_latest ->
+            NewConf = change_values([{r_latest, R}, {latest_v, V}], Conf);
+        true -> ok
+    end,
+    NewConf
+    .
 
 %%%%%%%
 % checks two configurations and informs the collector in case they are different
