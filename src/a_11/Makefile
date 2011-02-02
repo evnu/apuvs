@@ -1,4 +1,4 @@
-FILES=collector.beam paxos.beam proposer.beam acceptor.beam kreator.beam learner.beam
+FILES=collector.beam proposer.beam acceptor.beam kreator.beam learner.beam
 MSCGEN?=/home/evnu/tmp/msc/mscgen-0.19/src/mscgen
 NUMBER_OF_PROCESSES?=10
 

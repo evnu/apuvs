@@ -27,6 +27,7 @@ initialize (Collector) ->
         ,{majority, Majority}
         ,{acknum, 0}
         ,{collector, Collector}
+        ,{timeout, 100}
     ],
     
     Collector ! {c_name_process, self(), "Proposer"},
@@ -52,6 +53,17 @@ life (Configuration) ->
             io:format("~w received <propose, Value=~w> from ~w\n", [self(), Value, Sender]),
             send_new_proposal (Configuration, Value);
 
+        M -> exit (io_lib:format("Didn't expect this kind of message: ~w",[M]))
+    end,
+
+    check_configs(NewConf, Configuration),
+
+    life (NewConf) 
+    . %% END OF FUNCTION
+
+proposed(Configuration) ->
+    NewConf =
+    receive
         {{ack, R_ack, V_i, R_i}, Sender} ->
             io:format("~w received <ack, R_ack = ~w, V_i = ~w, R_i = ~w> from ~w\n",
                 [self(), R_ack, V_i, R_i, Sender]),
@@ -94,30 +106,12 @@ life (Configuration) ->
                 true ->
                     % false
                     Configuration
-            end;
-        M -> exit (io_lib:format("Didn't expect this kind of message: ~w",[M]))
-    end,
-
-    if (NewConf =/= Configuration) ->
-            % tell collector about our new state
-            proplists:get_value(collector, NewConf) ! 
-                {c_state_change, 
-                    {self(), 
-                        io_lib:format("r = ~w, r_latest = ~w, latest_v = ~w", 
-                            [
-                                proplists:get_value (r, NewConf),
-                                proplists:get_value(r_latest, NewConf),
-                                proplists:get_value(latest_v, NewConf)
-                            ]
-                        )
-                    }
-                }
-            ;
-        true -> ok
-    end,
-
-    life (NewConf) 
-    . %% END OF FUNCTION
+            end,
+            check_configs(NewConf, Configuration)
+    after proplists:get_value(timeout, Configuration) ->
+            life(Configuration)
+    end
+    .
 
 %%%%%%%
 % Send a new proposal
@@ -135,6 +129,28 @@ send_new_proposal (Configuration, Value) ->
     io:format("Propose\n"),
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
         NewConf.
+
+%%%%%%%
+% checks two configurations and informs the collector in case they are different
+check_configs(NewC, Con) ->
+    if (NewConf =/= Configuration) ->
+            % tell collector about our new state
+            proplists:get_value(collector, NewConf) ! 
+                {c_state_change, 
+                    {self(), 
+                        io_lib:format("r = ~w, r_latest = ~w, latest_v = ~w", 
+                            [
+                                proplists:get_value (r, NewConf),
+                                proplists:get_value(r_latest, NewConf),
+                                proplists:get_value(latest_v, NewConf)
+                            ]
+                        )
+                    }
+                }
+            ;
+        true -> ok
+    end.
+
 
 %%%%%%%
 % Change value in key store

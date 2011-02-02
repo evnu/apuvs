@@ -57,6 +57,18 @@ simple_run (Collector, InitialProposer, Learners) ->
 
 
 %%%%%%
+% Double run
+% Double run starts the Paxos algorithm on two nodes with different values
+simple_run (Collector, InitialProposers, Learners) ->
+    InitialProposer ! {{propose, 10}, self()},
+    %% wait for all learners
+    [receive {learned_about_decision, Learner} -> true end || Learner <- Learners],
+    Collector ! {c_print_to_file, "msc/simple_run.msc"},
+    io:format("simple run finished\n")
+    . %% END OF FUNCTION
+
+
+%%%%%%
 % Floor
 %  We need the floor function.
 %
