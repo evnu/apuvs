@@ -42,7 +42,10 @@ testsuite (N) ->
     double_run_sametime (N),
     timer:sleep(1000),
     io:fwrite("\n",[]),
-    double_run_minority (N)
+    double_run_minority (N),
+    timer:sleep(1000),
+    io:fwrite("\n",[]),
+    double_run_late (N)
     . %%%%% END OF FUNCTION
 
 
@@ -93,9 +96,28 @@ double_run_minority(N) ->
     First ! {{propose, 4}, self()},
     Second ! {{propose, 7}, self()},
     %% wait for all learners
-    [receive {learned_about_decision, Learner} -> true end || Learner <- L],
+    [receive {learned_about_decision, Learner} -> true after 1000 -> true end || Learner <- L],
     C ! {c_print_to_file, "msc/double_run_min.msc"},
     io:format("double run minority finished\n")
+    . %% END OF FUNCTION
+
+double_run_late(N) ->
+    {Proposers, A, L, C} = create(N, round(N/2), round(N/4)),
+    [Acc ! {L, self()} || Acc <- A],
+    {Proposers_first, Proposers_second} = lists:split(2, Proposers),
+    {Acceptors_first, Acceptors_second} = lists:split(6, A),
+    [Prop ! {A, self()} || Prop <- Proposers_second],
+    timer:sleep(1000),
+    [Prop ! {Acceptors_first, self()} || Prop <- Proposers_first],
+
+    First = lists:nth(1, Proposers),
+    Second = lists:last(Proposers),
+    First ! {{propose, 4}, self()},
+    Second ! {{propose, 7}, self()},
+    %% wait for all learners
+    [receive {learned_about_decision, Learner} -> true end || Learner <- L],
+    C ! {c_print_to_file, "msc/double_run_late.msc"},
+    io:format("double run late finished\n")
     . %% END OF FUNCTION
 
 

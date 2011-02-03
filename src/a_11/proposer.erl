@@ -26,7 +26,7 @@ initialize (Collector, N) ->
         ,{majority, N}
         ,{acknum, 0}
         ,{collector, Collector}
-        ,{timeout, 100}
+        ,{timeout, 1000}
     ],
     
     Collector ! {c_name_process, self(), "Proposer"},
@@ -80,7 +80,8 @@ proposed(Configuration) ->
             Collector ! {c_state_change, {self(),
                     io_lib:format("Timeout...proposal ~w is bad",
                         [proplists:get_value(myvalue, Configuration)])}},
-           life(Configuration)
+            io:format("Timeout...proposal ~w is bad\n", [proplists:get_value(myvalue, Configuration)])
+            %, life(Configuration)
    end
    .
 
