@@ -47,7 +47,7 @@ life (C, OldR_ack, OldR_acc, OldV, LearnerList) ->
                     % a proposer accepted by majority. Lets tell the learners and finish this.
                     R_acc = R,
                     V = W,
-                    io:format("learners: ~w\n",[LearnerList]),
+                    %io:format("learners: ~w\n",[LearnerList]),
                     [Learner ! {{accepted,R_acc,V},self()}|| Learner <- LearnerList], % @Kai: kein , vor end
                     {OldR_acc, R_acc, V} % we updated the last accepted round 
                     ;

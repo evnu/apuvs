@@ -32,7 +32,7 @@ learner(Creator, Collector, Maj, OldR , OldNum) ->
                     io:format("~w: we all decided on ~w\n",[self(), Value]),
                     % tell creator that we are finished to enable building the msc
                     Creator ! {learned_about_decision, self()};
-                true -> false
+                true -> ok
             end,
             {TempRound, NumAccepted} % return the local variables
     end,

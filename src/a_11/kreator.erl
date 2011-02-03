@@ -10,7 +10,7 @@ start([String]) when is_list (String) ->
     start(list_to_integer(String));
 
 start(N) when is_integer(N) ->
-    create(round(N/2), N, round(N/4)).
+    create(N, round(N/2), round(N/4)).
 
 create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
     % Initialize a collector to build the msc
@@ -18,9 +18,9 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
     % Calculate majority
     Majority = floor(N / 2) + 1,
     % create N proposers
-    Proposers = [spawn (proposer, initialize, [C]) || _ <- lists:seq(1,N)],
+    Proposers = [spawn (proposer, initialize, [C]) || _ <- lists:seq(1,F)],
     % create F acceptors
-    Acceptors = [spawn (acceptor, initialize, [C]) || _ <- lists:seq(1,F)],
+    Acceptors = [spawn (acceptor, initialize, [C]) || _ <- lists:seq(1,N)],
     % create L learners
     Learners  = [spawn (learner , initialize, [self (), C, Majority]) || _ <- lists:seq(1,L)],
 
