@@ -56,6 +56,11 @@ simple_run (Collector, InitialProposer, Learners) ->
     . %% END OF FUNCTION
 
 
+%double_run_sametime(Collector, Proposers, Learners) ->
+%    First = lists:nth(1, Proposers),
+%    Second = lists:last(Proposers),
+
+
 %%%%%%
 % Double run
 % Double run starts the Paxos algorithm on two nodes with different values

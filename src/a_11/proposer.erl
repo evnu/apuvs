@@ -89,7 +89,7 @@ propose_value(Conf) ->
     Latest_v = proplists:get_value(latest_v, Conf),
     if
         Latest_v =:= null ->
-            Return_v = 1;
+            Return_v = proplists:get_value(myvalue, Conf);
         true -> 
             Return_v = Latest_v
     end,
