@@ -10,7 +10,8 @@ start([String]) when is_list (String) ->
     start(list_to_integer(String));
 
 start(N) when is_integer(N) ->
-    create(N, round(N/2), round(N/4)).
+    testsuite(N)
+    .
 
 create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
     % Initialize a collector to build the msc
@@ -18,19 +19,15 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
     % Calculate majority
     Majority = floor(N / 2) + 1,
     % create N proposers
-    Proposers = [spawn (proposer, initialize, [C]) || _ <- lists:seq(1,F)],
+    Proposers = [spawn (proposer, initialize, [C, Majority]) || _ <- lists:seq(1,F)],
     % create F acceptors
     Acceptors = [spawn (acceptor, initialize, [C]) || _ <- lists:seq(1,N)],
     % create L learners
     Learners  = [spawn (learner , initialize, [self (), C, Majority]) || _ <- lists:seq(1,L)],
 
-    [Acc ! {Learners, self()} || Acc <- Acceptors],
-    [Prop ! {Acceptors, self()} || Prop <- Proposers],
-
     % output the pids
     io:format("Proposers: ~w\nAcceptors: ~w\nLearners: ~w\n",[Proposers, Acceptors, Learners]), 
-    testsuite (C, Proposers, Acceptors, Learners),
-    ok
+    {Proposers, Acceptors, Learners, C}
     . %%%%% END OF FUNCTION
 
 
@@ -38,8 +35,14 @@ create (N, F, L) when is_integer(N) and is_integer(F) and is_integer(L) ->
 % Testsuite
 %  run some tests on the implementation and log the output.
 %
-testsuite (Collector, Proposers, _Acceptors, Learners) ->
-    simple_run (Collector, lists:nth(1,Proposers), Learners)
+testsuite (N) ->
+    simple_run (N),
+    timer:sleep(1000),
+    io:fwrite("\n",[]),
+    double_run_sametime (N),
+    timer:sleep(1000),
+    io:fwrite("\n",[]),
+    double_run_minority (N)
     . %%%%% END OF FUNCTION
 
 
@@ -47,18 +50,53 @@ testsuite (Collector, Proposers, _Acceptors, Learners) ->
 % Simple run
 %  Simple run starts a consensus and then waits for all learners to learn about the
 %  decision. InitialProposer is the only process which proposes.
-simple_run (Collector, InitialProposer, Learners) ->
-    InitialProposer ! {{propose, 10}, self()},
+simple_run (N) ->
+    {Proposers, A, L, C} = create(N, round(N/2), round(N/4)),
+    [Acc ! {L, self()} || Acc <- A],
+    [Prop ! {A, self()} || Prop <- Proposers],
+
+    lists:nth(1, Proposers) ! {{propose, 10}, self()},
     %% wait for all learners
-    [receive {learned_about_decision, Learner} -> true end || Learner <- Learners],
-    Collector ! {c_print_to_file, "msc/simple_run.msc"},
+    [receive {learned_about_decision, Learner} -> true end || Learner <- L],
+    C ! {c_print_to_file, "msc/simple_run.msc"},
     io:format("simple run finished\n")
     . %% END OF FUNCTION
 
+double_run_sametime(N) ->
+    {Proposers, A, L, C} = create(N, round(N/2), round(N/4)),
+    [Acc ! {L, self()} || Acc <- A],
+    {Proposers_first, Proposers_second} = lists:split(2, Proposers),
+    {Acceptors_first, Acceptors_second} = lists:split(6, A),
+    [Prop ! {Acceptors_first, self()} || Prop <- Proposers_first],
+    [Prop ! {A, self()} || Prop <- Proposers_second],
 
-%double_run_sametime(Collector, Proposers, Learners) ->
-%    First = lists:nth(1, Proposers),
-%    Second = lists:last(Proposers),
+    First = lists:nth(1, Proposers),
+    Second = lists:last(Proposers),
+    First ! {{propose, 4}, self()},
+    Second ! {{propose, 7}, self()},
+    %% wait for all learners
+    [receive {learned_about_decision, Learner} -> true end || Learner <- L],
+    C ! {c_print_to_file, "msc/double_run.msc"},
+    io:format("double run finished\n")
+    . %% END OF FUNCTION
+
+double_run_minority(N) ->
+    {Proposers, A, L, C} = create(N, round(N/2), round(N/4)),
+    [Acc ! {L, self()} || Acc <- A],
+    {Proposers_first, Proposers_second} = lists:split(2, Proposers),
+    {Acceptors_first, Acceptors_second} = lists:split(6, A),
+    [Prop ! {Acceptors_second, self()} || Prop <- Proposers_first],
+    [Prop ! {Acceptors_second, self()} || Prop <- Proposers_second],
+
+    First = lists:nth(1, Proposers),
+    Second = lists:last(Proposers),
+    First ! {{propose, 4}, self()},
+    Second ! {{propose, 7}, self()},
+    %% wait for all learners
+    [receive {learned_about_decision, Learner} -> true end || Learner <- L],
+    C ! {c_print_to_file, "msc/double_run_min.msc"},
+    io:format("double run minority finished\n")
+    . %% END OF FUNCTION
 
 
 %%%%%%

@@ -1,12 +1,12 @@
 -module(proposer).
--export([initialize/1]).
+-export([initialize/2]).
 
 %%%%%%%
 %
 % Initialize a proposer
 %
 
-initialize (Collector) ->
+initialize (Collector, N) ->
     %% Get the list of acceptors
     receive
         {Acceptors, _Sender} when is_list(Acceptors) ->
@@ -16,7 +16,6 @@ initialize (Collector) ->
             io:format("Unexpected message."),
             exit('Unknown value')
     end,
-    Majority = length (Acceptors)/2 + 1,
 
     %% create a proplist to contain the configuration
     Configuration = [
@@ -24,7 +23,7 @@ initialize (Collector) ->
         ,{r_latest,0}    % number of the highest acknowledged round
         ,{latest_v,null} % value of the highest acknowledged round
         ,{acceptors, Acceptors}
-        ,{majority, Majority}
+        ,{majority, N}
         ,{acknum, 0}
         ,{collector, Collector}
         ,{timeout, 100}
@@ -59,19 +58,19 @@ proposed(Configuration) ->
     Timeout = proplists:get_value(timeout, Configuration),
     receive
         {{ack, R, Old_v, Old_r_ack}, _} ->
-            io:format("Received ack-Message R: ~w OldV: ~w OldRAck: ~w\n",[R,
-                    Old_v, Old_r_ack]),
+            io:format("~w Received ack-Message R: ~w OldV: ~w OldRAck: ~w\n",
+                [self(), R, Old_v, Old_r_ack]),
             Acknum = proplists:get_value(acknum, Configuration),
             NewConf = change_value({acknum, Acknum + 1},
                 change_mind(Configuration, Old_r_ack, Old_v)),
             Majority = proplists:get_value(majority, NewConf),
-            io:format("Acknum: ~w Majority: ~w \n",[Acknum, Majority]),
+            io:format("Acknum: ~w Majority: ~w \n",[Acknum + 1, Majority]),
             if
-                Acknum >= Majority ->
+                Acknum + 1== Majority ->
                     Latest_v = propose_value(NewConf),
+                    io:format("Sending accept-Message\n",[]),
                     [Acceptor ! {{accept, R, Latest_v}, self()} || Acceptor <-
                         proplists:get_value(acceptors, NewConf)],
-                    io:format("Sending accept-Message\n",[]),
                     life(NewConf);
                 true ->
                     proposed(NewConf)
