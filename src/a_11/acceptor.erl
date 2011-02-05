@@ -40,14 +40,14 @@ life (C, OldR_ack, OldR_acc, OldV, LearnerList) ->
                     {OldR_ack, OldR_acc, OldV}
             end;
 
-        {{accepted, R, W}, Sender} ->
-            C ! {c_collect, {Sender, self(), io_lib:format("<accepted, ~w,~w>",[R,W])}},
-            io:format("~w received <accepted, R=~w, W≃~w from ~w \n", [self(), R, W, Sender]),
+        {{accept, R, W}, Sender} ->
+            C ! {c_collect, {Sender, self(), io_lib:format("<accept, ~w,~w>",[R,W])}},
+            io:format("~w received <accept, R=~w, W≃~w from ~w \n", [self(), R, W, Sender]),
             if ((R >= OldR_ack) and (R > OldR_acc)) -> 
                     % a proposer accepted by majority. Lets tell the learners and finish this.
                     R_acc = R,
                     V = W,
-                    io:format("learners: ~w\n",[LearnerList]),
+                    %io:format("learners: ~w\n",[LearnerList]),
                     [Learner ! {{accepted,R_acc,V},self()}|| Learner <- LearnerList], % @Kai: kein , vor end
                     {OldR_acc, R_acc, V} % we updated the last accepted round 
                     ;

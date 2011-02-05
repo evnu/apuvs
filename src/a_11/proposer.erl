@@ -1,12 +1,12 @@
 -module(proposer).
--export([initialize/1]).
+-export([initialize/2]).
 
 %%%%%%%
 %
 % Initialize a proposer
 %
 
-initialize (Collector) ->
+initialize (Collector, N) ->
     %% Get the list of acceptors
     receive
         {Acceptors, _Sender} when is_list(Acceptors) ->
@@ -16,7 +16,6 @@ initialize (Collector) ->
             io:format("Unexpected message."),
             exit('Unknown value')
     end,
-    Majority = length (Acceptors)/2 + 1,
 
     %% create a proplist to contain the configuration
     Configuration = [
@@ -24,10 +23,10 @@ initialize (Collector) ->
         ,{r_latest,0}    % number of the highest acknowledged round
         ,{latest_v,null} % value of the highest acknowledged round
         ,{acceptors, Acceptors}
-        ,{majority, Majority}
+        ,{majority, N}
         ,{acknum, 0}
         ,{collector, Collector}
-        ,{timeout, 100}
+        ,{timeout, 1000}
     ],
     
     Collector ! {c_name_process, self(), "Proposer"},
@@ -49,16 +48,53 @@ initialize (Collector) ->
 life (Configuration) ->
     receive
         {{propose, V}, _sender} ->
-            NewConf = change_value({acknum, 0}, Configuration),
-            send_new_proposal(NewConf, V)
+            NewConf = send_new_proposal(Configuration, V),
+            proposed(NewConf)
     end
     .
 
 proposed(Configuration) ->
     R = proplists:get_value(r, Configuration),
+    Timeout = proplists:get_value(timeout, Configuration),
     receive
         {{ack, R, Old_v, Old_r_ack}, _} ->
-            NewConf = change_mind(Configuration, Old_r_ack, Old_v),
+            io:format("~w Received ack-Message R: ~w OldV: ~w OldRAck: ~w\n",
+                [self(), R, Old_v, Old_r_ack]),
+            Acknum = proplists:get_value(acknum, Configuration),
+            NewConf = change_value({acknum, Acknum + 1},
+                change_mind(Configuration, Old_r_ack, Old_v)),
+            Majority = proplists:get_value(majority, NewConf),
+            io:format("Acknum: ~w Majority: ~w \n",[Acknum + 1, Majority]),
+            if
+                Acknum + 1== Majority ->
+                    Latest_v = propose_value(NewConf),
+                    io:format("Sending accept-Message\n",[]),
+                    [Acceptor ! {{accept, R, Latest_v}, self()} || Acceptor <-
+                        proplists:get_value(acceptors, NewConf)],
+                    life(NewConf);
+                true ->
+                    proposed(NewConf)
+            end
+    after Timeout ->
+            Collector = proplists:get_value(collector, Configuration),
+            Collector ! {c_state_change, {self(),
+                    io_lib:format("Timeout...proposal ~w is bad",
+                        [proplists:get_value(myvalue, Configuration)])}},
+            io:format("Timeout...proposal ~w is bad\n", [proplists:get_value(myvalue, Configuration)])
+            %, life(Configuration)
+   end
+   .
+
+propose_value(Conf) ->
+    Latest_v = proplists:get_value(latest_v, Conf),
+    if
+        Latest_v =:= null ->
+            Return_v = proplists:get_value(myvalue, Conf);
+        true -> 
+            Return_v = Latest_v
+    end,
+    Return_v
+    .
 
 %%%%%%%
 % Send a new proposal
@@ -75,39 +111,18 @@ send_new_proposal (Configuration, Value) ->
     % send prepare(r) to each acceptor
     io:format("Propose\n"),
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
-        NewConf.
+    NewConf
+    .
 
 change_mind(Conf, R, V) ->
     R_latest = proplists:get_value(r_latest, Conf),
     if
         R > R_latest ->
             NewConf = change_values([{r_latest, R}, {latest_v, V}], Conf);
-        true -> ok
+        true -> NewConf = Conf
     end,
     NewConf
     .
-
-%%%%%%%
-% checks two configurations and informs the collector in case they are different
-check_configs(NewC, Con) ->
-    if (NewConf =/= Configuration) ->
-            % tell collector about our new state
-            proplists:get_value(collector, NewConf) ! 
-                {c_state_change, 
-                    {self(), 
-                        io_lib:format("r = ~w, r_latest = ~w, latest_v = ~w", 
-                            [
-                                proplists:get_value (r, NewConf),
-                                proplists:get_value(r_latest, NewConf),
-                                proplists:get_value(latest_v, NewConf)
-                            ]
-                        )
-                    }
-                }
-            ;
-        true -> ok
-    end.
-
 
 %%%%%%%
 % Change value in key store
@@ -128,3 +143,14 @@ change_values ([], Configuration) -> Configuration;
 change_values ([H|T], Configuration) ->
     change_values (T, change_value(H, Configuration)).
 
+max(A, B) ->
+    Return = if
+        A < B ->
+            B;
+        B < A ->
+            A;
+        true ->
+            A
+    end,
+    Return
+    .
