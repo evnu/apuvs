@@ -57,9 +57,12 @@ proposed(Configuration) ->
     R = proplists:get_value(r, Configuration),
     Timeout = proplists:get_value(timeout, Configuration),
     receive
-        {{ack, R, Old_v, Old_r_ack}, _} ->
+        {{ack, R, Old_v, Old_r_ack}, Sender} ->
             io:format("~w Received ack-Message R: ~w OldV: ~w OldRAck: ~w\n",
                 [self(), R, Old_v, Old_r_ack]),
+            Collector = proplists:get_value(collector, Configuration),
+            Collector ! {c_collect, {Sender, self(),
+                    io_lib:format("<ack, ~w, ~w, ~w>", [R, Old_v, Old_r_ack])}},
             Acknum = proplists:get_value(acknum, Configuration),
             NewConf = change_value({acknum, Acknum + 1},
                 change_mind(Configuration, Old_r_ack, Old_v)),
@@ -107,7 +110,7 @@ send_new_proposal (Configuration, Value) ->
     % Note: proplist:delete doesn't fail, if the key to be deleted isn't found
     OldR = proplists:get_value (r, Configuration),
     LatestR = proplists:get_value(r_latest, Configuration),
-    NewConf = change_values ([{acknum, 0}, {myvalue, Value}, {r, max(OldR, LatestR) + 1}], Configuration),
+    NewConf = change_values ([{acknum, 0}, {myvalue, Value}, {r, max_of_params(OldR, LatestR) + 1}], Configuration),
     % send prepare(r) to each acceptor
     io:format("Propose\n"),
     [Acceptor ! {{prepare, proplists:get_value(r, NewConf)}, self()} || Acceptor <- proplists:get_value(acceptors, NewConf)],
@@ -143,7 +146,7 @@ change_values ([], Configuration) -> Configuration;
 change_values ([H|T], Configuration) ->
     change_values (T, change_value(H, Configuration)).
 
-max(A, B) ->
+max_of_params(A, B) ->
     Return = if
         A < B ->
             B;
